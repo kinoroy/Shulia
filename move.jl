@@ -3,6 +3,8 @@
 
 module move
 
+  include("square.jl")
+  using ST
   using SQLite
 
   #= ---- Opens the Database for reading ---- =#
@@ -24,6 +26,8 @@ module move
 
   #=---- Determines a move to make (AI integration below)----=#
   move_number = lastMoveID+1 #The current move is move#: move_number
+  board = readdlm("board.txt") #board is a 2d-array, where each element is of type piece
+
   #Todo: write AI: must define variables: move_type, sourcex, sourcey, targetx, targety, option, i_am_cheating
 
   # ---- Saves the determined move in the database ---- =#
