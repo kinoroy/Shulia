@@ -12,9 +12,12 @@ type square
 
 end
 
-  function clear() #This function clears the square to be empty
-    piece = 'x'
-    team = 'x'
+  function clear!(target) #This function clears the square to be empty
+    target.piece = 'x'
+    target.team = 'x'
+  end
+  function promote!(target)
+    target.piece = uppercase(target.piece) #promotes the piece
   end
   #=----The following are tester functions, they are bool return functions meant to be used with find()
   Example:  to find all kings on a board you could run "find(k,board)"
@@ -98,5 +101,5 @@ end
       end
     end
 
-export square, clear,w,b,p,l,b,s,g,n,r,k,isPromoted
+export square, clear!,promote!,w,b,p,l,b,s,g,n,r,k,isPromoted
 end
