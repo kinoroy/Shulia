@@ -11,7 +11,7 @@ module move_user_drop
   piece = ARGS[2] #one of {b,g,k,l,n,p,r,s} {String}
   xTarget = parse(chomp(ARGS[3]),Int) #x coordinate to place piece {Int}
   yTarget = parse(chomp(ARGS[4]),Int) #x coordinate to place piece {Int}
-  
-  SQLite.connect(database) #Opens the database gamefile
+
+  db = SQLite.DB(database) #Opens the database gamefile
 
 end

@@ -8,6 +8,6 @@ module validate
   using SQLite
 
   database = ARGS[1] #/path/to/database/file {string}
-  SQLite.connect(database) #Opens the database gamefile
+  db = SQLite.DB(database) #Opens the database gamefile
 
 end

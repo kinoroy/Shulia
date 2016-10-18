@@ -10,6 +10,6 @@ gameType = ARGS[2] #Either "S" or "M" {string}
 cheatingDict = Dict("T" => true, "F" => false)
 cheating = cheatingDict[ARGS[3]] #Either true or false {bool}
 
-SQLite.connect(database) #Opens the database gamefile
+db = SQLite.DB(database) #Opens the database gamefile
 
 end
