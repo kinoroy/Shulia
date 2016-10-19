@@ -34,20 +34,20 @@ module move_user_move
 
   #=-----UPDATE DATABASE W/MOVE-----=#
   if shouldPromote #Option will be '!'
-    SQLite.query(db,"INSERT INTO moves (move_number, move_type, sourcex, sourcey, targetx, targety, option, i_am_cheating)
-    VALUES ($(move_number),move,$xSource, $ySource,$xTarget, $yTarget, !, $(i_am_cheating));")
+    SQLite.query(db,"INSERT INTO moves (move_number, move_type, sourcex, sourcey, targetx, targety, option)
+    VALUES ($(move_number),move,$xSource, $ySource,$xTarget, $yTarget, !);")
   else #Option will be NULL
-    SQLite.query(db,"INSERT INTO moves (move_number, move_type, sourcex, sourcey, targetx, targety, i_am_cheating)
-    VALUES ($(move_number),move,$xSource, $ySource,$xTarget, $yTarget, $(i_am_cheating));")
+    SQLite.query(db,"INSERT INTO moves (move_number, move_type, sourcex, sourcey, targetx, targety)
+    VALUES ($(move_number),move,$xSource, $ySource,$xTarget, $yTarget);")
   end
 
   board = readdlm("board.txt") #reads board
   #Updates the board (should check that move was successful before doing this)
-  which = board[xSource,ySource].piece #whos piece is being moved
-  who = board[xSource,ySource].team #what kind of piece is being moved
+  which = board[xSource,ySource].piece #what kind of piece is being moved
+  who = board[xSource,ySource].team #whos piece is being moved
 
   clear(board[xSource,ySource]) #clears the old space the piece occupied
-  board[xTarget,yTarget] = square(which,who) #Places the piece at new location 
+  board[xTarget,yTarget] = square(which,who) #Places the piece at new location
   if shouldPromote #Promotes the piece if needed
     promote!(board[xTarget,yTarget].)
   end

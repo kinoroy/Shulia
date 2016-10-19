@@ -32,8 +32,8 @@ db = SQLite.DB(database) #Opens the database gamefile
 
 #=-----UPDATE DATABASE W/MOVE-----=#
 #Option will be dropped pieces abv
-  SQLite.query(db,"INSERT INTO moves (move_number, move_type, targetx, targety, option, i_am_cheating)
-  VALUES ($(move_number),drop,$xTarget, $yTarget, $pieceToDrop, $(i_am_cheating));")
+  SQLite.query(db,"INSERT INTO moves (move_number, move_type, targetx, targety, option)
+  VALUES ($(move_number),drop,$xTarget, $yTarget, $pieceToDrop);")
 
 
 board = readdlm("board.txt") #reads board
