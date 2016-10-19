@@ -23,6 +23,14 @@ end
   Example:  to find all kings on a board you could run "find(k,board)"
   Each function is named the same as the piece it checks for
   There is also an "isPromoted" function to determine if the piece is promoted=#
+  function isEmpty(test)
+    if test.piece == 'x'
+      return true
+    else
+      return false
+    end
+  end
+
   function b(test)
     if test.team == 'b'
       return true
@@ -101,5 +109,5 @@ end
       end
     end
 
-export square, clear!,promote!,w,b,p,l,b,s,g,n,r,k,isPromoted
+export isEmpty,square, clear!,promote!,w,b,p,l,b,s,g,n,r,k,isPromoted
 end

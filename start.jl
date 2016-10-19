@@ -12,6 +12,10 @@ cheating = cheatingDict[ARGS[3]] #Either true or false {bool}
 
 db = SQLite.DB(database) #Opens the database gamefile
 
+#=----Initialize the captures----=#
+captured = Array(square,0)
+writedlm("captured.txt",captured)
+
 #=----Initialize the board ----=#
 board = fill!(Array(square,9,9),square())
 board[1,5] = square('k','w')

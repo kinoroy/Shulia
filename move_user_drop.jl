@@ -30,22 +30,32 @@ db = SQLite.DB(database) #Opens the database gamefile
   end
   move_number = lastMoveID+1 #Current move number
 
+  if iseven(move_number)
+    who = 'w'
+  else
+    who = 'b'
+  end
+  which = pieceToDrop #what kind of piece is being moved
+
 #=-----UPDATE DATABASE W/MOVE-----=#
 #Option will be dropped pieces abv
   SQLite.query(db,"INSERT INTO moves (move_number, move_type, targetx, targety, option)
   VALUES ($(move_number),drop,$xTarget, $yTarget, $pieceToDrop);")
 
+pieceFunctionDict = Dict('k' => k,'b' => b,'g' => g,'s' => s,'r' => r,'p' => p,
+'l' => l, 'n' => n)
+captureFunctionDict = Dict('w' => b, 'b' => w)
+
+  captured = readdlm("captured.txt") #Reads from captured
+    indecies = find(pieceFunctionDict[pieceToDrop]&&captureFunctionDict[who], captured)
+    if !isEmpty(indecies)
+      deleteat!(captured, indecies[1])
+    end
+  
+  writedlm("captured.txt",board)
 
 board = readdlm("board.txt") #reads board
 #Updates the board (should check that move was successful before doing this)
-which = pieceToDrop #what kind of piece is being moved
-if iseven(move_number)
-  who = 'w'
-else
-  who = 'b'
-end
-
-
 board[xTarget,yTarget] = square(which,who) #Places the piece at new location
 
 
