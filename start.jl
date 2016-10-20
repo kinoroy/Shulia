@@ -12,9 +12,6 @@ cheating = cheatingDict[ARGS[3]] #Either true or false {bool}
 
 db = SQLite.DB(database) #Opens the database gamefile
 
-#=----Initialize the captures----=#
-captured = Array(square,0)
-writedlm("captured.txt",captured)
 
 #=----Initialize the board ----=#
 board = fill!(Array(square,9,9),square())
@@ -34,8 +31,5 @@ board[2,8] = square('r','w')
 board[8,2] = square('r','b')
 board[3,1:9] = square('p','w')
 board[7,1:9] = square('p','b')
-
-#=----Save the board to file----=#
-writedlm("board.txt",board)
 
 end

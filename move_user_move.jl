@@ -5,7 +5,7 @@ Accepts 6 command line args : <filename> => database, <xsource> => xSource
 =#
 
 module move_user_move
-  include("square.jl")
+
   using ST
   using SQLite
 
@@ -41,23 +41,4 @@ module move_user_move
     VALUES ($(move_number),move,$xSource, $ySource,$xTarget, $yTarget);")
   end
 
-  captured = readdlm("captured.txt")
-  if !isEmpty(board[xTarget,yTarget])
-    push!(captured,board[xTarget,yTarget])
-  end
-  writedlm("captured.txt",board)
-
-  board = readdlm("board.txt") #reads board
-  #Updates the board (should check that move was successful before doing this)
-  which = board[xSource,ySource].piece #what kind of piece is being moved
-  who = board[xSource,ySource].team #whos piece is being moved
-
-  clear(board[xSource,ySource]) #clears the old space the piece occupied
-  board[xTarget,yTarget] = square(which,who) #Places the piece at new location
-  if shouldPromote #Promotes the piece if needed
-    promote!(board[xTarget,yTarget].)
-  end
-
-  writedlm("board.txt",board) #writes the board to memory
-  writedlm()
 end
