@@ -11,11 +11,10 @@ cheatingDict = Dict("T" => true, "F" => false)
 cheating = cheatingDict[ARGS[3]] #Either true or false {bool}
 
 db = SQLite.DB(database) #Opens the database gamefile
-
-
+SQLite.query(db,"CREATE TABLE moves (move_number,move_type,sourcex,sourcey,targetx,targety,option,i_am_cheating)")
 #=----Initialize the board ----=#
-board = fill!(Array(square,9,9),square())
-board[1,5] = square('k','w')
+
+#=board[1,5] = square('k','w')
 board[9,5] = square('k','b')
 board[1,[4,6]] = square('g','w')
 board[9,[4,6]] = square('g','b')
@@ -30,6 +29,7 @@ board[8,8] = square('b','b')
 board[2,8] = square('r','w')
 board[8,2] = square('r','b')
 board[3,1:9] = square('p','w')
-board[7,1:9] = square('p','b')
+board[7,1:9] = square('p','b')=#
+
 
 end
