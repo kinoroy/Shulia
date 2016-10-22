@@ -5,28 +5,26 @@ of the violating move if it wasn’t. Accepts 1 command line argument,<filename>
 
 module validate
 
-using SQLite
+  using SQLite
 
-database = ARGS[1] #/path/to/database/file {string}
-db = SQLite.DB(database) #Opens the database gamefile
+  database = ARGS[1] #/path/to/database/file {string}
+  db = SQLite.DB(database) #Opens the database gamefile
 
-# dictionary has potential problems, also need promotions
-# gamePiece = Dict("b" => "Bishop", "g" => "Gold General", "k" => "King", "l" => "Lance", "n" => "Knight", "p" => "Pawn", "r" => "Rook", "s" => "Silver General")
-
-maxMove = SQLite.query(db, "SELECT max(move_number)")
-for x in 1:maxMove
-  #access each row of database
-  dataMove = SQLite.query(db, "SELECT move_number, move_type, sourcex, sourcey, targetx, targety, option, i_am_cheating FROM moves WHERE move_number = $x" )
+  maxMove = SQLite.query(db, "SELECT max(move_number)")
+  for x in 1:maxMove #access each row of database
+    dataMove = SQLite.query(db, "SELECT move_number, move_type, sourcex, sourcey, targetx, targety, option, i_am_cheating FROM moves WHERE move_number = $x" )
     if ( !isnull(dataMove[1][3]) && !isnull(dataMove[1][4]) && !isnull(dataMove[1][5]) && !isnull(dataMove[1][6]) )
       sourcex = get(dataMove[1][3])
       sourcey = get(dataMove[1][4])
       targetx = get(dataMove[1][5])
       targety = get(dataMove[1][6])
       unitType = board[sourcex][sourcey].piece
-      moveValidate(unitType, board[sourcex][sourcey].team, sourcex, sourcey, targetx, targety)
+      if (moveValidate(unitType, board[sourcex][sourcey].team, sourcex, sourcey, targetx, targety) == true)
+        println(0)
+      else
+        println(dataMove[1][1])
     end
   end
-
 
   #returns True if move is Valid, False otherwise
   #unit refers to gamePiece, team refers to black player or white player, sourcex and sourcey is current position of unit
@@ -358,173 +356,173 @@ for x in 1:maxMove
     return false
   end #knigthValidate
 
-#case 5.2 promoted knight #moves same as gold general
+  #case 5.2 promoted knight #moves same as gold general
 
-#case 6 pawn
-function pawnValidate(team,sourcex,sourcey,targetx,targety)
-  if (team == "b") #team black
-    if (targetx == sourcex - 1) && (targety == sourcey)
-      return true
-    end
-  elseif (team == "w") #team white
-    if (targetx == sourcex + 1) && (targety == sourcey)
-      return true
-    end
-  else
-    return false #invalid team
-  end
-
-  return false
-end #pawnValidate end
-
-#case 6.2 promotedPawn #moves same as gold general
-
-#case 7 rook
-function rookValidate(team,sourcex,sourcey,targetx,targety)
-  #doesn't care about teams #4 cases #moving horizontally to left or right #moving vertically to up or down
-
-  #moving horizontally
-  if (sourcex == targetx) && (sourcey != targety)
-    unitCheck = abs(sourcey - targety)
-    #horizontal left
-    if (sourcey > targety)
-      y = sourcey - 1
-      for unit in 1:(unitCheck - 1)
-        if (isEmpty(board[sourcex][y] == true))
-          y = y - 1
-        else
-          return false
-        end
-      end
-    #horizontal right
-    else #(sourcey < targety)
-      y = sourcey + 1
-      for unit in 1:(unitCheck -1)
-        if (isEmpty(board[sourcex][y] == true))
-          y = y + 1
-        else
-          return false
-        end
-      end
-    end
-
-  #moving vertically
-  elseif (sourcey == targety) && (sourcex != targetx)
-    unitCheck = abs(sourcex - targetx)
-    #vertical up
-    if (sourcex > targetx)
-      x = sourcex - 1
-      for unit in 1:(unitCheck - 1)
-        if (isEmpty(board[x][sourcey] == true))
-          x = x - 1
-        else
-          return false
-        end
-      end
-    #vertical down
-    else #(sourcex < targetx)
-      x = sourcex + 1
-      for unit in 1:(unitCheck - 1)
-        if (isEmpty(board[x][sourcey] == true))
-          x = x + 1
-        else
-          return false
-        end
-      end
-    end
-  end
-
-  return false
-end #rookValidate end
-
-#case 7.2 promotedRook #moves like king or normal rook
-function pRookValidate(team,sourcex,sourcey,targetx,targety)
-
-  #checks if it moves like king
-  if ((abs(sourcex - targetx) == 1) || (abs(sourcex - targetx) == 0))
-    if ((abs(sourcey - targety) == 1) || (abs(sourcey - targety) == 0))
-      return true
-    end
-
-  #checks if it moves like normal rook
-
-  #moving horizontally
-  elseif (sourcex == targetx) && (sourcey != targety)
-    unitCheck = abs(sourcey - targety)
-    #horizontal left
-    if (sourcey > targety)
-      y = sourcey - 1
-      for unit in 1:(unitCheck - 1)
-        if (isEmpty(board[sourcex][y] == true))
-          y = y - 1
-        else
-          return false
-        end
-      end
-    #horizontal right
-    else #(sourcey < targety)
-      y = sourcey + 1
-      for unit in 1:(unitCheck -1)
-        if (isEmpty(board[sourcex][y] == true))
-          y = y + 1
-        else
-          return false
-        end
-      end
-    end
-
-  #moving vertically
-  elseif (sourcey == targety) && (sourcex != targetx)
-    unitCheck = abs(sourcex - targetx)
-    #vertical up
-    if (sourcex > targetx)
-      x = sourcex - 1
-      for unit in 1:(unitCheck - 1)
-        if (isEmpty(board[x][sourcey] == true))
-          x = x - 1
-        else
-          return false
-        end
-      end
-    #vertical down
-    else #(sourcex < targetx)
-      x = sourcex + 1
-      for unit in 1:(unitCheck - 1)
-        if (isEmpty(board[x][sourcey] == true))
-          x = x + 1
-        else
-          return false
-        end
-      end
-    end
-  end
-
-  return false
-end #pRookValidate end
-
-#case 8 silverGeneral
-function silverGeneralValidate(team,sourcex,sourcey,targetx,targety)
-  if (team == "b") #team black
-    if (abs(sourcex - targetx) == 1)
-      if (abs(sourcey - targety) == 1 ) #every diagonal corner
-        return true
-      elseif (sourcey == targety) && (sourcex == targetx + 1) #up 1
+  #case 6 pawn
+  function pawnValidate(team,sourcex,sourcey,targetx,targety)
+    if (team == "b") #team black
+      if (targetx == sourcex - 1) && (targety == sourcey)
         return true
       end
-    end
-  elseif (team == "w") #team white
-    if (abs(sourcex - targetx) == 1)
-      if (abs(sourcey - targety) == 1) #every diagonal corner
-        return true
-      elseif (sourcey == targety) && (sourcex == targetx - 1) #down 1
+    elseif (team == "w") #team white
+      if (targetx == sourcex + 1) && (targety == sourcey)
         return true
       end
+    else
+      return false #invalid team
     end
-  else
-    return false #invalid team
-  end
 
-  return false
-end #silverGeneralValidate end
+    return false
+  end #pawnValidate end
+
+  #case 6.2 promotedPawn #moves same as gold general
+
+  #case 7 rook
+  function rookValidate(team,sourcex,sourcey,targetx,targety)
+    #doesn't care about teams #4 cases #moving horizontally to left or right #moving vertically to up or down
+
+    #moving horizontally
+    if (sourcex == targetx) && (sourcey != targety)
+      unitCheck = abs(sourcey - targety)
+      #horizontal left
+      if (sourcey > targety)
+        y = sourcey - 1
+        for unit in 1:(unitCheck - 1)
+          if (isEmpty(board[sourcex][y] == true))
+            y = y - 1
+          else
+            return false
+          end
+        end
+      #horizontal right
+      else #(sourcey < targety)
+        y = sourcey + 1
+        for unit in 1:(unitCheck -1)
+          if (isEmpty(board[sourcex][y] == true))
+            y = y + 1
+          else
+            return false
+          end
+        end
+      end
+
+    #moving vertically
+    elseif (sourcey == targety) && (sourcex != targetx)
+      unitCheck = abs(sourcex - targetx)
+      #vertical up
+      if (sourcex > targetx)
+        x = sourcex - 1
+        for unit in 1:(unitCheck - 1)
+          if (isEmpty(board[x][sourcey] == true))
+            x = x - 1
+          else
+            return false
+          end
+        end
+      #vertical down
+      else #(sourcex < targetx)
+        x = sourcex + 1
+        for unit in 1:(unitCheck - 1)
+          if (isEmpty(board[x][sourcey] == true))
+            x = x + 1
+          else
+            return false
+          end
+        end
+      end
+    end
+
+    return false
+  end #rookValidate end
+
+  #case 7.2 promotedRook #moves like king or normal rook
+  function pRookValidate(team,sourcex,sourcey,targetx,targety)
+
+    #checks if it moves like king
+    if ((abs(sourcex - targetx) == 1) || (abs(sourcex - targetx) == 0))
+      if ((abs(sourcey - targety) == 1) || (abs(sourcey - targety) == 0))
+        return true
+      end
+
+    #checks if it moves like normal rook
+
+    #moving horizontally
+    elseif (sourcex == targetx) && (sourcey != targety)
+      unitCheck = abs(sourcey - targety)
+      #horizontal left
+      if (sourcey > targety)
+        y = sourcey - 1
+        for unit in 1:(unitCheck - 1)
+          if (isEmpty(board[sourcex][y] == true))
+            y = y - 1
+          else
+            return false
+          end
+        end
+      #horizontal right
+      else #(sourcey < targety)
+        y = sourcey + 1
+        for unit in 1:(unitCheck -1)
+          if (isEmpty(board[sourcex][y] == true))
+            y = y + 1
+          else
+            return false
+          end
+        end
+      end
+
+    #moving vertically
+    elseif (sourcey == targety) && (sourcex != targetx)
+      unitCheck = abs(sourcex - targetx)
+      #vertical up
+      if (sourcex > targetx)
+        x = sourcex - 1
+        for unit in 1:(unitCheck - 1)
+          if (isEmpty(board[x][sourcey] == true))
+            x = x - 1
+          else
+            return false
+          end
+        end
+      #vertical down
+      else #(sourcex < targetx)
+        x = sourcex + 1
+        for unit in 1:(unitCheck - 1)
+          if (isEmpty(board[x][sourcey] == true))
+            x = x + 1
+          else
+            return false
+          end
+        end
+      end
+    end
+
+    return false
+  end #pRookValidate end
+
+  #case 8 silverGeneral
+  function silverGeneralValidate(team,sourcex,sourcey,targetx,targety)
+    if (team == "b") #team black
+      if (abs(sourcex - targetx) == 1)
+        if (abs(sourcey - targety) == 1 ) #every diagonal corner
+          return true
+        elseif (sourcey == targety) && (sourcex == targetx + 1) #up 1
+          return true
+        end
+      end
+    elseif (team == "w") #team white
+      if (abs(sourcex - targetx) == 1)
+        if (abs(sourcey - targety) == 1) #every diagonal corner
+          return true
+        elseif (sourcey == targety) && (sourcex == targetx - 1) #down 1
+          return true
+        end
+      end
+    else
+      return false #invalid team
+    end
+
+    return false
+  end #silverGeneralValidate end
 
 #case 8.2 pSilverGeneral moves same as gold general

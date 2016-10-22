@@ -12,24 +12,39 @@ module win
   database = ARGS[1] #/path/to/database/file {string}
   db = SQLite.DB(database)  #Opens the database gamefile
 
-  #pseudocode
-  for moves in database
-    if isCheckMate() == "b"
-      println("B")
-    elseif isCheckMate() =="w"
-      println("W")
-    elseif isResigned() == "b"
-      println("B")
-    elseif isResigned() == "w"
-      println("r")
-    elseif isDraw() == true
-      println("D")
-    else
+  maxMove = SQLite.query(db, "SELECT max(move_number)")
+  for x in 1:maxMove  #iterates through each row of the database
+    dataMove = SQLite.query(db, "SELECT move_number, move_type, targetx, targety FROM moves WHERE move_number = $x")
+    move_type = dataMove[1][2]
+    targetx = dataMove[1][3]
+    targety = dataMove[1][4]
+
+    #Case 1: Resigned
+    if move_type == "resign"
+      if even(x) == true
+        println("r")
+      else #x is odd
+        println("R")
+      end
+
+    #Case 2: Win
+    #Game is won on the move that captures a king
+    #I implemented win where, if the target X Y location of the current move is a king, it means the king is captpured so the other team wins
+    elseif ( k(board[targetx][targety]) == true) #uses function from spuare.jl
+      if (board[targetx][targety].team == "b")
+        println("W")
+      else #board[targetx][targety].team == "w"
+        println("B")
+      end
+
+    elseif #draw MISSING
+
+    else #game is on
       println("?")
     end
   end
 
-  #Return true if victim is vulnerable to opponent
+  #=Return true if victim is vulnerable to opponent
   function isThreatened(victim)
     for piece in opponent
       if (piece.dead == false)
@@ -40,48 +55,6 @@ module win
     end
     return false
   end
+  =#
 
-  #Checks for checkmate
-  function isCheckMate()
-    if (isThreatened(bKing) == true)
-      if (blockKing() == false)
-        if (moveKing() == false)
-          return "b"
-        end
-      end
-    end
-    if (isThreatened(wKing) == true)
-      if (blockKing() == false)
-        if (moveKing() == false)
-          return "w"
-        end
-      end
-    end
-    return "x"
-  end
-
-  #Checks for resigned
-  function isResigned(database)
-    if database.move_number == 0
-      return false
-    end
-    if even(database.move_number) == true
-      if database.movetype == "resign"
-        return "w"
-      end
-    else
-      if database.movetype == "resign"
-        return "b"
-      end
-    end
-    return "x"
-  end    
-
-  #looks for a piece to block for the king
-  function blockKing()
-  end
-
-  #If blockKing == false, looks for an unthreatened area
-  function moveKing()
-  end
 end
