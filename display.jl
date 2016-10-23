@@ -8,63 +8,34 @@ using SQLite
 
   database = ARGS[1] #/path/to/database/file {string}
   db = SQLite.DB(database) #Opens the database gamefile
-#print_with_color(:green, "king")
-game = Array(Float64,9,9)
-Bishop=98 #letter b
-Gold_General=103 #letter g
-King=107 #letter k
-Lance=108 #letter l
-Knight=110 #letter n
-Pawn=112 #letter p
-Rook=114 #letter r
-Silver_General=115 #letter s
-promoted_Bishop=66 #letter B
-promoted_Gold_General=71 #letter G
-promoted_King=75 #letter K
-promoted_Lance=76 #letter L
-promoted_Knight=78 #letter N
-promoted_Pawn=80 #letter P
-promoted_Rook=82 #letter R
-promoted_Silver_General=83 #letter S
-for x_target in (1:9)
-  for y_target in (1:9)
-    if board[x_target,y_target]=="b"
-      game[x_target,y_target]=Bishop
-    elseif board[x_target,y_target]=="g"
-      game[x_target,y_target]=Gold_General
-    elseif board[x_target,y_target]=="k"
-      game[x_target,y_target]=King
-    elseif board[x_target,y_target]=="l"
-      game[x_target,y_target]=Lance
-    elseif board[x_target,y_target]=="n"
-      game[x_target,y_target]=Knight
-    elseif board[x_target,y_target]=="p"
-      game[x_target,y_target]=Pawn
-    elseif board[x_target,y_target]=="r"
-      game[x_target,y_target]=Rook
-    elseif board[x_target,y_target]=="s"
-      game[x_target,y_target]=Silver_General
-    elseif board[x_target,y_target]=="B"
-      game[x_target,y_target]=promoted_Bishop
-    elseif board[x_target,y_target]=="G"
-      game[x_target,y_target]=promoted_Gold_General
-    elseif board[x_target,y_target]=="K"
-      game[x_target,y_target]=promoted_King
-    elseif board[x_target,y_target]=="L"
-      game[x_target,y_target]=promoted_Lance
-    elseif board[x_target,y_target]=="N"
-      game[x_target,y_target]=promoted_Knight
-    elseif board[x_target,y_target]=="P"
-      game[x_target,y_target]=promoted_Pawn
-    elseif board[x_target,y_target]=="R"
-      game[x_target,y_target]=promoted_Rook
-    elseif board[x_target,y_target]=="S"
-      game[x_target,y_target]=promoted_Silver_General
-    else
-      game[x_target,y_target]=" "
-    end
+
+board=Array{AbstractString}(9,9)
+for i in (1:9)
+  for y in (1:9)
+    board[i,y]=" "
   end
 end
+
+board[1,9]="a"
+board[1,8]="b"
+board[1,7]="c"
+board[1,6]="d"
+board[1,5]="e"
+board[1,4]="f"
+board[1,3]="g"
+board[1,2]="h"
+board[1,1]="i"
+board[2,8]="j"
+board[2,2]="k"
+board[3,9]="l"
+board[3,8]="m"
+board[3,7]="n"
+board[3,6]="o"
+board[3,5]="p"
+board[3,4]="q"
+board[3,3]="r"
+board[3,2]="s"
+board[3,1]="t"
 
 for x_index in (1:19)
   for y_index in (1:19)
@@ -102,7 +73,11 @@ for x_index in (1:19)
       if rem(x_index,2)==1
         print("-")
       else
-        print(" ")#game[x_index/2,y_index/2])
+        if board[div(x_index,2),(10-div(y_index,2))]=="e"
+          print_with_color(:green, board[div(x_index,2),(10-div(y_index,2))])
+          continue
+        end
+        print(board[div(x_index,2),(10-div(y_index,2))])
       end
     end
   end
@@ -110,33 +85,3 @@ for x_index in (1:19)
 end
 
 end
-
-
-
-
-
-
-
-  #=    continue
-    elseif
-
-
-      if x_index==1
-        print("┌")
-        continue
-      end
-      for index in (1:10)
-        print("——")
-      end
-      print("\n")
-      continue
-    end
-    for hor_index in (1:20)
-      if rem(hor_index,2)==0
-        print(" ")
-        continue
-      end
-      print("┏")
-    end
-  print("\n")
-end=#
