@@ -3,9 +3,12 @@
 
 module move
 
-
+  include("dParse.jl")
+  using dParse
   using ST
   using SQLite
+
+  #=----Parses the database and determines where pieces are on the board----=#
 
   #= ---- Opens the Database for reading ---- =#
   database = ARGS[1] #/path/to/database/file {string}

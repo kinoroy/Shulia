@@ -11,7 +11,25 @@ type square
   end
 
 end
-
+  function saveBoard(target)
+    pieceArr = Array(Char,9,9)
+    teamArr = Array(Char,9,9)
+    for i in eachindex(target)
+      pieceArr[i]=target[i].piece
+      teamArr[i]=target[i].team
+    end
+    writedlm("boardA.txt",pieceArr)
+    writedlm("boardB.txt",teamArr)
+  end
+  function loadBoard()
+    pieceArr = readdlm("boardA.txt")
+    teamArr = readdlm("boardB.txt")
+    board = Array(square,9,9)
+    for i in eachindex(board)
+      board[i]=square(pieceArr[i][1],teamArr[i][1])
+    end
+    return board
+  end
   function clear!(target) #This function clears the square to be empty
     target.piece = 'x'
     target.team = 'x'
@@ -109,5 +127,5 @@ end
       end
     end
 
-export isEmpty,square, clear!,promote!,w,b,p,l,b,s,g,n,r,k,isPromoted
+export isEmpty,square,loadBoard,saveBoard, clear!,promote!,w,b,p,l,b,s,g,n,r,k,isPromoted
 end
