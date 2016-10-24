@@ -4,18 +4,15 @@ Accepts 1 command line argument,<filename> => database
 =#
 
 module display
-using SQLite
+include("square.jl")
+using ST
 
-  database = ARGS[1] #/path/to/database/file {string}
-  db = SQLite.DB(database) #Opens the database gamefile
 
-board=Array{AbstractString}(9,9)#needs to assign the board before display
-for i in (1:9)
-  for y in (1:9)
-    board[i,y]=" "
-  end
+iboard = ST.loadBoard()
+board = Array(Char,9,9)
+for i in eachindex(iboard)
+  board[i]=iboard[i].piece
 end
-
 
 for x_index in (1:19)
   for y_index in (1:19)
@@ -53,7 +50,7 @@ for x_index in (1:19)
       if rem(x_index,2)==1
         print("-")
       else
-        if board[div(x_index,2),(10-div(y_index,2))]=="k"
+        if board[div(x_index,2),(10-div(y_index,2))]=='k'
           print_with_color(:green, board[div(x_index,2),(10-div(y_index,2))])
           continue
         end
