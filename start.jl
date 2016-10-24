@@ -1,17 +1,17 @@
 #=start.jl - Starts the game and accepts 3 command line arguments,<filename> => database
 <type> => gameType, <cheating> => cheating
 =#
-module start
 include("square.jl")
 using ST
+
+
 using SQLite
 
 database = ARGS[1] #/path/to/database/file {string}
 gameTypeDict = Dict("S" => "standard","M" => "minishogi")
 gameType = gameTypeDict[ARGS[2]] #Either "standard" or "minishogi" {string}
 cheatingDict = Dict("T" => "cheating", "F" => "legal")
-cheating = cheatingDict[ARGS[3]] #Either "cheating" or "legal" {string}
-board = fill!(Array(square,9,9),square())
+cheating = cheatingDict[ARGS[3]] #Either "cheating" or "legal" {string}=#
 captures = Array(square,0)
 seed = time() #current unix time
 db = SQLite.DB(database) #Opens the database gamefile
@@ -22,7 +22,7 @@ SQLite.query(db,"INSERT INTO meta (key,value) VALUES (legality,$(cheating));")
 SQLite.query(db,"INSERT INTO meta (key,value) VALUES (seed,$(seed));")
 
 #=----Initialize the board ----=#
-
+board = fill!(Array(square,9,9),square())
 board[1,5] = square('k','w')
 board[9,5] = square('k','b')
 board[1,[4,6]] = square('g','w')
@@ -40,6 +40,5 @@ board[8,2] = square('r','b')
 board[3,1:9] = square('p','w')
 board[7,1:9] = square('p','b')
 
-ST.saveBoard(board)
+saveBoard(board)
 #writedlm(captures,"captures.txt")
-end

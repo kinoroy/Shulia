@@ -3,12 +3,13 @@ is equal to ”T” then promote the piece after it has completed the move.
 Accepts 6 command line args : <filename> => database, <xsource> => xSource
 <ysource> => ySource <xtarget> =>xTarget <ytarget> =>yTarget <promote> => promote
 =#
-
+include("square.jl")
+include("dParse.jl")
 module move_user_move
 
   using ST
   using SQLite
-
+  board = ST.loadBoard()
   database = ARGS[1] #/path/to/database/file {string}
   xSource = parse(chomp(ARGS[2]),Int) #x coordinate of piece {Int}
   ySource = parse(chomp(ARGS[3]),Int) #y coordinate of piece {Int}
@@ -32,13 +33,20 @@ module move_user_move
     end
     move_number = lastMoveID+1 #Current move number
 
-  #=-----UPDATE DATABASE W/MOVE-----=#
+  #=-----UPDATE DATABASE & BOARD W/MOVE-----=#
   if shouldPromote #Option will be '!'
     SQLite.query(db,"INSERT INTO moves (move_number, move_type, sourcex, sourcey, targetx, targety, option)
     VALUES ($(move_number),move,$xSource, $ySource,$xTarget, $yTarget, !);")
+    board[targetx][targety].piece = board[sourcex][sourcey].piece #Updates the board before next move
+    board[targetx][targety].team = board[sourcex][sourcey].team
+    clear!(board[sourcex][sourcey])
+    promote!(board[targetx][targety])
   else #Option will be NULL
     SQLite.query(db,"INSERT INTO moves (move_number, move_type, sourcex, sourcey, targetx, targety)
     VALUES ($(move_number),move,$xSource, $ySource,$xTarget, $yTarget);")
+    board[targetx][targety].piece = board[sourcex][sourcey].piece #Updates the board before next move
+    board[targetx][targety].team = board[sourcex][sourcey].team
+    clear!(board[sourcex][sourcey])
   end
-
+ST.saveBoard(board)
 end

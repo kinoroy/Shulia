@@ -2,7 +2,7 @@
 given. accepts 4 command line argument,<filename> => database <piece> => piece
 <xtarget> => xTarget <ytarget> => yTarget
 =#
-
+include("dParse.jl")
 module move_user_drop
 
 
@@ -13,7 +13,7 @@ database = ARGS[1] #/path/to/database/file {string}
 pieceToDrop = parse(chomp(ARGS[2]),Int) #piece {char}
 xTarget = parse(chomp(ARGS[3]),Int) #x coordinate to place piece {Int}
 yTarget = parse(chomp(ARGS[4]),Int) #y coordinate to place piece {Int}
-
+board = ST.loadBoard()
 db = SQLite.DB(database) #Opens the database gamefile
 
   #= ---- Determines the move_number ---- =#
@@ -36,7 +36,12 @@ db = SQLite.DB(database) #Opens the database gamefile
 #Option will be dropped pieces abv
   SQLite.query(db,"INSERT INTO moves (move_number, move_type, targetx, targety, option)
   VALUES ($(move_number),drop,$xTarget, $yTarget, $pieceToDrop);")
+  board[xTarget][yTarget].piece = pieceToDrop
+  if iseven(move_number)
+    board[xTarget][yTarget].team = 'w'
+  else
+    board[xTarget][yTarget].team = 'b'
+  end
 
-
-
+ST.saveBoard(board)
 end

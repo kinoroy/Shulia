@@ -2,15 +2,17 @@
 sure that the rules were kept. Print 0 is the game was played cleanly so far and the move ID
 of the violating move if it wasn’t. Accepts 1 command line argument,<filename> => database
 =#
-
+include("square.jl")
+include("dParse")
 module validate
-
+using ST
   using SQLite
-
+  board = ST.loadBoard()
   database = ARGS[1] #/path/to/database/file {string}
   db = SQLite.DB(database) #Opens the database gamefile
-
   maxMove = SQLite.query(db, "SELECT max(move_number)")
+  validSoFar = true
+  badMove=0
   for x in 1:maxMove #access each row of database
     dataMove = SQLite.query(db, "SELECT move_number, move_type, sourcex, sourcey, targetx, targety, option, i_am_cheating FROM moves WHERE move_number = $x" )
     if ( !isnull(dataMove[1][3]) && !isnull(dataMove[1][4]) && !isnull(dataMove[1][5]) && !isnull(dataMove[1][6]) )
@@ -20,11 +22,20 @@ module validate
       targety = get(dataMove[1][6])
       unitType = board[sourcex][sourcey].piece
       if (moveValidate(unitType, board[sourcex][sourcey].team, sourcex, sourcey, targetx, targety) == true)
-        println(0)
+        #validSoFar
       else
-        println(dataMove[1][1])
+        validSoFar = false
+        badMove=get(dataMove[1][1])
     end
+    board[targetx][targety].piece = board[sourcex][sourcey].piece #Updates the board before next move
+    board[targetx][targety].team = board[sourcex][sourcey].team
+    clear!(board[sourcex][sourcey])
   end
+if !validSoFar #Ensures print only happens at end
+  println(badMove)
+else
+  println(0)
+end
 
   #returns True if move is Valid, False otherwise
   #unit refers to gamePiece, team refers to black player or white player, sourcex and sourcey is current position of unit
