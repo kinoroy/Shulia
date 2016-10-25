@@ -2,9 +2,10 @@ module dParse
 include("square.jl")
 using ST
 global DB
+using SQLite
 
-db = SQLite.DB(pathToDatabase) #Opens the database gamefile
-res = SQLite.query(db,"SELECT key,value FROM meta where key = type;")
+db = SQLite.DB(ARGS[1]) #Opens the database gamefile
+res = SQLite.query(db,"SELECT key,value FROM meta where key = 'type';")
 gameType = get(res[1,2])
 
 
@@ -46,7 +47,7 @@ if gameType == "standard"
 end
 ST.saveBoard(board)
 
-function dParse(pathToDatabase)
+function parse(pathToDatabase)
   board = ST.loadBoard()
   #captures = readdml("captures.txt")
   db = SQLite.DB(pathToDatabase) #Opens the database gamefile

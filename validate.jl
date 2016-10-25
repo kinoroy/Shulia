@@ -13,40 +13,16 @@ Pawn cannot checkmate only checks
 =#
 
 include("square.jl")
-include("dParse")
-module validate
-using ST
+include("dParse.jl")
+
+
+
+  using ST
   using SQLite
   board = ST.loadBoard()
   database = ARGS[1] #/path/to/database/file {string}
   db = SQLite.DB(database) #Opens the database gamefile
-  maxMove = SQLite.query(db, "SELECT max(move_number)")
-  validSoFar = true
-  badMove=0
-  for x in 1:maxMove #access each row of database
-    dataMove = SQLite.query(db, "SELECT move_number, move_type, sourcex, sourcey, targetx, targety, option, i_am_cheating FROM moves WHERE move_number = $x" )
-    if (!isnull(dataMove[1][5]) && !isnull(dataMove[1][6])) #targetx and targety not null
-      sourcex = get(dataMove[1][3])
-      sourcey = get(dataMove[1][4])
-      targetx = get(dataMove[1][5])
-      targety = get(dataMove[1][6])
-      moveType = get(dataMove[1][2])
-      unitType = board[sourcex][sourcey].piece
-      if (moveValidate(unitType, moveType, board[sourcex][sourcey].team, sourcex, sourcey, targetx, targety) == true)
-        #validSoFar
-      else
-        validSoFar = false
-        badMove=get(dataMove[1][1])
-    end
-    board[targetx][targety].piece = board[sourcex][sourcey].piece #Updates the board before next move
-    board[targetx][targety].team = board[sourcex][sourcey].team
-    clear!(board[sourcex][sourcey])
-  end
-if !validSoFar #Ensures print only happens at end
-  println(badMove)
-else
-  println(0)
-end
+
 
   #returns True if move is Valid, False otherwise
   #unit refers to gamePiece, team refers to black player or white player, sourcex and sourcey is current position of unit
@@ -57,6 +33,7 @@ end
     #edge 0, sourcex or source y are null but it is not drop
     if ( (isnull(sourcex) || isnull(sourcey)) && moveType != "drop")
       return false
+    end
 
     #edge 1, source and target are the same
     if (sourcex == targetx) && (sourcey == targety)
@@ -100,6 +77,8 @@ end
         for x in 1:9
           if (board([x][targety]) == "p") #there is a pawn
             return false
+          end
+        end
       end
 
       #drop case6: Capture targets can be dropped #missing
@@ -247,7 +226,7 @@ end
 
     #checks if it moves like king
     if ((abs(sourcex - targetx) == 1) || (abs(sourcex - targetx) == 0))
-      if (abs(sourcey - targety) == 1) || (abs(sourcey - targety) == 0))
+      if (abs(sourcey - targety) == 1) || (abs(sourcey - targety) == 0)
         return true
       end
 
@@ -318,7 +297,7 @@ end
 
     #check if it moves like king
     if ((abs(sourcex - targetx) == 1) || (abs(sourcex - targetx) == 0))
-      if (abs(sourcey - targety) == 1) || (abs(sourcey - targety) == 0))
+      if (abs(sourcey - targety) == 1) || (abs(sourcey - targety) == 0)
         if (team == "b") #team black
           if (sourcex - targetx == -1) && (sourcey - targety == 1) #bottom left
             return false
@@ -589,4 +568,34 @@ end
     return false
   end #silverGeneralValidate end
 
-#case 8.2 pSilverGeneral moves same as gold general
+  #case 8.2 pSilverGeneral moves same as gold general
+
+
+  maxMove = get(SQLite.query(db, """SELECT max("move_number") from moves;""")[1,1])
+  validSoFar = true
+  badMove=0
+  for x in 1:maxMove #access each row of database
+    dataMove = SQLite.query(db, """SELECT move_number, move_type, sourcex, sourcey, targetx, targety, option, i_am_cheating FROM moves WHERE "move_number" = $x""" )
+    if (!isnull(dataMove[1,5]) && !isnull(dataMove[1,6])) #targetx and targety not null
+      sourcex = get(dataMove[1,3])
+      sourcey = get(dataMove[1,4])
+      targetx = get(dataMove[1,5])
+      targety = get(dataMove[1,6])
+      moveType = get(dataMove[1,2])
+      unitType = board[sourcex,sourcey].piece
+      if (moveValidate(unitType, moveType, board[sourcex,sourcey].team, sourcex, sourcey, targetx, targety) == true)
+        #validSoFar
+      else
+        validSoFar = false
+        badMove=get(dataMove[1,1])
+      end
+    end
+    board[targetx,targety].piece = board[sourcex,sourcey].piece #Updates the board before next move
+    board[targetx,targety].team = board[sourcex,sourcey].team
+    ST.clear!(board[sourcex,sourcey])
+end
+if !validSoFar #Ensures print only happens at end
+  println(badMove)
+else
+  println(0)
+end
