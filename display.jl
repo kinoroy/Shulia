@@ -3,11 +3,14 @@ from start to finish, displaying the current game state.
 Accepts 1 command line argument,<filename> => database
 =#
 include("square.jl")
-include("start.jl")
+
 using ST
-module display
+
+include("start.jl")
+using SQLite
 pathToDatabase = ARGS[1]
 db = SQLite.DB(pathToDatabase) #Opens the database gamefile
+board = fill!(Array(ST.square,9,9),ST.square())
 #calculates all black piece positions
 
 #=----Gets last move number----=#
@@ -24,7 +27,7 @@ end
 currentMoveID=1
 #=----Replays the game until move_id = lastMoveID----=#
 while currentMoveID<=lastMoveID
-  res = SQLite.query(db,"SELECT sourcex,sourcey,targetx,targety,move_type,option FROM moves WHERE move_id = $(currentMoveID);")
+  res = SQLite.query(db,"SELECT sourcex,sourcey,targetx,targety,move_type,option FROM moves WHERE move_id = '$(currentMoveID)';")
   sourcexNullable = res[1][1]
   sourceyNullable = res[1][2]
   targetxNullable = res[1][3]
@@ -37,12 +40,12 @@ while currentMoveID<=lastMoveID
     targety = get(targetyNullable)
     sourcex = get(sourcexNullable)
     sourcey = get(sourceyNullable)
-    if !(isEmpty(board[targetx][targety]))# capture
+    if !(ST.isEmpty(board[targetx][targety]))# capture
       #push(captures,board[targetx][targety])
     end
     board[targetx][targety].piece = board[sourcex][sourcey].piece
     board[targetx][targety].team = board[sourcex][sourcey].team
-    clear!(board[sourcex][sourcey])
+    ST.clear!(board[sourcex][sourcey])
 
   elseif move_type == "drop"
     option = get(optionNullable)
@@ -57,6 +60,7 @@ while currentMoveID<=lastMoveID
     #Do nothing
   end
   ST.saveBoard(board)
+
   if gameType == "standard"
     display()
   else
@@ -122,11 +126,11 @@ end
 
 
 
-function display()
+function myDisplay()
 
-  board = ST.loadBoard()
-  global dboard = Array(Char,9,9)
-  for i in eachindex(iboard)
+  iboard = ST.loadBoard()
+  board = Array(Char,9,9)
+  for i in eachindex(board)
     board[i]=iboard[i].piece
   end
 
@@ -178,5 +182,3 @@ for x_index in (1:19)
 end
 
 end#Func
-
-end
