@@ -23,6 +23,7 @@ board[7,1:9] = square('p','b')
 ST.saveBoard(board)
 
 function dParse(pathToDatabase)
+  terminal = false
   board = ST.loadBoard()
   #captures = readdml("captures.txt")
   db = SQLite.DB(pathToDatabase) #Opens the database gamefile
@@ -58,6 +59,9 @@ function dParse(pathToDatabase)
         if !(isEmpty(board[targetx][targety]))# capture
           #push(captures,board[targetx][targety])
         end
+        if (ST.k(board[targetx][targety]))
+          terminal = true
+        end
         board[targetx][targety].piece = board[sourcex][sourcey].piece
         board[targetx][targety].team = board[sourcex][sourcey].team
         clear!(board[sourcex][sourcey])
@@ -78,13 +82,12 @@ function dParse(pathToDatabase)
       elseif move_type == "resign"
         #Do nothing
       end
-
+      currentMoveID +=1
     end
 
   ST.saveBoard(board)
-  return board
+  return terminal
 end #End function
-
 
 #End module
 end

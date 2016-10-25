@@ -4,20 +4,22 @@ print ”R”. If white resigned, print ”r”. If the game is on, print ”?�
 ”D”.
 Accepts 1 command line argument,<filename> => database
 =#
-
+include("dParse.jl")
+include("square.jl")
 module win
-
+  using ST
+  using dParse
   using SQLite
 
   database = ARGS[1] #/path/to/database/file {string}
   db = SQLite.DB(database)  #Opens the database gamefile
 
-  maxMove = SQLite.query(db, "SELECT max(move_number)")
+  maxMove = get(SQLite.query(db, "SELECT max(move_number) FROM moves")[1,1])
   for x in 1:maxMove  #iterates through each row of the database
     dataMove = SQLite.query(db, "SELECT move_number, move_type, targetx, targety FROM moves WHERE move_number = $x")
-    move_type = dataMove[1][2]
-    targetx = dataMove[1][3]
-    targety = dataMove[1][4]
+    move_type = get(dataMove[1][2])
+    if !isnull(dataMove[1][3]) targetx = get(dataMove[1][3]) end
+    if !isnull(dataMove[1][4]) targety = get(dataMove[1][4]) end
 
     #Case 1: Resigned
     if move_type == "resign"

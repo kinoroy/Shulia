@@ -1,19 +1,21 @@
 #=move.jl - Updates the game file with a move, accepts 1 command line argument,<filename> => database
 =#
 
+  include("dParse.jl")
 module move
 
-  include("dParse.jl")
   using dParse
   using ST
   using SQLite
 
-  #=----Parses the database and determines where pieces are on the board----=#
-
+global db
+global database
   #= ---- Opens the Database for reading ---- =#
   database = ARGS[1] #/path/to/database/file {string}
   db = SQLite.DB(database) #Opens the database gamefile
-
+  #=----Parses the database and determines where pieces are on the board----=#
+  dParse(database)
+  board = ST.loadBoard()
   #= ---- Determines whos turn it is (white or black) ---- =#
 
   res = SQLite.query(db,"SELECT MAX(move_number) FROM moves;") #Finds the last played move (maximum move_number)
@@ -32,9 +34,29 @@ module move
 
 
   #Todo: write AI: must define variables: move_type, sourcex, sourcey, targetx, targety, option, i_am_cheating
+function MC_BoardEval(state):
+   wins = 0
+   losses = 0
+   for i=1:NUM_SAMPLES
+     next_state = state
+     while non_terminal(next_state):
+       next_state = random_legal_move(next_state)
+       if next_state.winner == state.turn: wins++
+       else: losses++ #needs slight modification if draws possible
+       return (wins - losses) / (wins + losses)
+     end
+   end
+ end
+
 
   # ---- Saves the determined move in the database ---- =#
   SQLite.query(db,"INSERT INTO moves (move_number, move_type, sourcex, sourcey, targetx, targety, option, i_am_cheating)
   VALUES ($(move_number),$(move_type),$sourcex, $sourcey,$targetx, $targety, $option, $(i_am_cheating));")
 
-end
+
+#=Helper Functions to AI:=#
+function non_terminal(target)
+  return !dParse(target)
+end#End function
+
+end#End Module
