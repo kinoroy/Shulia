@@ -1,21 +1,19 @@
 #=move.jl - Updates the game file with a move, accepts 1 command line argument,<filename> => database
 =#
 
-  include("dParse.jl")
 module move
 
+  include("dParse.jl")
   using dParse
   using ST
   using SQLite
 
-global db
-global database
+  #=----Parses the database and determines where pieces are on the board----=#
+
   #= ---- Opens the Database for reading ---- =#
   database = ARGS[1] #/path/to/database/file {string}
   db = SQLite.DB(database) #Opens the database gamefile
-  #=----Parses the database and determines where pieces are on the board----=#
-  dParse(database)
-  board = ST.loadBoard()
+
   #= ---- Determines whos turn it is (white or black) ---- =#
 
   res = SQLite.query(db,"SELECT MAX(move_number) FROM moves;") #Finds the last played move (maximum move_number)
@@ -34,29 +32,42 @@ global database
 
 
   #Todo: write AI: must define variables: move_type, sourcex, sourcey, targetx, targety, option, i_am_cheating
-function MC_BoardEval(state):
-   wins = 0
-   losses = 0
-   for i=1:NUM_SAMPLES
-     next_state = state
-     while non_terminal(next_state):
-       next_state = random_legal_move(next_state)
-       if next_state.winner == state.turn: wins++
-       else: losses++ #needs slight modification if draws possible
-       return (wins - losses) / (wins + losses)
-     end
-   end
- end
+
+  # get all of our pieces on board set numbers to them  ####if piece is our piece its choosable
+
+  create array
+
+  # check every square if empty square dont add to list, if piece colour = opponent dont add, if ours add
+
+  if piece colour = our colour add to list
+  create temppiece
+
+  # choose random piece from list based on random number from list (rand mod listend)
+
+  find array length
+  do temppiece = rand % arraylength
+
+  # set temp piece to it
+  # use validate file to see what moves it can make, number them, put them in a list  ####movevalidate
+
+  create another array, if piece -> target = movevalidate, add to list,
+
+  # make a move based on random number from list (rand mod listend)
+
+  makemove = rand % array2length
+
+ #random number part
+ #use random function mod max val it can be
+
+
+
+
+
+
 
 
   # ---- Saves the determined move in the database ---- =#
   SQLite.query(db,"INSERT INTO moves (move_number, move_type, sourcex, sourcey, targetx, targety, option, i_am_cheating)
   VALUES ($(move_number),$(move_type),$sourcex, $sourcey,$targetx, $targety, $option, $(i_am_cheating));")
 
-
-#=Helper Functions to AI:=#
-function non_terminal(target)
-  return !dParse(target)
-end#End function
-
-end#End Module
+end
