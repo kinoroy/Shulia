@@ -2,6 +2,16 @@
 sure that the rules were kept. Print 0 is the game was played cleanly so far and the move ID
 of the violating move if it wasn’t. Accepts 1 command line argument,<filename> => database
 =#
+
+#=
+Only captured targets can be dropped
+Dropped cannot capture a piece
+It is not promoted instantly
+Pawn, knight, lance cannot be dropped on the furthest rank
+Pawn cannot be dropped on the same column (y) as another unpromoted pawn
+Pawn cannot checkmate only checks
+=#
+
 include("square.jl")
 include("dParse")
 module validate
@@ -15,13 +25,14 @@ using ST
   badMove=0
   for x in 1:maxMove #access each row of database
     dataMove = SQLite.query(db, "SELECT move_number, move_type, sourcex, sourcey, targetx, targety, option, i_am_cheating FROM moves WHERE move_number = $x" )
-    if ( !isnull(dataMove[1][3]) && !isnull(dataMove[1][4]) && !isnull(dataMove[1][5]) && !isnull(dataMove[1][6]) )
+    if (!isnull(dataMove[1][5]) && !isnull(dataMove[1][6])) #targetx and targety not null
       sourcex = get(dataMove[1][3])
       sourcey = get(dataMove[1][4])
       targetx = get(dataMove[1][5])
       targety = get(dataMove[1][6])
+      moveType = get(dataMove[1][2])
       unitType = board[sourcex][sourcey].piece
-      if (moveValidate(unitType, board[sourcex][sourcey].team, sourcex, sourcey, targetx, targety) == true)
+      if (moveValidate(unitType, moveType, board[sourcex][sourcey].team, sourcex, sourcey, targetx, targety) == true)
         #validSoFar
       else
         validSoFar = false
@@ -39,9 +50,13 @@ end
 
   #returns True if move is Valid, False otherwise
   #unit refers to gamePiece, team refers to black player or white player, sourcex and sourcey is current position of unit
-  function moveValidate(unit, team, sourcex, sourcey, targetx, targety)
+  function moveValidate(unit, moveType, team, sourcex, sourcey, targetx, targety)
     #None of the pieces, except the knight, may jump over another piece as it moves.
     #Dropping restriction
+
+    #edge 0, sourcex or source y are null but it is not drop
+    if ( (isnull(sourcex) || isnull(sourcey)) && moveType != "drop")
+      return false
 
     #edge 1, source and target are the same
     if (sourcex == targetx) && (sourcey == targety)
@@ -51,6 +66,44 @@ end
     #edge 2, source or target are out of bounds
     if  (~(sourcex >= 1 && sourcex <= 9) || ~(sourcey >= 1 && sourcey <= 9) || ~(targetx >= 1 && targetx <= 9) || ~(targety >= 1 && targety <= 9))
       return false #out of bounds
+    end
+
+    #drop case
+    if (moveType == "drop")
+
+      #drop case 1: Dropped cannot capture
+      if (isEmpty(board[targetx][targety]) == false)
+        return false
+      end
+
+      #drop case 2: Pawn, Knight, Lance cannot be dropped on the furthest rank
+      if (unit == "p" || unit == "n" || unit == "l")
+        if (team == "b") #team black
+          if (targetx == 1)
+            return false
+          end
+        elseif (team =="w") #team white
+          if (targetx == 9)
+            return false
+          end
+        end
+      end
+
+      #drop case3: It is not promoted
+      if (unit == "B" || unit == "L" || unit == "N" || unit == "P" || unit == "R" || unit == "S")
+        return false
+      end
+
+      #drop case4: Pawns cannot be dropped on the same column as another unpromoted pawn
+      #drop case5: Pawns cannot checkmate #missing
+      if (unit == "p")
+        for x in 1:9
+          if (board([x][targety]) == "p") #there is a pawn
+            return false
+      end
+
+      #drop case6: Capture targets can be dropped #missing
+
     end
 
     #case 1 bishop
