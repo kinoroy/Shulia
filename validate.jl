@@ -41,9 +41,9 @@ include("dParse.jl")
     end
 
     #edge 2, source or target are out of bounds
-    if  (~(sourcex >= 1 && sourcex <= 9) || ~(sourcey >= 1 && sourcey <= 9) || ~(targetx >= 1 && targetx <= 9) || ~(targety >= 1 && targety <= 9))
+  #=  if  (~(sourcex >= 1 && sourcex <= 9) || ~(sourcey >= 1 && sourcey <= 9) || ~(targetx >= 1 && targetx <= 9) || ~(targety >= 1 && targety <= 9))
       return false #out of bounds
-    end
+    end =#
 
     #drop case
     if (moveType == "drop")
@@ -583,10 +583,11 @@ include("dParse.jl")
       targety = get(dataMove[1,6])
       moveType = get(dataMove[1,2])
       unitType = board[sourcex,sourcey].piece
-      if (moveValidate(unitType, moveType, board[sourcex,sourcey].team, sourcex, sourcey, targetx, targety) == true)
+      if (moveValidate(unitType, moveType, board[sourcex,sourcey].team, sourcex, sourcey, targetx, targety))
         #validSoFar
       else
         validSoFar = false
+println(badMove)
         badMove=get(dataMove[1,1])
       end
     end

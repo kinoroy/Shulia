@@ -11,17 +11,17 @@ module move_user_move
   using SQLite
   board = ST.loadBoard()
   database = ARGS[1] #/path/to/database/file {string}
-  xSource = parse(chomp(ARGS[2]),Int) #x coordinate of piece {Int}
-  ySource = parse(chomp(ARGS[3]),Int) #y coordinate of piece {Int}
-  xTarget = parse(chomp(ARGS[4]),Int) #x coordinate to place piece {Int}
-  yTarget = parse(chomp(ARGS[5]),Int) #y coordinate to place piece {Int}
+  sourcey = parse(Int,chomp(ARGS[2])) #x coordinate of piece {Int}
+  sourcex = parse(Int,chomp(ARGS[3])) #y coordinate of piece {Int}
+  targetx = parse(Int,chomp(ARGS[4])) #x coordinate to place piece {Int}
+  targety = parse(Int,chomp(ARGS[5])) #y coordinate to place piece {Int}
   promoteDict = Dict("T" => true, "F" => false)
   shouldPromote = promoteDict[ARGS[6]] #Promote the piece after moving {bool}
   db = SQLite.DB(database) #Opens the database gamefile
 
     #= ---- Determines the move_number ---- =#
 
-    res = SQLite.query(db,"SELECT MAX(move_number) FROM moves;") #Finds the last played move (maximum move_number)
+    res = SQLite.query(db,"""SELECT MAX("move_number") FROM moves;""") #Finds the last played move (maximum move_number)
     lastMoveIDNullable = res[1,1] #SQL query with max move_number (POSSIBLY "NULL" if no moves have been made)
 
     if (!isnull(lastMoveIDNullable)) #Checks that lastMoveID was not NULL
@@ -35,18 +35,18 @@ module move_user_move
 
   #=-----UPDATE DATABASE & BOARD W/MOVE-----=#
   if shouldPromote #Option will be '!'
-    SQLite.query(db,"INSERT INTO moves (move_number, move_type, sourcex, sourcey, targetx, targety, option)
-    VALUES ($(move_number),move,$xSource, $ySource,$xTarget, $yTarget, !);")
-    board[targetx][targety].piece = board[sourcex][sourcey].piece #Updates the board before next move
-    board[targetx][targety].team = board[sourcex][sourcey].team
-    clear!(board[sourcex][sourcey])
-    promote!(board[targetx][targety])
+    SQLite.query(db,"""INSERT INTO "moves" (move_number, move_type, sourcex, sourcey, targetx, targety, option)
+    VALUES ($(move_number),'move',$sourcex, $sourcey,$targetx, $targety, !);""")
+    board[targetx,targety].piece = board[sourcex,sourcey].piece #Updates the board before next move
+    board[targetx,targety].team = board[sourcex,sourcey].team
+    ST.clear!(board[sourcex,sourcey])
+    ST.promote!(board[targetx,targety])
   else #Option will be NULL
-    SQLite.query(db,"INSERT INTO moves (move_number, move_type, sourcex, sourcey, targetx, targety)
-    VALUES ($(move_number),move,$xSource, $ySource,$xTarget, $yTarget);")
-    board[targetx][targety].piece = board[sourcex][sourcey].piece #Updates the board before next move
-    board[targetx][targety].team = board[sourcex][sourcey].team
-    clear!(board[sourcex][sourcey])
+    SQLite.query(db,"""INSERT INTO "moves" (move_number, move_type, sourcex, sourcey, targetx, targety)
+    VALUES ($(move_number),'move',$sourcex, $sourcey,$targetx, $targety);""")
+    board[targetx,targety].piece = board[sourcex,sourcey].piece #Updates the board before next move
+    board[targetx,targety].team = board[sourcex,sourcey].team
+    ST.clear!(board[sourcex,sourcey])
   end
 ST.saveBoard(board)
 end

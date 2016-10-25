@@ -5,6 +5,7 @@ print ”R”. If white resigned, print ”r”. If the game is on, print ”?�
 Accepts 1 command line argument,<filename> => database
 =#
 include("square.jl")
+include("dParse.jl")
 module win
 using ST
   using SQLite
@@ -15,7 +16,7 @@ using ST
 res = "?"
   maxMove = get(SQLite.query(db, """SELECT max("move_number") from moves;""")[1,1])
   for x in 1:maxMove  #iterates through each row of the database
-    dataMove = SQLite.query(db, """SELECT move_number, move_type, targetx, targety FROM moves WHERE "move_number" = $x""")
+    dataMove = SQLite.query(db, """SELECT move_number, move_type, targetx, targety,sourcex,sourcey FROM moves WHERE "move_number" = $x""")
     move_type = get(dataMove[1,2])
     targetx = get(dataMove[1,3])
     targety = get(dataMove[1,4])
@@ -37,6 +38,13 @@ res = "?"
       else #board[targetx][targety].team == "w"
         res = "B"
       end
+    end
+    if !(isnull(dataMove[1,5])) #type:move
+	    sourcex=get(dataMove[1,5])
+	    sourcey=get(dataMove[1,6])
+	    board[targetx,targety].piece = board[sourcex,sourcey].piece #Updates the board before next move
+	    board[targetx,targety].team = board[sourcex,sourcey].team
+	    ST.clear!(board[sourcex,sourcey])
     end
   end
 
