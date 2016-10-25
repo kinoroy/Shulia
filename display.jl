@@ -3,6 +3,7 @@ from start to finish, displaying the current game state.
 Accepts 1 command line argument,<filename> => database
 =#
 include("square.jl")
+include("start.jl")
 using ST
 module display
 pathToDatabase = ARGS[1]
@@ -56,9 +57,69 @@ while currentMoveID<=lastMoveID
     #Do nothing
   end
   ST.saveBoard(board)
-  display()
+  if gameType == "standard"
+    display()
+  else
+    displayminishogi()
+  end
   sleep(500) #Waits half a second before running displaying a new board
 end
+
+function displayminishogi()
+  board = ST.loadBoard()
+  global dboard = Array(Char,9,9)
+  for i in eachindex(iboard)
+    board[i]=iboard[i].piece
+  end
+
+  for x_index in (1:11)
+    for y_index in (1:11)
+      if y_index==1
+        if x_index==1
+          print("┌")
+        elseif x_index==11
+          print("└")
+        elseif rem(x_index,2)==0
+          print("|")
+        else
+          print("├")
+        end
+      elseif y_index==11
+        if x_index==1
+          print("┐")
+        elseif x_index==11
+          print("┘")
+        elseif rem(x_index,2)==0
+          print("|")
+        else
+          print("┤")
+        end
+      elseif rem(y_index,2)==1
+        if x_index==1
+          print("┬")
+        elseif x_index==11
+          print("┴")
+        elseif rem(x_index,2)==1
+          print("┼")
+        else
+          print("|")
+        end
+      else
+        if rem(x_index,2)==1
+          print("-")
+        else
+          if board[div(x_index,2),(6-div(y_index,2))]=='k'
+            print_with_color(:green, "$(board[div(x_index,2),(6-div(y_index,2))])")
+            continue
+          end
+          print(board[div(x_index,2),(6-div(y_index,2))])
+        end
+      end
+    end
+    print("\n")
+  end
+end
+
 
 
 function display()
