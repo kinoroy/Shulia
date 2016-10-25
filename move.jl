@@ -31,6 +31,13 @@ module move
   move_number = lastMoveID+1 #The current move is move#: move_number
 
 
+
+
+
+
+
+
+
   #Todo: write AI: must define variables: move_type, sourcex, sourcey, targetx, targety, option, i_am_cheating
 
   # get all of our pieces on board set numbers to them  ####if piece is our piece its choosable
@@ -69,5 +76,40 @@ module move
   # ---- Saves the determined move in the database ---- =#
   SQLite.query(db,"INSERT INTO moves (move_number, move_type, sourcex, sourcey, targetx, targety, option, i_am_cheating)
   VALUES ($(move_number),$(move_type),$sourcex, $sourcey,$targetx, $targety, $option, $(i_am_cheating));")
+
+
+
+  function isCheck()
+    if (even(move_number) == true)
+      team = "w"
+    else
+      team = "b"
+
+    #first finds the x y coordinates of king
+    for x in 1:9
+      for y in 1:9
+        if (k(board[x][y]) == true) #there's a king
+          if board[x][y].team == team
+            kingx = x
+            kingy = y
+          end
+        end
+      end
+    end
+
+    for x in 1:9
+      for y in 1:9
+        if (isEmpty(board[x][y]) == false)
+          unit = board[x][y].piece
+          team = board[x][y].team
+          if (moveValidate(unit, "move", team, x, y, kingx, kingy) == true)
+            return true #resign
+          end
+        end
+      end
+    end
+    return false
+  end
+
 
 end
