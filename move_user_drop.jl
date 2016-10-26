@@ -2,10 +2,10 @@
 given. accepts 4 command line argument,<filename> => database <piece> => piece
 <xtarget> => xTarget <ytarget> => yTarget
 =#
+include("square.jl")
 include("dParse.jl")
+
 module move_user_drop
-
-
 using ST
 using SQLite
 

@@ -1,11 +1,13 @@
 #=move.jl - Updates the game file with a move, accepts 1 command line argument,<filename> => database
 =#
+include("square.jl")
+  include("dParse.jl")
+
 
 module move
-
-  include("dParse.jl")
+using ST
   using dParse
-  using ST
+
   using SQLite
 
   #=----Parses the database and determines where pieces are on the board----=#
@@ -20,7 +22,7 @@ module move
   lastMoveIDNullable = res[1,1] #SQL query with max move_number (POSSIBLY "NULL" if no moves have been made)
 
   if (!isnull(lastMoveIDNullable)) #Checks that lastMoveID was not NULL
-    lastMoveID = parse(Int64, get(res[1,1]) )#Parses the last move move_number as an Int
+    lastMoveID = get(res[1,1])#Parses the last move move_number as an Int
 
   else #lastMoveID is NULL
     lastMoveID = 0 #move_number "0" is unsused. This implies no moves have been made
@@ -66,15 +68,6 @@ module move
 
 
   end
-
-move_type = "resign"
-sourcex = 3
-sourcey = 4
-targetx = 3
-targety = 3
-option = 0
-i_am_cheating = 0
-
 
 
 #=

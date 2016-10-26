@@ -578,13 +578,15 @@ include("dParse.jl")
   badMove=0
   for x in 1:maxMove #access each row of database
     dataMove = SQLite.query(db, """SELECT move_number, move_type, sourcex, sourcey, targetx, targety, option, i_am_cheating FROM moves WHERE "move_number" = $x""" )
-    if (!isnull(dataMove[1,5]) && !isnull(dataMove[1,6])) #targetx and targety not null
+    if (!isnull(dataMove[1,5]) && !isnull(dataMove[1,3]) && !isnull(dataMove[1,6])) #targetx and targety not null
+
       sourcex = get(dataMove[1,3])
       sourcey = get(dataMove[1,4])
       targetx = get(dataMove[1,5])
       targety = get(dataMove[1,6])
       moveType = get(dataMove[1,2])
       unitType = board[sourcex,sourcey].piece
+
       if (moveValidate(unitType, moveType, board[sourcex,sourcey].team, sourcex, sourcey, targetx, targety))
         #validSoFar
 
@@ -593,10 +595,10 @@ include("dParse.jl")
         badMove=get(dataMove[1,1])
         println(badMove)
       end
+      board[targetx,targety].piece = board[sourcex,sourcey].piece #Updates the board before next move
+      board[targetx,targety].team = board[sourcex,sourcey].team
+      ST.clear!(board[sourcex,sourcey])
     end
-    board[targetx,targety].piece = board[sourcex,sourcey].piece #Updates the board before next move
-    board[targetx,targety].team = board[sourcex,sourcey].team
-    ST.clear!(board[sourcex,sourcey])
 end
 if !validSoFar #Ensures print only happens at end
   println(badMove)
