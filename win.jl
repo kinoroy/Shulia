@@ -15,15 +15,16 @@ using ST
   board = ST.loadBoard()
 res = "?"
   maxMove = get(SQLite.query(db, """SELECT max("move_number") from moves;""")[1,1])
-  for x in 1:maxMove  #iterates through each row of the database
-    dataMove = SQLite.query(db, """SELECT move_number, move_type, targetx, targety,sourcex,sourcey FROM moves WHERE "move_number" = $x""")
+  parse(Int64, maxMove)
+  for x in 1:parse(Int64,maxMove)  #iterates through each row of the database
+    dataMove = SQLite.query(db, """SELECT move_number, move_type, targetx, targety,sourcex,sourcey FROM moves WHERE "move_number" = '$x'""")
     move_type = get(dataMove[1,2])
-    targetx = get(dataMove[1,3])
-    targety = get(dataMove[1,4])
+    targetx = parse(Int64,get(dataMove[1,3]))
+    targety = parse(Int64,get(dataMove[1,4]))
 
     #Case 1: Resigned
     if move_type == "resign"
-      if even(x) == true
+      if iseven(x) == true
         res="r"
       else #x is odd
         res="R"
@@ -39,9 +40,9 @@ res = "?"
         res = "B"
       end
     end
-    if !(isnull(dataMove[1,5])) #type:move
-	    sourcex=get(dataMove[1,5])
-	    sourcey=get(dataMove[1,6])
+    if !(isnull(parse(Int64,get(dataMove[1,5])))) #type:move
+	    sourcex=parse(Int64,get(dataMove[1,5]))
+	    sourcey=parse(Int64,get(dataMove[1,6]))
 	    board[targetx,targety].piece = board[sourcex,sourcey].piece #Updates the board before next move
 	    board[targetx,targety].team = board[sourcex,sourcey].team
 	    ST.clear!(board[sourcex,sourcey])
