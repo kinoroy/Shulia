@@ -29,7 +29,6 @@ include("dParse.jl")
   function moveValidate(unit, moveType, team, sourcex, sourcey, targetx, targety)
     #None of the pieces, except the knight, may jump over another piece as it moves.
     #Dropping restriction
-
     #edge 0, sourcex or source y are null but it is not drop
     if ( (isnull(sourcex) || isnull(sourcey)) && moveType != "drop")
       return false
@@ -49,17 +48,17 @@ include("dParse.jl")
     if (moveType == "drop")
 
       #drop case 1: Dropped cannot capture
-      if (isEmpty(board[targetx][targety]) == false)
+      if (isEmpty(board[targetx,targety]) == false)
         return false
       end
 
       #drop case 2: Pawn, Knight, Lance cannot be dropped on the furthest rank
       if (unit == "p" || unit == "n" || unit == "l")
-        if (team == "b") #team black
+        if (team == 'b') #team black
           if (targetx == 1)
             return false
           end
-        elseif (team =="w") #team white
+        elseif (team =='w') #team white
           if (targetx == 9)
             return false
           end
@@ -67,7 +66,7 @@ include("dParse.jl")
       end
 
       #drop case3: It is not promoted
-      if (unit == "B" || unit == "L" || unit == "N" || unit == "P" || unit == "R" || unit == "S")
+      if (unit == 'b' || unit == "L" || unit == "N" || unit == "P" || unit == "R" || unit == "S")
         return false
       end
 
@@ -75,7 +74,7 @@ include("dParse.jl")
       #drop case5: Pawns cannot checkmate #missing
       if (unit == "p")
         for x in 1:9
-          if (board([x][targety]) == "p") #there is a pawn
+          if (board([x,targety]) == "p") #there is a pawn
             return false
           end
         end
@@ -86,62 +85,62 @@ include("dParse.jl")
     end
 
     #case 1 bishop
-    if unit == "b"
+    if unit == 'b'
       return bishopValidate(team,sourcex,sourcey,targetx,targety)
 
       #case 1.2 promoted bishop
-    elseif unit == "B"
+    elseif unit == 'B'
       return pBishopValidate(team,sourcex,sourcey,targetx,targety)
 
       #case 2 gold general
-    elseif unit == "g"
+    elseif unit == 'g'
       return goldGeneralValidate(team,sourcex,sourcey,targetx,targety)
 
       #case 3 king
-    elseif unit == "k"
+    elseif unit == 'k'
       return kingValidate(team,sourcex,sourcey,targetx,targety)
 
       #case 4 lance
-    elseif unit == "l"
+    elseif unit == 'l'
       return lanceValidate(team,sourcex,sourcey,targetx,targety)
 
       #case 4.2 promoted lance
-    elseif unit == "L"
+    elseif unit == 'L'
       #promotedLance moves same as gold general
       return goldGeneralValidate(team,sourcex,sourcey,targetx,targety)
 
       #case 5 knight
-    elseif unit == "n"
+    elseif unit == 'n'
       return knightValidate(team,sourcex,sourcey,targetx,targety)
 
       #case 5.2 promoted knight
-    elseif unit == "N"
+    elseif unit == 'N'
       #promotedKnight moves same as gold general
       return goldGeneralValidate(team,sourcex,sourcey,targetx,targety)
 
       #case 6 pawn
-    elseif unit == "p"
+    elseif unit == 'p'
       return pawnValidate(team,sourcex,sourcey,targetx,targety)
 
       #case 6.2 promoted pawn
-    elseif unit == "P"
+    elseif unit == 'P'
       #promotedPawn moves same as gold general
       return goldGeneralValidate(team,sourcex,sourcey,targetx,targety)
 
       #case 7 rook
-    elseif unit == "r"
+    elseif unit == 'r'
       return rookValidate(team,sourcex,sourcey,targetx,targety)
 
       #case 7.2 promoted rook
-    elseif unit == "R"
+    elseif unit == 'R'
       return pRookValidate(team,sourcex,sourcey,targetx,targety)
 
       #case 8 silver general
-    elseif unit == "s"
+    elseif unit == 's'
       return silverGeneralValidate(team,sourcex,sourcey,targetx,targety)
 
       #case 8.2 promoted silver general
-    elseif unit == "S"
+    elseif unit == 'S'
       #promoted silver general moves same as gold general
       return goldGeneralValidate(team,sourcex,sourcey,targetx,targety)
 
@@ -166,7 +165,7 @@ include("dParse.jl")
         x = sourcex + 1
         y = sourcey - 1
         for unit in 1:(unitCheck - 1)
-          if (isEmpty(board[x][y]) == true)
+          if (isEmpty(board[x,y]) == true)
             x = x + 1
             y = y - 1
           else #there is a piece in its path
@@ -179,7 +178,7 @@ include("dParse.jl")
         x = sourcex + 1
         y = sourcey + 1
         for unit in 1:(unitCheck - 1)
-          if (isEmpty(board[x][y]) == true)
+          if (isEmpty(board[x,y]) == true)
             x = x + 1
             y = y + 1
           else #there is a piece in its path
@@ -192,7 +191,7 @@ include("dParse.jl")
         x = sourcex - 1
         y = sourcey - 1
         for unit in 1:(unitCheck - 1)
-          if (isEmpty(board[x][y]) == true)
+          if (isEmpty(board[x,y]) == true)
             x = x - 1
             y = y - 1
           else #there is a piece in its path
@@ -205,7 +204,7 @@ include("dParse.jl")
         x = sourcex - 1
         y = sourcey + 1
         for unit in 1:(unitCheck - 1)
-          if (isEmpty(board[x][y]) == true)
+          if (isEmpty(board[x,y]) == true)
             x = x - 1
             y = y + 1
           else #there is a piece in its path
@@ -239,7 +238,7 @@ include("dParse.jl")
         x = sourcex + 1
         y = sourcey - 1
         for unit in 1:(unitCheck - 1)
-          if (isEmpty(board[x][y]) == true)
+          if (isEmpty(board[x,y]) == true)
             x = x + 1
             y = y - 1
           else #there is a piece in its path
@@ -252,7 +251,7 @@ include("dParse.jl")
         x = sourcex + 1
         y = sourcey + 1
         for unit in 1:(unitCheck - 1)
-          if (isEmpty(board[x][y]) == true)
+          if (isEmpty(board[x,y]) == true)
             x = x + 1
             y = y + 1
           else #there is a piece in its path
@@ -265,7 +264,7 @@ include("dParse.jl")
         x = sourcex - 1
         y = sourcey - 1
         for unit in 1:(unitCheck - 1)
-          if (isEmpty(board[x][y]) == true)
+          if (isEmpty(board[x,y]) == true)
             x = x - 1
             y = y - 1
           else #there is a piece in its path
@@ -278,7 +277,7 @@ include("dParse.jl")
         x = sourcex - 1
         y = sourcey + 1
         for unit in 1:(unitCheck - 1)
-          if (isEmpty(board[x][y]) == true)
+          if (isEmpty(board[x,y]) == true)
             x = x - 1
             y = y + 1
           else #there is a piece in its path
@@ -298,13 +297,13 @@ include("dParse.jl")
     #check if it moves like king
     if ((abs(sourcex - targetx) == 1) || (abs(sourcex - targetx) == 0))
       if (abs(sourcey - targety) == 1) || (abs(sourcey - targety) == 0)
-        if (team == "b") #team black
+        if (team == 'b') #team black
           if (sourcex - targetx == -1) && (sourcey - targety == 1) #bottom left
             return false
           elseif (sourcex - targetx == -1) && (sourcey - targety == -1) #bottom right
             return false
           end
-        elseif (team == "w") #team white
+        elseif (team == 'w') #team white
           if (sourcex - targetx == 1) && (sourcey - targety == 1)#top left
             return false
           elseif (sourcex - targetx == 1) && (sourcey - targety == -1) #top right
@@ -334,7 +333,7 @@ include("dParse.jl")
   #case 4 lance #moves forward by any
   #hopping check
   function lanceValidate(team,sourcex,sourcey,targetx,targety)
-    if (team == "b") #team black
+    if (team == 'b') #team black
       if (targetx < sourcex) && (targety == sourcey)
 
         #it is confirmed that it moves up but need to check jumping restrictions
@@ -342,7 +341,7 @@ include("dParse.jl")
         unitCheck = sourcex - targetx #how many units it advances
         x = sourcex - 1
         for unit in 1:(unitCheck - 1)
-          if (isEmpty(board[x][sourcey] == true))
+          if (isEmpty(board[x,sourcey] == true))
             x = x - 1
           else
             return false
@@ -352,14 +351,14 @@ include("dParse.jl")
         #passes jumping test
         return true
       end
-    elseif (team == "w") #team white
+    elseif (team == 'w') #team white
       if (targetx > sourcex) && (targety == sourcey)
 
         #jumping restriction
         unitCheck = targetx - sourcex
         x = sourcex + 1
         for unit in 1:(unitCheck -1)
-          if (isEmpty(board[x][sourcey] == true))
+          if (isEmpty(board[x,sourcey] == true))
             x = x + 1
           else
             return false
@@ -380,13 +379,13 @@ include("dParse.jl")
 
   #case 5 knight #moves like L
   function knightValidate(team,sourcex,sourcey,targetx,targety)
-    if (team == "b") #team black
+    if (team == 'b') #team black
       if (sourcex - targetx == 2)
         if (abs(targety - sourcey) == 1)
           return true
         end
       end
-    elseif (team == "w") #team white
+    elseif (team == 'w') #team white
       if (sourcex - targetx == -2)
         if (abs(targety - sourcey) == 1)
           return trues
@@ -403,11 +402,11 @@ include("dParse.jl")
 
   #case 6 pawn
   function pawnValidate(team,sourcex,sourcey,targetx,targety)
-    if (team == "b") #team black
+    if (team == 'b') #team black
       if (targetx == sourcex - 1) && (targety == sourcey)
         return true
       end
-    elseif (team == "w") #team white
+    elseif (team == 'w') #team white
       if (targetx == sourcex + 1) && (targety == sourcey)
         return true
       end
@@ -431,7 +430,7 @@ include("dParse.jl")
       if (sourcey > targety)
         y = sourcey - 1
         for unit in 1:(unitCheck - 1)
-          if (isEmpty(board[sourcex][y] == true))
+          if (isEmpty(board[sourcex,y] == true))
             y = y - 1
           else
             return false
@@ -441,7 +440,7 @@ include("dParse.jl")
       else #(sourcey < targety)
         y = sourcey + 1
         for unit in 1:(unitCheck -1)
-          if (isEmpty(board[sourcex][y] == true))
+          if (isEmpty(board[sourcex,y] == true))
             y = y + 1
           else
             return false
@@ -456,7 +455,7 @@ include("dParse.jl")
       if (sourcex > targetx)
         x = sourcex - 1
         for unit in 1:(unitCheck - 1)
-          if (isEmpty(board[x][sourcey] == true))
+          if (isEmpty(board[x,sourcey] == true))
             x = x - 1
           else
             return false
@@ -466,7 +465,7 @@ include("dParse.jl")
       else #(sourcex < targetx)
         x = sourcex + 1
         for unit in 1:(unitCheck - 1)
-          if (isEmpty(board[x][sourcey] == true))
+          if (isEmpty(board[x,sourcey] == true))
             x = x + 1
           else
             return false
@@ -496,7 +495,7 @@ include("dParse.jl")
       if (sourcey > targety)
         y = sourcey - 1
         for unit in 1:(unitCheck - 1)
-          if (isEmpty(board[sourcex][y] == true))
+          if (isEmpty(board[sourcex,y] == true))
             y = y - 1
           else
             return false
@@ -506,7 +505,7 @@ include("dParse.jl")
       else #(sourcey < targety)
         y = sourcey + 1
         for unit in 1:(unitCheck -1)
-          if (isEmpty(board[sourcex][y] == true))
+          if (isEmpty(board[sourcex,y] == true))
             y = y + 1
           else
             return false
@@ -521,7 +520,7 @@ include("dParse.jl")
       if (sourcex > targetx)
         x = sourcex - 1
         for unit in 1:(unitCheck - 1)
-          if (isEmpty(board[x][sourcey] == true))
+          if (isEmpty(board[x,sourcey] == true))
             x = x - 1
           else
             return false
@@ -531,7 +530,7 @@ include("dParse.jl")
       else #(sourcex < targetx)
         x = sourcex + 1
         for unit in 1:(unitCheck - 1)
-          if (isEmpty(board[x][sourcey] == true))
+          if (isEmpty(board[x,sourcey] == true))
             x = x + 1
           else
             return false
@@ -545,27 +544,30 @@ include("dParse.jl")
 
   #case 8 silverGeneral
   function silverGeneralValidate(team,sourcex,sourcey,targetx,targety)
-    if (team == "b") #team black
+    res = false
+    if (team == 'b') #team black
       if (abs(sourcex - targetx) == 1)
         if (abs(sourcey - targety) == 1 ) #every diagonal corner
-          return true
+          res = true
         elseif (sourcey == targety) && (sourcex == targetx + 1) #up 1
-          return true
+          res = true
         end
       end
-    elseif (team == "w") #team white
+    elseif (team == 'w') #team white
+      println("white")
       if (abs(sourcex - targetx) == 1)
         if (abs(sourcey - targety) == 1) #every diagonal corner
-          return true
+          res = true
         elseif (sourcey == targety) && (sourcex == targetx - 1) #down 1
-          return true
+          res = true
         end
       end
     else
-      return false #invalid team
+      #return false #invalid team
     end
 
-    return false
+    #return false
+    return res
   end #silverGeneralValidate end
 
   #case 8.2 pSilverGeneral moves same as gold general
@@ -585,10 +587,11 @@ include("dParse.jl")
       unitType = board[sourcex,sourcey].piece
       if (moveValidate(unitType, moveType, board[sourcex,sourcey].team, sourcex, sourcey, targetx, targety))
         #validSoFar
+
       else
         validSoFar = false
-println(badMove)
         badMove=get(dataMove[1,1])
+        println(badMove)
       end
     end
     board[targetx,targety].piece = board[sourcex,sourcey].piece #Updates the board before next move

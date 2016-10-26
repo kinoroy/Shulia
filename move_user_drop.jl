@@ -10,15 +10,15 @@ using ST
 using SQLite
 
 database = ARGS[1] #/path/to/database/file {string}
-pieceToDrop = parse(chomp(ARGS[2]),Int) #piece {char}
-xTarget = parse(chomp(ARGS[3]),Int) #x coordinate to place piece {Int}
-yTarget = parse(chomp(ARGS[4]),Int) #y coordinate to place piece {Int}
+pieceToDrop = chomp(ARGS[2])[1] #piece {char}
+xTarget = parse(Int,chomp(ARGS[3])) #x coordinate to place piece {Int}
+yTarget = parse(Int,chomp(ARGS[4])) #y coordinate to place piece {Int}
 board = ST.loadBoard()
 db = SQLite.DB(database) #Opens the database gamefile
 
   #= ---- Determines the move_number ---- =#
 
-  res = SQLite.query(db,"SELECT MAX(move_number) FROM moves;") #Finds the last played move (maximum move_number)
+  res = SQLite.query(db,"""SELECT MAX("move_number") FROM moves;""") #Finds the last played move (maximum move_number)
   lastMoveIDNullable = res[1,1] #SQL query with max move_number (POSSIBLY "NULL" if no moves have been made)
 
   if (!isnull(lastMoveIDNullable)) #Checks that lastMoveID was not NULL
@@ -35,12 +35,12 @@ db = SQLite.DB(database) #Opens the database gamefile
 #=-----UPDATE DATABASE W/MOVE-----=#
 #Option will be dropped pieces abv
   SQLite.query(db,"INSERT INTO moves (move_number, move_type, targetx, targety, option)
-  VALUES ($(move_number),drop,$xTarget, $yTarget, $pieceToDrop);")
-  board[xTarget][yTarget].piece = pieceToDrop
+  VALUES ($(move_number),'drop',$xTarget, $yTarget, '$pieceToDrop');")
+  board[xTarget,yTarget].piece = pieceToDrop
   if iseven(move_number)
-    board[xTarget][yTarget].team = 'w'
+    board[xTarget,yTarget].team = 'w'
   else
-    board[xTarget][yTarget].team = 'b'
+    board[xTarget,yTarget].team = 'b'
   end
 
 ST.saveBoard(board)

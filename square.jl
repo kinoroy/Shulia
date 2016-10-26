@@ -4,7 +4,7 @@ type square
   piece::Char
   team::Char
   function square() #Empty constructor
-    new('x','x') #(x,x) is EMPTY
+    new('_','_') #(x,x) is EMPTY
   end
   function square(n,t) #Specific constructor
     new(n,t)
@@ -31,8 +31,8 @@ end
     return board
   end
   function clear!(target) #This function clears the square to be empty
-    target.piece = 'x'
-    target.team = 'x'
+    target.piece = '_'
+    target.team = '_'
   end
   function promote!(target)
     target.piece = uppercase(target.piece) #promotes the piece
@@ -42,7 +42,7 @@ end
   Each function is named the same as the piece it checks for
   There is also an "isPromoted" function to determine if the piece is promoted=#
   function isEmpty(test)
-    if test.piece == 'x'
+    if test.piece == '_'
       return true
     else
       return false
