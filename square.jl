@@ -50,11 +50,7 @@ end
   end
 
   function b(test)
-    if test.team == 'b'
-      return true
-    else
-      return false
-    end
+    return test.team == 'b'
   end
   function w(test)
     if test.team == 'w'
@@ -98,7 +94,7 @@ end
         return false
       end
     end
-  function b(test)
+  function bi(test)
     if test.piece == 'b' || test.piece == 'B'
       return true
     else
@@ -127,5 +123,5 @@ end
       end
     end
 
-export isEmpty,square,loadBoard,saveBoard, clear!,promote!,w,b,p,l,b,s,g,n,r,k,isPromoted
+export isEmpty,square,loadBoard,saveBoard, clear!,promote!,w,b,p,l,bi,s,g,n,r,k,isPromoted
 end
