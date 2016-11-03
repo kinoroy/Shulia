@@ -34,6 +34,10 @@ end
     target.piece = '_'
     target.team = '_'
   end
+  function move(board,sourcex,sourcey,targetx,targety)
+    board[targetx,targety] = board[sourcex,sourcey]
+    ST.clear!(target)
+  end
   function promote!(target)
     target.piece = uppercase(target.piece) #promotes the piece
   end

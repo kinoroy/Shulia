@@ -1,5 +1,6 @@
-include("square.jl")
+include("Node.jl")
 using ST
+using Tree
 #=AIHelp.jl --
 functions which will help out the AI=#
 
@@ -259,12 +260,111 @@ function legalMoves(board,x,y)
   funDict[unit](board,x,y)
 end
 
-legalC = Array(Tuple{Int64,Int64,Int64,Int64},0) #Initialize an array of tuples for coordinates
- currentTeam = 'b' #Define currentTeam
-for x in 1:9
-  for y in 1:9
-    if board[x,y].team == currentTeam
-      append!(legalC,legalMoves(board,x,y))
+function legalMovesPlayer(board,team)
+  legalC = Array(Tuple{Int64,Int64,Int64,Int64},0) #Initialize an array of tuples for coordinates
+   currentTeam = team #Define currentTeam (either 'b' or 'w)
+  for x in 1:9
+    for y in 1:9
+      if board[x,y].team == currentTeam
+        append!(legalC,legalMoves(board,x,y))
+      end
     end
   end
+  return legalC
+end
+
+function expand(state)
+  state.visits = 1
+  state.value = 0
+end
+function update_value(state,winner)
+  if winner == state.turn
+    state.reward += 1
+  else
+    state.reward -= 1
+  end
+end
+function random_playout(state)
+  turnDict=Dict(0 =>'b',1=> 'w')
+  if state.terminal
+    return state.turn
+  else
+  legalC = legalMovesPlayer(state.board,turnDict[state.turn])
+  println(legalC)
+  println(ceil(mod(seed,size(legalC)[1])))
+  randomAction = Int(ceil(mod(seed,size(legalC)[1])))
+  new_state = Tree.Node(state.board,legalC[randomAction])
+  Tree.addChild!(state,new_state)
+    return random_playout(new_state)
+  end
+end
+
+type board
+  state::Array{ST.square}
+  board(state) = new(state)
+
+end
+
+==(t1 :: board, t2 :: board) = true
+function hashBoard(target::Array{ST.square})
+
+end
+
+#=timeMoveBegins = time()
+maxTime 60 = #in seconds (300 is 5 min)
+root = Node((0,0,0,0)) #root "action" is current state (no action)
+currentNode = root =#
+#while time()-timeMoveBegins < maxTime #Do MCTS while we have time
+function MCTS(state)
+  state.visits += 1 #Update the number of visits for this node
+  currentNode = state
+  #=----Determines childToExplore----=#
+  if size(currentNode.children)[1] == 0 #Leaf node, |Simulation Step|
+    next_state = currentNode
+    winner = random_playout(next_state)
+  else #Node has children,
+    unvisited = Array(Int64,0)
+    for i in eachindex(currentNode.children)
+      if currentNode.children[i].visits == 0
+        push!(unvisited,i)
+      end
+    end
+    if size(unvisited)[1] == 0 #All Nodes expanded, pick the best one via UCB1 |Selection Step|
+      UCBS = Array(Float64,0)
+      children = currentNode.children
+      for i in eachindex(currentNode.children)
+        push!(UCBS,children[i].reward + sqrt((2*ln(currentNode.visits))/(children[i].visits)))
+      end
+      next_state = currentNode.children[find(x->x==maximum(UCBS),UCBS)[1]] #This is the child we want to explore: With max UCB1
+      winner =  MCTS_sample(next_state)
+    else #Some nodes not expanded, pick random one and expand it
+      randomAction = ceil(mod(seed,size(unvisited)[1])) #seed is the time of game creation
+      next_state = currentNode.children[Int(randomAction)] #This is the "random" child to expand
+      winner = random_playout(next_state)
+    end
+    update_value(state,winner)
+  end
+
+
+end #End function
+#end #end while
+
+function run_simulation() #2,3,5
+  states_copy = states[:]
+  state = states_copy[-1]
+  max_moves= 100 #How is this determined?
+
+  for i in 1:(max_moves)
+    legalC  = legalMovesPlayer(board,currentPlayer)
+
+    play = legalC[seed] #Choose a "random" move from legalC seeded from 'seed'
+    state = self.board.next_state(state, play)
+    states_copy.append!(state)
+
+    winner = win(states_copy)
+    if winner!='?' #The current state has a winner
+      break #Stop searching
+    end
+  end
+
 end

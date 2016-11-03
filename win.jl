@@ -10,6 +10,7 @@ module win
 using ST
   using SQLite
 
+function winner()
   database = ARGS[1] #/path/to/database/file {string}
   db = SQLite.DB(database)  #Opens the database gamefile
   board = ST.loadBoard()
@@ -50,6 +51,7 @@ res = "?"
 	    ST.clear!(board[sourcex,sourcey])
     end
   end
+end #End function
 
-println(res)
+println(winner())
 end
