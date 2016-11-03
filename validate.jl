@@ -36,13 +36,13 @@ include("dParse.jl")
     end
 
     #edge 2, source or target are out of bounds
-    if (gameType == "n") #normalShogi
+    if (gameType == 'S') #normalShogi
       if  (~(sourcex >= 1 && sourcex <= 9) || ~(sourcey >= 1 && sourcey <= 9) || ~(targetx >= 1 && targetx <= 9) || ~(targety >= 1 && targety <= 9))
         return false
-    elseif (gameType == "m") #miniShogi
+    elseif (gameType == 'M') #miniShogi
       if  (~(sourcex >= 1 && sourcex <= 5) || ~(sourcey >= 1 && sourcey <= 5) || ~(targetx >= 1 && targetx <= 5) || ~(targety >= 1 && targety <= 5))
         return false
-    elseif (gameType == "c") #chuShogi
+    elseif (gameType == 'C') #chuShogi
       if  (~(sourcex >= 1 && sourcex <= 12) || ~(sourcey >= 1 && sourcey <= 12) || ~(targetx >= 1 && targetx <= 12) || ~(targety >= 1 && targety <= 12))
         return false
     end
@@ -51,7 +51,7 @@ include("dParse.jl")
     if (moveType == "drop")
 
       #Chu Shogi has no drops
-      if (moveType == "c")
+      if (moveType == 'C')
         return false
       end
 
@@ -61,7 +61,7 @@ include("dParse.jl")
       end
 
       #drop case 2: Pawn, Knight, Lance cannot be dropped on the furthest rank
-      if (unit == "p" || unit == "n" || unit == "l")
+      if (unit == 'p' || unit == 'N' || unit == 'l')
         if (team == 'b') #team black
           if (targetx == 1)
             return false
@@ -74,14 +74,14 @@ include("dParse.jl")
       end
 
       #drop case3: It is not promoted
-      if (unit == 'B' || unit == "L" || unit == "N" || unit == "P" || unit == "R" || unit == "S")
+      if (unit == 'B' || unit == 'L' || unit == 'N' || unit == 'p' || unit == 'R' || unit == 'S')
         return false
       end
 
       #drop case4: Pawns cannot be dropped on the same column as another unpromoted pawn
-      if (unit == "p")
+      if (unit == 'p')
         for x in 1:9
-          if (board([x,targety]) == "p") #there is a pawn
+          if (board([x,targety]) == 'p') #there is a pawn
             return false
           end
         end
@@ -99,9 +99,9 @@ include("dParse.jl")
 
     #case 1.2 promoted bishop or dragon Horse
     elseif unit == 'B'
-      if (gameType == "c")
+      if (gameType == 'C')
         return dragonHorseValidate(team,sourcex,sourcey,targetx,targety)
-      elseif (gameType == "n")
+      elseif (gameType == 'S')
         return pBishopValidate(team,sourcex,sourcey,targetx,targety)
       end
 
@@ -110,7 +110,7 @@ include("dParse.jl")
       return goldGeneralValidate(team,sourcex,sourcey,targetx,targety)
 
     #case 2.3 Chu shogi, gold general promotes to rook
-    elseif unit == "G" && gameType == "c"
+    elseif unit == 'G' && gameType == 'C'
       return rookValidate(team,sourcex,sourcey,targetx,targety)
 
     #case 3 king
@@ -123,27 +123,27 @@ include("dParse.jl")
 
     #case 4.2 promoted lance or white Horse
     elseif unit == 'L'
-      if (gameType == "c'")
+      if (gameType == 'C')
         return whiteHorseValidate(team,sourcex,sourcey,targetx,targety)
-      elseif (gameType == "n")
+      elseif (gameType == 'S')
       #promotedLance moves same as gold general
         return goldGeneralValidate(team,sourcex,sourcey,targetx,targety)
       end
 
     #case 5 knight or Kirin
     elseif unit == 'n'
-      if (gameType == "c")
+      if (gameType == 'C')
         return kirinValidate(team,sourcex,sourcey,targetx,targety)
-      elseif (gameType == "n")
+      elseif (gameType == 'S')
         return knightValidate(team,sourcex,sourcey,targetx,targety)
       end
 
     #case 5.2 promoted knight or kirin
     elseif unit == 'N'
       #kirin promotes to lion
-      if (gameType == "c")
-        return lionValidate(team,sourcex,sourcey,targetx,targety)
-      elseif (gameType == "n")
+      if (gameType == 'C')
+        return lionValidate(team,sourcex,sourcey,targetx,targety,targetx2,targety2)
+      elseif (gameType == 'S')
         #promotedKnight moves same as gold general
         return goldGeneralValidate(team,sourcex,sourcey,targetx,targety)
       end
@@ -163,9 +163,9 @@ include("dParse.jl")
 
     #case 7.2 promoted rook or dragon king
     elseif unit == 'R'
-      if (gameType == "c")
+      if (gameType == 'C')
         return dragonKingValidate(team,sourcex,sourcey,targetx,targety)
-      elseif (gameType == "n")
+      elseif (gameType == 'S')
         return pRookValidate(team,sourcex,sourcey,targetx,targety)
       end
 
@@ -175,109 +175,109 @@ include("dParse.jl")
 
     #case 8.2 promoted silver general or veritcal mover
     elseif unit == 'S'
-      if (gameType == "c")
+      if (gameType == 'C')
         return verticalMoverValidate(team,sourcex,sourcey,targetx,targety)
-      elseif (gameType == "n")
+      elseif (gameType == 'S')
         #promoted silver general moves same as gold general
         return goldGeneralValidate(team,sourcex,sourcey,targetx,targety)
       end
 
     #CHU SHOGI
     #case 9 Reverse Chariot promotes to whale
-    elseif unit == "a" && gameType == "c"
+    elseif unit == 'a' && gameType == 'C'
       return reverseChariotValidate(team,sourcex,sourcey,targetx,targety)
 
     #case 9.2 whale
-    elseif unit == "A" && gameType == "c"
+    elseif unit == 'a' && gameType == 'C'
       return whaleValidate(team,sourcex,sourcey,targetx,targety)
 
     #case 10 Copper general promotes to side mover
-    elseif unit == "c" && gameType == "c"
+    elseif unit == 'c' && gameType == 'C'
       return copperGeneralValidate(team,sourcex,sourcey,targetx,targety)
 
     #case 10.2 side mover
-    elseif unit == "C" && gameType == "c"
+    elseif unit == 'c' && gameType == 'C'
       return sideMoverValidate(team,sourcex,sourcey,targetx,targety)
 
     #case 11 Dragon King promotes to soaring eagle
-    elseif unit == "d" && gameType == "c"
+    elseif unit == 'd' && gameType == 'C'
       return dragonKingValidate(team,sourcex,sourcey,targetx,targety)
 
     #case 11.2 Soaring eagle
-    elseif unit == "D" && gameType == "c"
-      return soaringEagleValidate(team,sourcex,sourcey,targetx,targety)
+    elseif unit == 'd' && gameType == 'C'
+      return soaringEagleValidate(team,sourcex,sourcey,targetx,targety,targetx2,targety2)
 
     #case 12 Drunk Elephant promotes to prince
-    elseif unit == "e" && gameType == "c"
+    elseif unit == 'e' && gameType == 'C'
       return drunkElephantValidate(team,sourcex,sourcey,targetx,targety)
 
     #case 12.2 prince
-    elseif unit == "E" && gameType == "c"
+    elseif unit == 'E' && gameType == 'C'
       #move like king
       return kingValidate(team,sourcex,sourcey,targetx,targety)
 
     #case 13 ferocious leopard promotes bishop
-    elseif unit == "f" && gameType == "c"
+    elseif unit == 'f' && gameType == 'C'
       return ferociousLeopardValidate(team,sourcex,sourcey,targetx,targety)
 
     #case 13.2 bishop
-    elseif unit == "F" && gameType == "c"
+    elseif unit == 'F' && gameType == 'C'
       return bishopValidate(team,sourcex,sourcey,targetx,targety)
 
     #case 14 Dragon Horse promotes to horned falcon
-    elseif unit == "h" && gameType == "c"
+    elseif unit == 'h' && gameType == 'C'
       return dragonHorseValidate(team,sourcex,sourcey,targetx,targety)
 
     #case 14.2 horned falcon
-    elseif unit == "H" && gameType == "c"
-      return hornedFalconValidate(team,sourcex,sourcey,targetx,targety)
+    elseif unit == 'H' && gameType == 'C'
+      return hornedFalconValidate(team,sourcex,sourcey,targetx,targety,targetx2,targety2)
 
     #case 15 Lion
-    elseif unit == "i" && gameType == "c"
-      return lionValidate(team,sourcex,sourcey,targetx,targety)
+    elseif unit == 'i' && gameType == 'C'
+      return lionValidate(team,sourcex,sourcey,targetx,targety,targetx2,targety2)
 
     #case 16 Side Mover promotes to free boar
-    elseif unit == "m" && gameType == "c"
+    elseif unit == 'm' && gameType == 'C'
       return sideMoverValidate(team,sourcex,sourcey,targetx,targety)
 
     #case 16.2 free boar
-    elseif unit == "M" && gameType == "c"
+    elseif unit == 'M' && gameType == 'C'
       return freeBoarValidate(team,sourcex,sourcey,targetx,targety)
 
     #case 17 Go-between promotes to drunk Elephant
-    elseif unit == "o" && gameType == "c"
+    elseif unit == 'o' && gameType == 'C'
       return goBetweenValidate(team,sourcex,sourcey,targetx,targety)
 
     #case 17.2 drunk elephant
-    elseif unit == "O" && gameType == "c"
+    elseif unit == 'O' && gameType == 'C'
       return drunkElephantValidate(team,sourcex,sourcey,targetx,targety)
 
     #case 18 Blind tiger promotes to flying stag
-    elseif unit == "t" && gameType == "c"
+    elseif unit == 't' && gameType == 'C'
       return blindTigerValidate(team,sourcex,sourcey,targetx,targety)
 
     #case 18.2 flying stag
-    elseif unit == "T" && gameType == "c"
+    elseif unit == 'T' && gameType == 'C'
       return flyingStagValidate(team,sourcex,sourcey,targetx,targety)
 
     #case 19 Queen
-    elseif unit == "q" && gameType == "c"
+    elseif unit == 'q' && gameType == 'C'
       return queenValidate(team,sourcex,sourcey,targetx,targety)
 
     #case 20 Vertical Mover promotes to flying ox
-    elseif unit == "v" && gameType == "c"
+    elseif unit == 'v' && gameType == 'C'
       return verticalMoverValidate(team,sourcex,sourcey,targetx,targety)
 
     #case 20.2
-    elseif unit == "V" && gameType == "c"
+    elseif unit == 'V' && gameType == 'C'
       return flyingOxValidate(team,sourcex,sourcey,targetx,targety)
 
     #case 21 Phoenix promotes to queen
-    elseif unit == "x" && gameType == "c"
+    elseif unit == 'x' && gameType == 'C'
       return phoenixValidate(team,sourcex,sourcey,targetx,targety)
 
     #case 21.2
-    elseif unit == "X" && gameType == "c"
+    elseif unit == 'X' && gameType == 'C'
       return queenValidate(team,sourcex,sourcey,targetx,targety)
 
     else
@@ -712,7 +712,7 @@ include("dParse.jl")
         end
       end
     elseif (team == 'w') #team white
-      println("white")
+      println('white')
       if (abs(sourcex - targetx) == 1)
         if (abs(sourcey - targety) == 1) #every diagonal corner
           res = true
@@ -759,7 +759,7 @@ include("dParse.jl")
         end
       end
     else if (abs(sourcex - targetx) == abs(sourcey - targety)) #diagonal
-      if (team == "b") && (sourcex < targetx)
+      if (team == 'b') && (sourcex < targetx)
         if (sourcey < targety) #diagonalDownRight
           if (diagonalDownRightValidate(sourcex,sourcey,targetx,targety) == true)
             return true
@@ -769,7 +769,7 @@ include("dParse.jl")
             return true
           end
         end
-      elseif (team == "w") && (sourcex > targetx)
+      elseif (team == 'w') && (sourcex > targetx)
         if (sourcey < targety) #diagonalUpRight
           if (diagonalUpRightValidate(sourcex,sourcey,targetx,targety) == true)
             return true
@@ -787,7 +787,7 @@ include("dParse.jl")
 
   #case 10 copperGeneralValidate
   function copperGeneralValidate(team,sourcex,sourcey,targetx,targety)
-    if (team == "b")
+    if (team == 'b')
       if (targetx == sourcex - 1)
         if ((sourcey == targety) || (abs(sourcey - targety) == 1)) #forward any direction by 1
           return true
@@ -796,7 +796,7 @@ include("dParse.jl")
           return true
         end
       end
-    else if (team == "w")
+    else if (team == 'w')
       if (targetx == sourcex + 1)
         if ((sourcey == targety) || (abs(sourcey - targety) == 1)) #forward any direction by 1
           return true
@@ -864,20 +864,75 @@ include("dParse.jl")
   end #dragonKingValidate end
 
   #case 11.2 Soaring eagle
-  function soaringEagleValidate(team,sourcex,sourcey,targetx,targety)
+  function soaringEagleValidate(team,sourcex,sourcey,targetx,targety,targetx2,targety2)
+    #range move
+    if (isnull(targetx2) && isnull(targety2))
+
+      #moves like rook
+      if (sourcex == targetx) && (sourcey != targety) #moving horizontally
+        if (sourcey > targety) #horizontal left
+          if (moveLeftValidate(sourcex,sourcey,targetx,targety) == true)
+            return true
+          end
+        else #horizontal right
+          if (moveRightValidate(sourcex,sourcey,targetx,targety) == true)
+            return true
+          end
+        end
+      elseif (sourcey == targety) && (sourcex != targetx) #moving vertically
+        if (sourcex > targetx) #vertical up
+          if (moveUpValidate(sourcex,sourcey,targetx,targety) == true)
+            return true
+          end
+        else #vertical down
+          if (moveDownValidate(sourcex,sourcey,targetx,targety) == true)
+            return true
+          end
+        end
+      end
+
+      #diagonal down
+      if (team == 'b')
+        if (sourcex < targetx) #move down
+          if (sourcey < targety) #move right
+            if (diagonalDownRightValidate(sourcex,sourcey,targetx,targety) == true)
+              return true
+            end
+          else #move left
+            if (diagonalDownLeftValidate(sourcex,sourcey,targetx,targety) == true)
+              return true
+            end
+          end
+        end
+      elseif (team == 'w')
+        if (sourcex > targetx) #move up
+          if (sourcey < targety) #move right
+            if (diagonalUpRightValidate(sourcex,sourcey,targetx,targety) == true)
+              return true
+            end
+          else #move left
+            if (diagonalUpLeftValidate(sourcex,sourcey,targetx,targety) == true)
+              return true
+            end
+          end
+        end
+      end
+
+    else #lion move
+    end
   end #soaringEagleValidate end
 
   #case 12 drunkElephantValidate
   function drunkElephantValidate(team,sourcex,sourcey,targetx,targety)
     if ((abs(sourcex - targetx) == 1) || (abs(sourcex - targetx) == 0))
       if ((abs(sourcey - targety) == 1) || (abs(sourcey - targety) == 0))
-        if (team == "b")
+        if (team == 'b')
           if (sourcey == targety) && (targetx == sourcex + 1) #moveback
             return false
           else
             return true
           end
-        elseif (team == "w")
+        elseif (team == 'w')
           if (sourcey == targety) && (targetx == sourcex - 1) #moveUp
             return false
           else
@@ -945,39 +1000,408 @@ include("dParse.jl")
   end #dragonHorseValidate end
 
   #case 14.2 hornedFalconValidate
-  function hornedFalconValidate(team,sourcex,sourcey,targetx,targety)
+  function hornedFalconValidate(team,sourcex,sourcey,targetx,targety,targetx2,targety2)
+
+    #range moves
+    if isnull(targetx2) && isnull(targety2)
+
+      #check for moves like bishop
+      if (abs(sourcex - targetx) == abs(sourcey - targety) #moves diagonally
+        if (sourcex < targetx) #downwards
+          if (sourcey < targety) #diagonalDownRight
+            if (diagonalDownRightValidate(sourcex,sourcey,targetx,targety) == true)
+              return true
+            end
+          else #diagonalDownLeft
+            if (diagonalDownLeftValidate(sourcex,sourcey,targetx,targety) == true)
+              return true
+            end
+          end
+        else #upwards
+          if (sourcey < targety) #diagonalUpRightValidate
+            if (diagonalUpRightValidate(sourcex,sourcey,targetx,targety) == true)
+              return true
+            end
+          else #diagonalUpLeft
+            if (diagonalUpLeftValidate(sourcex,sourcey,targetx,targety) == true)
+              return true
+            end
+          end
+        end
+      end
+
+      #move down
+      if (sourcey == targety)
+        if (team == 'b')
+          if (sourcex < targetx)
+            if (moveDownValidate(sourcex,sourcey,targetx,targety) == true)
+              return true
+            end
+          end
+        elseif (team == 'w')
+          if (sourcex > targetx)
+            if (moveUpValidate(sourcex,sourcey,targetx,targety) == true)
+              return true
+            end
+          end
+        end
+      end
+
+    else #lion moves
+
+    end
+
+    return false
   end #hornedFalconValidate end
 
   #case 15 lionValidate
-  function lionValidate(team,sourcex,sourcey,targetx,targety)
+  function lionValidate(team,sourcex,sourcey,targetx,targety,targetx2,targety2)
+
   end #lionValidate end
 
   #case 16 sideMoverValidate found in case 10.2
 
   #case 16.2 freeBoarValidate #bishop and side mover
   function freeBoarValidate(team,sourcex,sourcey,targetx,targety)
+
     #check if moves like bishop
+    if (abs(sourcex - targetx) == abs(sourcey - targety) #moves diagonally
+      if (sourcex < targetx) #downwards
+        if (sourcey < targety) #diagonalDownRight
+          if (diagonalDownRightValidate(sourcex,sourcey,targetx,targety) == true)
+            return true
+          end
+        else #diagonalDownLeft
+          if (diagonalDownLeftValidate(sourcex,sourcey,targetx,targety) == true)
+            return true
+          end
+        end
+      else #upwards
+        if (sourcey < targety) #diagonalUpRightValidate
+          if (diagonalUpRightValidate(sourcex,sourcey,targetx,targety) == true)
+            return true
+          end
+        else #diagonalUpLeft
+          if (diagonalUpLeftValidate(sourcex,sourcey,targetx,targety) == true)
+            return true
+          end
+        end
+      end
+    end
+
+    #check if it moves like side mover
+    if (sourcex == targetx)
+      if (sourcey > targety) #moveLeftValidate
+        if (moveLeftValidate(sourcex,sourcey,targetx,targety) == true)
+          return true
+        end
+      else #moveRightValidate
+        if (moveRightValidate(sourcex,sourcey,targetx,targety) == true)
+          return true
+        end
+    elseif (sourcey == targety)
+      if (abs(sourcex - targetx) == 1)
+        return true
+      end
+    end
+
+    return false
   end #freeBoarValidate end
 
+  #case 17 goBetweenValidate
+  function goBetweenValidate(team,sourcex,sourcey,targetx,targety)
+    if (sourcey == targety)
+      if (abs(sourcey - targety) == 1)
+        return true
+      end
+    end
 
-  #whale, sidemover, soraing eagle, prince, bishop, horned falcon, freeboar, drunk elephant, flying stag, flyingox, queen
-  #<=== whiteHorseValidate, kirinValidate, dragonKingValidate,verticalMoverValidate ===>#
+    return false
+  end #goBetweenValidate end
+
+  #case 17.2 drunk elephant  implemented case 12
+
+  #case 18 blindTigerValidate
+  function blindTigerValidate(team,sourcex,sourcey,targetx,targety)
+
+    if ((abs(sourcex - targetx) == 1) || (abs(sourcex - targetx) == 0))
+      if ((abs(sourcey - targety) == 1) || (abs(sourcey - targety) == 0))
+        if (team == 'w')
+          if (sourcex != targetx - 1)
+            return true #move down 1
+        elseif (team == 'b')
+          if (sourcex != targetx + 1)
+            return true #move up 1
+          end
+        end
+      end
+    end
+
+    return false
+  end #blindTigerValidate end
+
+  #case 18.2 flygingstagvalidate
+  function flyingStagValidate(team,sourcex,sourcey,targetx,targety)
+    #moves like king
+    if ((abs(sourcex - targetx) == 1) || (abs(sourcex - targetx) == 0))
+      if ((abs(sourcey - targety) == 1) || (abs(sourcey - targety) == 0))
+        return true
+      end
+    end
+
+    #moves like vertical mover
+    if (sourcey == targety)
+      if ( sourcex < targetx) #move down
+        if (moveDownValidate(sourcex,sourcey,targetx,targety) == true)
+          return true
+        end
+      else #move up
+        if (moveUpValidate(sourcex,sourcey,targetx,targety) == true)
+          return true
+        end
+      end
+    end
+
+    return false
+  end #flyingStagValidate end
+
+  #case 19 queenValidate #moves like rook and bhishop
+  function queenValidate(team,sourcex,sourcey,targetx,targety)
+
+    #moves like bishop
+    if (abs(sourcex - targetx) == abs(sourcey - targety) #moves diagonally
+      if (sourcex < targetx) #downwards
+        if (sourcey < targety) #diagonalDownRight
+          if (diagonalDownRightValidate(sourcex,sourcey,targetx,targety) == true)
+            return true
+          end
+        else #diagonalDownLeft
+          if (diagonalDownLeftValidate(sourcex,sourcey,targetx,targety) == true)
+            return true
+          end
+        end
+      else #upwards
+        if (sourcey < targety) #diagonalUpRightValidate
+          if (diagonalUpRightValidate(sourcex,sourcey,targetx,targety) == true)
+            return true
+          end
+        else #diagonalUpLeft
+          if (diagonalUpLeftValidate(sourcex,sourcey,targetx,targety) == true)
+            return true
+          end
+        end
+      end
+    end
+
+    #moves like rook
+    if (sourcex == targetx) && (sourcey != targety) #moving horizontally
+      if (sourcey > targety) #horizontal left
+        if (moveLeftValidate(sourcex,sourcey,targetx,targety) == true)
+          return true
+        end
+      else #horizontal right
+        if (moveRightValidate(sourcex,sourcey,targetx,targety) == true)
+          return true
+        end
+      end
+
+    elseif (sourcey == targety) && (sourcex != targetx) #moving vertically
+      if (sourcex > targetx) #vertical up
+        if (moveUpValidate(sourcex,sourcey,targetx,targety) == true)
+          return true
+        end
+      else #vertical down
+        if (moveDownValidate(sourcex,sourcey,targetx,targety) == true)
+          return true
+        end
+      end
+    end
+
+    return false
+  end #queenValidate end
+
+  #case 20 verticalMoverValidate
+  function verticalMoverValidate(team,sourcex,sourcey,targetx,targety)
+
+    #move up and down
+    if (sourcey == targety)
+      if (sourcex < targetx) #move down
+        if (moveDownValidate(sourcex,sourcey,targetx,targety) == true)
+          return true
+        end
+      else #move up
+        if (moveUpValidate(sourcex,sourcey,targetx,targety) == true)
+          return true
+        end
+      end
+    end
+
+    #left or right by 1
+    if (sourcex == targetx)
+      if (abs(sourcey - targety) == 1)
+        return true
+      end
+    end
+
+    return false
+  end #verticalMoverValidate end
+
+  #case 20.2 flyingOxValidate #moves like bishop and vertical mover
+  function flyingOxValidate(team,sourcex,sourcey,targetx,targety)
+
+    #moves like bishop
+    if (abs(sourcex - targetx) == abs(sourcey - targety) #moves diagonally
+      if (sourcex < targetx) #downwards
+        if (sourcey < targety) #diagonalDownRight
+          if (diagonalDownRightValidate(sourcex,sourcey,targetx,targety) == true)
+            return true
+          end
+        else #diagonalDownLeft
+          if (diagonalDownLeftValidate(sourcex,sourcey,targetx,targety) == true)
+            return true
+          end
+        end
+      else #upwards
+        if (sourcey < targety) #diagonalUpRightValidate
+          if (diagonalUpRightValidate(sourcex,sourcey,targetx,targety) == true)
+            return true
+          end
+        else #diagonalUpLeft
+          if (diagonalUpLeftValidate(sourcex,sourcey,targetx,targety) == true)
+            return true
+          end
+        end
+      end
+    end
+
+    #moves like vertical mover
+    if (sourcey == targety)
+      if (sourcex < targetx) #move down
+        if (moveDownValidate(sourcex,sourcey,targetx,targety) == true)
+          return true
+        end
+      else #move up
+        if (moveUpValidate(sourcex,sourcey,targetx,targety) == true)
+          return true
+        end
+      end
+    end
+
+    #left or right by 1
+    if (sourcex == targetx)
+      if (abs(sourcey - targety) == 1)
+        return true
+      end
+    end
+
+    return false
+  end #flyingOxValidate
+
+  #case 21 Phoenix
+  function phoenixValidate(team,sourcex,sourcey,targetx,targety)
+
+    if (abs(sourcex - targetx) == 2) && (abs(sourcey - targety) == 2) #jumps
+      return true
+    end
+
+    if (sourcex == targetx) #up down left right by 1
+      if (abs(sourcey - targety) == 1)
+        return true
+      end
+    elseif (sourcey == targety)
+      if (abs(sourcex - targetx) == 1)
+        return true
+      end
+    end
+
+    return false
+  end #phoenixValidate end
+
+  #case 21.2 queen implemented case 19
+
+  #case 5 kirinValidate
+  function kirinValidate(team,sourcex,sourcey,targetx,targety)
+
+    if (abs(sourcex - targetx) == 1) && (abs(sourcey - targety) == 1) #jumps
+      return true
+    end
+
+    if (sourcex == targetx) #left or right
+      if (abs(sourcey - targety) == 2)
+        return true
+      end
+    elseif (sourcey == targety) #up or down
+      if (abs(sourcex - targety) == 2)
+        return
+      end
+    end
+
+    return false
+  end #kirinValidate end
+
+  #case 4.2 whiteHorseValidate
+  function whiteHorseValidate(team,sourcex,sourcey,targetx,targety)
+
+    if (sourcey == targety)
+      #moving up
+      if (sourcex > targetx)
+        if (moveUpValidate(sourcex,sourcey,targetx,targety) == true)
+          return true
+        end
+      #moving down
+      else
+        if (moveDownValidate(sourcex,sourcey,targetx,targety) == true)
+          return true
+        end
+      end
+    else if (abs(sourcex - targetx) == abs(sourcey - targety)) #diagonal
+      if (team == 'w') && (sourcex < targetx)
+        if (sourcey < targety) #diagonalDownRight
+          if (diagonalDownRightValidate(sourcex,sourcey,targetx,targety) == true)
+            return true
+          end
+        else #diagonalDownLeft
+          if (diagonalDownLeftValidate(sourcex,sourcey,targetx,targety) == true)
+            return true
+          end
+        end
+      elseif (team == 'b') && (sourcex > targetx)
+        if (sourcey < targety) #diagonalUpRight
+          if (diagonalUpRightValidate(sourcex,sourcey,targetx,targety) == true)
+            return true
+          end
+        else #diagonalUpLeft
+          if (diagonalUpLeftValidate(sourcex,sourcey,targetx,targety) == true)
+            return true
+          end
+        end
+      end
+    end
+
+    return false
+  end #whiteHorseValidate end
+
+  #missing lion move for hornedFalconValidate and soaringEagleValidate
+  #<=== lion ===>#
 
   maxMove = get(SQLite.query(db, """SELECT max("move_number") from moves;""")[1,1])
   validSoFar = true
   badMove=0
+  metaMove = SQLite.query(db, """SELECT value FROM meta WHERE key = "type" """)
   for x in 1:maxMove #access each row of database
-    dataMove = SQLite.query(db, """SELECT move_number, move_type, sourcex, sourcey, targetx, targety, option, i_am_cheating FROM moves WHERE "move_number" = $x""" )
+    dataMove = SQLite.query(db, """SELECT move_number, move_type, sourcex, sourcey, targetx, targety, targetx2, targety2, option, i_am_cheating FROM moves WHERE "move_number" = $x""" )
     if (!isnull(dataMove[1,5]) && !isnull(dataMove[1,3]) && !isnull(dataMove[1,6])) #targetx and targety not null
 
+      moveType = get(dataMove[1,2])
       sourcex = get(dataMove[1,3])
       sourcey = get(dataMove[1,4])
       targetx = get(dataMove[1,5])
       targety = get(dataMove[1,6])
-      moveType = get(dataMove[1,2])
+      targetx2 = get(dataMove[1,7])
+      targety2 = get(dataMove[1,8])
+      gameType = get(metaMove[1,1])
       unitType = board[sourcex,sourcey].piece
-
-      if (moveValidate(unitType, moveType, board[sourcex,sourcey].team, sourcex, sourcey, targetx, targety))
+      if (moveValidate(unitType, moveType, gameType, board[sourcex,sourcey].team, sourcex, sourcey, targetx, targety))
         #validSoFar
 
       else
