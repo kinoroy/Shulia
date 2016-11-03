@@ -2,7 +2,7 @@ module MonteCarlo
 
 
 currentBoard = startGame("standard")
-statistics
+statistics = Array()
 boardHistory
 
 function __init__(board::Board)
