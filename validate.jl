@@ -919,6 +919,7 @@ include("dParse.jl")
       end
 
     else #lion move
+
     end
   end #soaringEagleValidate end
 
@@ -1005,7 +1006,7 @@ include("dParse.jl")
     #range moves
     if isnull(targetx2) && isnull(targety2)
 
-      #check for moves like bishop
+      #Check for diagonal moves
       if (abs(sourcex - targetx) == abs(sourcey - targety) #moves diagonally
         if (sourcex < targetx) #downwards
           if (sourcey < targety) #diagonalDownRight
@@ -1030,25 +1031,67 @@ include("dParse.jl")
         end
       end
 
-      #move down
+      #Check for vertical down moves and jump 2 forward
       if (sourcey == targety)
         if (team == 'b')
           if (sourcex < targetx)
             if (moveDownValidate(sourcex,sourcey,targetx,targety) == true)
               return true
             end
+          else #jump 2 up
+            if (sourcex - targetx == 2)
+              return true
           end
         elseif (team == 'w')
           if (sourcex > targetx)
             if (moveUpValidate(sourcex,sourcey,targetx,targety) == true)
               return true
             end
-          end
+          else #jump 2 down
+            if (targetx - sourcex == 2)
+              return true
+            end
         end
       end
 
-    else #lion moves
+    else #lion moves #where targetx2 and targety2 is NOT null
 
+      #case 2 eats 1 forward without moving
+      #case 3 eat 1 forward and then jump 1 forward # not your own team
+
+      if (sourcey == targety)
+        if (team == 'b')
+          #case 2 eats 1 forward without moving
+          if (sourcex == targetx2 && sourcey == targety2)
+            if (sourcex == targetx + 1)
+              return true
+            end
+          #case 3 eat 1 forward and then jump 1  forward
+          elseif (sourcex == targetx2 + 2)
+            if (sourcex == targetx + 1)
+              #check if it has an enemy here
+              if ((isEmpty(board[targetx,targety]) == false) && (board[targetx,targety].team == 'w'))
+                return true
+              end
+            end
+          end
+        else if (team == 'w')
+          #case 2 eats 1 forward without moving
+          if (sourcex == targetx2 && sourcey == targety2)
+            if (sourcex == targetx - 1)
+              return true
+            end
+          #case 3 eat 1 forward and then jump 1  forward
+          elseif (sourcex == targetx2 - 2)
+            if (sourcex == targetx - 1)
+              #check if it has an enemy here
+              if ((isEmpty(board[targetx,targety]) == false) && (board[targetx,targety].team == 'b'))
+                return true
+              end
+            end
+          end
+        end
+      end
     end
 
     return false
@@ -1381,8 +1424,7 @@ include("dParse.jl")
     return false
   end #whiteHorseValidate end
 
-  #missing lion move for hornedFalconValidate and soaringEagleValidate
-  #<=== lion ===>#
+#<====== MISSING LIONVALIDATE AND LION MOVE FOR SOARING EAGLE =====> #
 
   maxMove = get(SQLite.query(db, """SELECT max("move_number") from moves;""")[1,1])
   validSoFar = true
