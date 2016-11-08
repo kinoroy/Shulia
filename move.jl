@@ -46,6 +46,33 @@ using Tree
   VALUES ("$(move_number)","$(move_type)","$sourcex","$sourcey","$targetx","$targety", "$option", "$(i_am_cheating)")""";)
 =#
 
+  function randomUnit(moveNumber)
+    if (even(moveNumber) == true)
+      team = "w"
+    else
+      team = "b"
+    end
+
+    for x in 1:9
+      for y in 1:9
+        if (isEmpty(board[x][y]) == false) && (board[x][y].team == team)
+          unit = board[x][y].piece
+          return unit
+      end
+    end
+  end
+
+  function randomMove(unit, sourcex, sourcey,moveNumber)
+    for x in 4:9
+      for y in 1:9
+        if ( moveValidate(unit, "move", board[sourcex][sourcey].team, sourcex, sourcey, x, y) == true)
+          move = "move"
+          SQLite.query(db,"INSERT INTO moves (move_number, move_type, sourcex, sourcey, targetx, targety)
+          VALUES ($(moveNumber),$move,$sourcex, $sourcey,$x, $y;")
+        end
+      end
+    end
+  end
 
 
 end
