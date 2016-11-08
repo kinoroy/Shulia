@@ -903,7 +903,15 @@ include("dParse.jl")
               return true
             end
           end
+        else #move up diagonal 1 or 2
+          if (sourcex - targetx == 1) && (abs(sourcey - targety) == 1)
+            return true
+          elseif (sourcex - targetx == 2) && (abs(sourcey - targety) == 2)
+            return true
+          end
         end
+
+
       elseif (team == 'w')
         if (sourcex > targetx) #move up
           if (sourcey < targety) #move right
@@ -915,12 +923,48 @@ include("dParse.jl")
               return true
             end
           end
+        else #move up diagonal 1 or 2
+          if (sourcex - targetx == -1) && (abs(sourcey - targety) == 1)
+            return true
+          elseif (sourcex - targetx == -2) && (abs(sourcey - targety) == 2)
+            return true
+          end
         end
       end
 
+
     else #lion move
 
+      #case 1 capture without movin
+      if (sourcex == targetx2 && sourcey == targety2)
+        if (team == 'b')
+          if ( (sourcex - targetx == 1) && (abs(sourcey - targety) == 1) )
+            return true
+          end
+        elseif (team == 'w')
+          if ( (targetx - sourcex == 1)) && (abs(sourcey - targety) == 1) )
+            return true
+          end
+        end
+      end
+
+      #case 2 eat 1 hop another
+      if (team =='b')
+        if (sourcex - targetx2 == 2) && (sourcex - targetx == 1)
+          if (abs(sourcex - targetx) == 1) && (abs(sourcex - targetx2) == 2)
+            return true
+          end
+        end
+      elseif (team == 'w')
+        if (targetx2 - sourcex == 2) && (targetx - sourcex == 1)
+          if (abs(sourcex - targetx) == 1) && (abs(sourcex - targetx2) == 2)
+            return true
+          end
+        end
+
     end
+
+    return false
   end #soaringEagleValidate end
 
   #case 12 drunkElephantValidate
