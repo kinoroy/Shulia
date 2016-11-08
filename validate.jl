@@ -23,7 +23,7 @@ include("dParse.jl")
 
 
   #returns True if move is Valid, False otherwise
-  function moveValidate(unit, moveType, gameType, team, sourcex, sourcey, targetx, targety)
+  function moveValidate(unit, moveType, gameType, team, sourcex, sourcey, targetx, targety, targetx2, targety2)
 
     #edge 0, sourcex or source y are null but it is not drop
     if ( (isnull(sourcex) || isnull(sourcey)) && moveType != "drop")
@@ -39,12 +39,15 @@ include("dParse.jl")
     if (gameType == 'S') #normalShogi
       if  (~(sourcex >= 1 && sourcex <= 9) || ~(sourcey >= 1 && sourcey <= 9) || ~(targetx >= 1 && targetx <= 9) || ~(targety >= 1 && targety <= 9))
         return false
+      end
     elseif (gameType == 'M') #miniShogi
       if  (~(sourcex >= 1 && sourcex <= 5) || ~(sourcey >= 1 && sourcey <= 5) || ~(targetx >= 1 && targetx <= 5) || ~(targety >= 1 && targety <= 5))
         return false
+      end
     elseif (gameType == 'C') #chuShogi
       if  (~(sourcex >= 1 && sourcex <= 12) || ~(sourcey >= 1 && sourcey <= 12) || ~(targetx >= 1 && targetx <= 12) || ~(targety >= 1 && targety <= 12))
         return false
+      end
     end
 
     #drop case
@@ -485,7 +488,7 @@ include("dParse.jl")
 
     #checks if it moves like king
     if ((abs(sourcex - targetx) == 1) || (abs(sourcex - targetx) == 0))
-      if (abs(sourcey - targety) == 1) || (abs(sourcey - targety) == 0)
+      if ((abs(sourcey - targety) == 1) || (abs(sourcey - targety) == 0))
         return true
       end
     end
@@ -712,7 +715,7 @@ include("dParse.jl")
         end
       end
     elseif (team == 'w') #team white
-      println('white')
+      #println("white")
       if (abs(sourcex - targetx) == 1)
         if (abs(sourcey - targety) == 1) #every diagonal corner
           res = true
@@ -758,7 +761,7 @@ include("dParse.jl")
           return true
         end
       end
-    else if (abs(sourcex - targetx) == abs(sourcey - targety)) #diagonal
+    elseif (abs(sourcex - targetx) == abs(sourcey - targety)) #diagonal
       if (team == 'b') && (sourcex < targetx)
         if (sourcey < targety) #diagonalDownRight
           if (diagonalDownRightValidate(sourcex,sourcey,targetx,targety) == true)
@@ -791,12 +794,13 @@ include("dParse.jl")
       if (targetx == sourcex - 1)
         if ((sourcey == targety) || (abs(sourcey - targety) == 1)) #forward any direction by 1
           return true
-      else if (targetx == sourcex + 1)
+        end
+      elseif (targetx == sourcex + 1)
         if (sourcey == targety) #back 1
           return true
         end
       end
-    else if (team == 'w')
+    elseif (team == 'w')
       if (targetx == sourcex + 1)
         if ((sourcey == targety) || (abs(sourcey - targety) == 1)) #forward any direction by 1
           return true
@@ -805,6 +809,7 @@ include("dParse.jl")
         if (sourcey == targety)
           return true
         end
+      end
     end
 
     return false
@@ -821,6 +826,7 @@ include("dParse.jl")
         if (moveRightValidate(sourcex,sourcey,targetx,targety) == true)
           return true
         end
+      end
     elseif (sourcey == targety)
       if (abs(sourcex - targetx) == 1)
         return true
@@ -849,6 +855,7 @@ include("dParse.jl")
         if (moveLeftValidate(sourcex,sourcey,targetx,targety) == true)
           return true
         end
+      end
     elseif (sourcey == targety) #vertical
       if (sourcex < targetx) #move down
         if (moveDownValidate(sourcex,sourcey,targetx,targety) == true)
@@ -858,6 +865,7 @@ include("dParse.jl")
         if (moveUpValidate(sourcex,sourcey,targetx,targety) == true)
           return true
         end
+      end
     end
 
     return false
@@ -942,7 +950,7 @@ include("dParse.jl")
             return true
           end
         elseif (team == 'w')
-          if ( (targetx - sourcex == 1)) && (abs(sourcey - targety) == 1) )
+          if ( (targetx - sourcex == 1) && (abs(sourcey - targety) == 1) )
             return true
           end
         end
@@ -961,7 +969,7 @@ include("dParse.jl")
             return true
           end
         end
-
+      end
     end
 
     return false
@@ -1017,7 +1025,7 @@ include("dParse.jl")
     end
 
     #check for moves like bishop
-    if (abs(sourcex - targetx) == abs(sourcey - targety) #moves diagonally
+    if (abs(sourcex - targetx) == abs(sourcey - targety)) #moves diagonally
       if (sourcex < targetx) #downwards
         if (sourcey < targety) #diagonalDownRight
           if (diagonalDownRightValidate(sourcex,sourcey,targetx,targety) == true)
@@ -1051,7 +1059,7 @@ include("dParse.jl")
     if isnull(targetx2) && isnull(targety2)
 
       #Check for diagonal moves
-      if (abs(sourcex - targetx) == abs(sourcey - targety) #moves diagonally
+      if (abs(sourcex - targetx) == abs(sourcey - targety)) #moves diagonally
         if (sourcex < targetx) #downwards
           if (sourcey < targety) #diagonalDownRight
             if (diagonalDownRightValidate(sourcex,sourcey,targetx,targety) == true)
@@ -1085,6 +1093,7 @@ include("dParse.jl")
           else #jump 2 up
             if (sourcex - targetx == 2)
               return true
+            end
           end
         elseif (team == 'w')
           if (sourcex > targetx)
@@ -1095,6 +1104,7 @@ include("dParse.jl")
             if (targetx - sourcex == 2)
               return true
             end
+          end
         end
       end
 
@@ -1119,7 +1129,7 @@ include("dParse.jl")
               end
             end
           end
-        else if (team == 'w')
+        elseif (team == 'w')
           #case 2 eats 1 forward without moving
           if (sourcex == targetx2 && sourcey == targety2)
             if (sourcex == targetx - 1)
@@ -1144,6 +1154,17 @@ include("dParse.jl")
   #case 15 lionValidate
   function lionValidate(team,sourcex,sourcey,targetx,targety,targetx2,targety2)
 
+#=
+    #Case 1: Eat without moving
+    if()
+    if (sourcex == targetx2) && (sourcey == targety2)
+      if (abs(sourcex - targetx) == 1) && (abs(sourcey - targety) == 1)
+        return true
+    #Case 2: Jump
+    if (abs(sourcex))
+
+    =#
+
   end #lionValidate end
 
   #case 16 sideMoverValidate found in case 10.2
@@ -1152,7 +1173,7 @@ include("dParse.jl")
   function freeBoarValidate(team,sourcex,sourcey,targetx,targety)
 
     #check if moves like bishop
-    if (abs(sourcex - targetx) == abs(sourcey - targety) #moves diagonally
+    if (abs(sourcex - targetx) == abs(sourcey - targety)) #moves diagonally
       if (sourcex < targetx) #downwards
         if (sourcey < targety) #diagonalDownRight
           if (diagonalDownRightValidate(sourcex,sourcey,targetx,targety) == true)
@@ -1186,6 +1207,7 @@ include("dParse.jl")
         if (moveRightValidate(sourcex,sourcey,targetx,targety) == true)
           return true
         end
+      end
     elseif (sourcey == targety)
       if (abs(sourcex - targetx) == 1)
         return true
@@ -1216,6 +1238,7 @@ include("dParse.jl")
         if (team == 'w')
           if (sourcex != targetx - 1)
             return true #move down 1
+          end
         elseif (team == 'b')
           if (sourcex != targetx + 1)
             return true #move up 1
@@ -1256,7 +1279,7 @@ include("dParse.jl")
   function queenValidate(team,sourcex,sourcey,targetx,targety)
 
     #moves like bishop
-    if (abs(sourcex - targetx) == abs(sourcey - targety) #moves diagonally
+    if (abs(sourcex - targetx) == abs(sourcey - targety)) #moves diagonally
       if (sourcex < targetx) #downwards
         if (sourcey < targety) #diagonalDownRight
           if (diagonalDownRightValidate(sourcex,sourcey,targetx,targety) == true)
@@ -1337,7 +1360,7 @@ include("dParse.jl")
   function flyingOxValidate(team,sourcex,sourcey,targetx,targety)
 
     #moves like bishop
-    if (abs(sourcex - targetx) == abs(sourcey - targety) #moves diagonally
+    if (abs(sourcex - targetx) == abs(sourcey - targety)) #moves diagonally
       if (sourcex < targetx) #downwards
         if (sourcey < targety) #diagonalDownRight
           if (diagonalDownRightValidate(sourcex,sourcey,targetx,targety) == true)
@@ -1441,7 +1464,7 @@ include("dParse.jl")
           return true
         end
       end
-    else if (abs(sourcex - targetx) == abs(sourcey - targety)) #diagonal
+    elseif (abs(sourcex - targetx) == abs(sourcey - targety)) #diagonal
       if (team == 'w') && (sourcex < targetx)
         if (sourcey < targety) #diagonalDownRight
           if (diagonalDownRightValidate(sourcex,sourcey,targetx,targety) == true)
@@ -1487,7 +1510,7 @@ include("dParse.jl")
       targety2 = get(dataMove[1,8])
       gameType = get(metaMove[1,1])
       unitType = board[sourcex,sourcey].piece
-      if (moveValidate(unitType, moveType, gameType, board[sourcex,sourcey].team, sourcex, sourcey, targetx, targety))
+      if (moveValidate(unitType, moveType, gameType, board[sourcex,sourcey].team, sourcex, sourcey, targetx, targety, targetx2, targety2))
         #validSoFar
 
       else
