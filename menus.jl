@@ -47,9 +47,15 @@ end
 
 
 function callbackr(path)
-  Messagebox(title="Quit", message="Are you sure you want to quit")
+  aa = Messagebox(w, message="Are you sure you want to quit")
+  msg = aa[:textvariable]
 end
 
+
+
+function callbackq(path)
+  destroy(w)
+end
 
 # do checkbutton for new game/continue
 
@@ -57,4 +63,36 @@ end
 callback_add(n, callback)   ## generic way to add callback for most common event
 callback_add(o, callback)
 callback_add(r, callback)
-callback_add(q, callbackr)
+callback_add(q, callbackq)
+
+#=
+
+bind(okk, "<Return>", callbackr)
+
+#okk =
+println(okk)
+#bind(okk, "command", callbackr)
+
+
+if okk == "Ok"
+  println("yes")
+end
+
+=#
+
+#=
+
+w = Toplevel()
+tcl("pack", "propagate", w, false) ## or pack_stop_propagate(w)
+
+mb = Menu(w)
+
+
+
+
+
+
+n1 = Button(w, "• Start a new game options")
+pack(n1, expand=true, fill="both")
+callback_add(n1, callbackr)
+=#
