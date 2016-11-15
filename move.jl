@@ -37,10 +37,7 @@ using Tree
   end
 
 
-
-  # ---- Saves the determined move in the database ---- =#
-  SQLite.query(db,"INSERT INTO moves (move_number, move_type)
-  VALUES ($(move_number),'resign');")
+randomMove(randomUnit()[1],randomUnit[2],randomUnit[3])
 #=
   SQLite.query(db,"""INSERT INTO moves (move_number, move_type, sourcex, sourcey, targetx, targety, option, i_am_cheating)
   VALUES ("$(move_number)","$(move_type)","$sourcex","$sourcey","$targetx","$targety", "$option", "$(i_am_cheating)")""";)
@@ -57,7 +54,7 @@ using Tree
       for y in 1:9
         if (isEmpty(board[x][y]) == false) && (board[x][y].team == team)
           unit = board[x][y].piece
-          return unit
+          return (unit,x,y)
       end
     end
   end
