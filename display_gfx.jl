@@ -16,7 +16,7 @@ using Tk
 
 
 
-
+cd("./Images")
 bishoppic = ("bishop.gif")
 bishopimg = Image(bishoppic)
 gold_generalpic = ("gold_general.gif")
