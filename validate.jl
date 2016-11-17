@@ -12,12 +12,12 @@ Pawn cannot be dropped on the same column (y) as another unpromoted pawn
 Pawn cannot checkmate only checks
 =#
 
-include("square.jl")
+include("board.jl")
 include("dParse.jl")
-
-  using ST
+gameType = "standard" #TO DO: don't hard code this
+  using BM
   using SQLite
-  board = ST.loadBoard()
+  board = BM.startGame(gameType)
   database = ARGS[1] #/path/to/database/file {string}
   db = SQLite.DB(database) #Opens the database gamefile
 
@@ -59,7 +59,7 @@ include("dParse.jl")
       end
 
       #drop case 1: Dropped cannot capture
-      if (isEmpty(board[targetx,targety]) == false)
+      if (targetx,targety) in keys(board)
         return false
       end
 
@@ -84,7 +84,7 @@ include("dParse.jl")
       #drop case4: Pawns cannot be dropped on the same column as another unpromoted pawn
       if (unit == 'p')
         for x in 1:9
-          if (board([x,targety]) == 'p') #there is a pawn
+          if (board[(x,targety)][1] == 'p') #there is a pawn
             return false
           end
         end
@@ -298,7 +298,7 @@ include("dParse.jl")
     unitCheck = abs(sourcex - targetx) - 1
     x = sourcex - 1
     for unit in 1:unitCheck
-      if (isEmpty(board[x,sourcey]) == true)
+      if ! ((targetx,targety) in keys(board)) #Empty
         x = x - 1
       else
         return false
@@ -316,7 +316,7 @@ include("dParse.jl")
     unitCheck = abs(sourcex - targetx) - 1
     x = sourcex + 1
     for unit in 1:unitCheck
-      if (isEmpty(board[x,sourcey]) == true)
+      if !((targetx,targety) in keys(board)) #isEmpty
         x = x + 1
       else
         return false
@@ -335,7 +335,7 @@ include("dParse.jl")
     unitCheck = abs(sourcey - targety) - 1
     y = sourcey - 1
     for unit in 1:unitCheck
-      if (isEmpty(board[sourcex,y]) == true)
+      if !((targetx,targety) in keys(board)) #isEmpty
         y = y - 1
       else
         return false
@@ -354,7 +354,7 @@ include("dParse.jl")
     unitCheck = abs(sourcey - targety) - 1
     y = sourcey + 1
     for unit in 1:unitCheck
-      if (isEmpty(board[sourcex,y]) == true)
+      if !((targetx,targety) in keys(board))
         y = y + 1
       else
         return false
@@ -372,7 +372,7 @@ include("dParse.jl")
         x = sourcex - 1
         y = sourcey - 1
         for unit in 1:unitCheck
-          if (isEmpty(board[x,y]) == true)
+          if !((targetx,targety) in keys(board)) #isEmpty
             x = x - 1
             y = y - 1
           else
@@ -394,7 +394,7 @@ include("dParse.jl")
         x = sourcex - 1
         y = sourcey + 1
         for unit in 1:unitCheck
-          if (isEmpty(board[x,y]) == true)
+          if !((targetx,targety) in keys(board)) #isEmpty
             x = x - 1
             y = y + 1
           else
@@ -416,7 +416,7 @@ include("dParse.jl")
         x = sourcex + 1
         y = sourcey - 1
         for unit in 1:unitCheck
-          if (isEmpty(board[x,y]) == true)
+          if !((targetx,targety) in keys(board)) #isEmpty
             x = x + 1
             y = y - 1
           else
@@ -438,7 +438,7 @@ include("dParse.jl")
         x = sourcex + 1
         y = sourcey + 1
         for unit in 1:unitCheck
-          if (isEmpty(board[x,y]) == true)
+          if !((targetx,targety) in keys(board)) #isEmpty
             x = x + 1
             y = y + 1
           else
@@ -1124,7 +1124,7 @@ include("dParse.jl")
           elseif (sourcex == targetx2 + 2)
             if (sourcex == targetx + 1)
               #check if it has an enemy here
-              if ((isEmpty(board[targetx,targety]) == false) && (board[targetx,targety].team == 'w'))
+              if ((targetx,targety) in keys(board)) && (board[targetx,targety].team == 'w')
                 return true
               end
             end
@@ -1139,7 +1139,7 @@ include("dParse.jl")
           elseif (sourcex == targetx2 - 2)
             if (sourcex == targetx - 1)
               #check if it has an enemy here
-              if ((isEmpty(board[targetx,targety]) == false) && (board[targetx,targety].team == 'b'))
+              if ((targetx,targety) in keys(board)) && (board[targetx,targety].team == 'b')
                 return true
               end
             end
@@ -1493,7 +1493,7 @@ include("dParse.jl")
 
 #<====== MISSING LIONVALIDATE AND LION MOVE FOR SOARING EAGLE =====> #
 
-  maxMove = get(SQLite.query(db, """SELECT max("move_number") from moves;""")[1,1])
+  maxMove = parse(get(SQLite.query(db, """SELECT max("move_number") from moves;""")[1,1]))
   validSoFar = true
   badMove=0
   metaMove = SQLite.query(db, """SELECT value FROM meta WHERE key = "type" """)
@@ -1509,8 +1509,8 @@ include("dParse.jl")
       targetx2 = get(dataMove[1,7])
       targety2 = get(dataMove[1,8])
       gameType = get(metaMove[1,1])
-      unitType = board[sourcex,sourcey].piece
-      if (moveValidate(unitType, moveType, gameType, board[sourcex,sourcey].team, sourcex, sourcey, targetx, targety, targetx2, targety2))
+      (unitType,team) = get(board,(sourcex,sourcey),('x','x'))
+      if (moveValidate(unitType, moveType, gameType, team, sourcex, sourcey, targetx, targety, targetx2, targety2))
         #validSoFar
 
       else
@@ -1518,9 +1518,8 @@ include("dParse.jl")
         badMove=get(dataMove[1,1])
         println(badMove)
       end
-      board[targetx,targety].piece = board[sourcex,sourcey].piece #Updates the board before next move
-      board[targetx,targety].team = board[sourcex,sourcey].team
-      ST.clear!(board[sourcex,sourcey])
+      board[(targetx,targety)] = deepcopy(board[(sourcex,sourcey)]) #Updates the board before next move
+      delete!(board,(sourcex,sourcey))
     end
 end
 if !validSoFar #Ensures print only happens at end
