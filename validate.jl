@@ -17,7 +17,7 @@ include("dParse.jl")
 gameType = "standard" #TO DO: don't hard code this
   using BM
   using SQLite
-  board = BM.startGame(gameType)
+  board = (BM.startGame(gameType)).state
   database = ARGS[1] #/path/to/database/file {string}
   db = SQLite.DB(database) #Opens the database gamefile
 

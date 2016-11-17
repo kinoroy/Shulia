@@ -17,7 +17,7 @@ cheating = cheatingDict[ARGS[3]] #Either "cheating" or "legal" {string}=#
 #captures = Array(square(),0)
 seed = time() #current unix time
 db = SQLite.DB(database) #Opens the database gamefile
-SQLite.query(db,"CREATE TABLE moves (move_number,move_type,sourcex,sourcey,targetx,targety,option,i_am_cheating);")
+SQLite.query(db,"CREATE TABLE moves (move_number,move_type,sourcex,sourcey,targetx,targety,targetx2,targety2,option,i_am_cheating);")
 SQLite.query(db,"CREATE TABLE meta (key,value);")
 SQLite.query(db,"""INSERT INTO meta (key,value) VALUES ("type","$(gameType)");""")
 SQLite.query(db,"""INSERT INTO meta (key,value) VALUES ("legality","$(cheating)");""")
