@@ -6,7 +6,7 @@ module move_user_resign
   using SQLite
 
   database = ARGS[1] #/path/to/database/file {string}
-db =  SQLite.DB(database) #Opens the database gamefile
+  db =  SQLite.DB(database) #Opens the database gamefile
 
   #= ---- Determines the move_number ---- =#
 

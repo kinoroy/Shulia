@@ -1,54 +1,18 @@
+include("board.jl")
 module dParse
-include("square.jl")
-using ST
+
+using BM
 global DB
 using SQLite
 
 db = SQLite.DB(ARGS[1]) #Opens the database gamefile
 res = SQLite.query(db,"SELECT key,value FROM meta where key = 'type';")
-gameType = get(res[1,2])
+global gameType = get(res[1,2])
+res = SQLite.query(db,"SELECT key,value FROM meta where key = 'seed';")
+global seed = parse(get(res[1,2]))
 
-
-if gameType == "standard"
-  board = fill!(Array(square,9,9),square())
-  board[1,5] = square('k','w')
-  board[9,5] = square('k','b')
-  board[1,[4,6]] = square('g','w')
-  board[9,[4,6]] = square('g','b')
-  board[1,[3,7]] = square('s','w')
-  board[9,[3,7]] = square('s','b')
-  board[1,[2,8]] = square('n','w')
-  board[9,[2,8]] = square('n','b')
-  board[1,[1,9]] = square('l','w')
-  board[9,[1,9]] = square('l','b')
-  board[2,2] = square('b','w')
-  board[8,8] = square('b','b')
-  board[2,8] = square('r','w')
-  board[8,2] = square('r','b')
-  board[3,1:9] = square('p','w')
-  board[7,1:9] = square('p','b')
-
-
-  else
-
-  board = fill!(Array(square,5,5),square())
-  board[1,1] = square('k','w')
-  board[5,5] = square('k','b')
-  board[1,2] = square('g','w')
-  board[5,4] = square('g','b')
-  board[1,3] = square('s','w')
-  board[5,3] = square('s','b')
-  board[1,4] = square('b','w')
-  board[5,2] = square('b','b')
-  board[1,5] = square('r','w')
-  board[5,1] = square('r','b')
-  board[2,1] = square('p','w')
-  board[4,5] = square('p','b')
-end
-ST.saveBoard(board)
-
-function parse(pathToDatabase)
-  board = ST.loadBoard()
+function Parse(pathToDatabase)
+  board = BM.startGame(gameType)
   #captures = readdml("captures.txt")
   db = SQLite.DB(pathToDatabase) #Opens the database gamefile
   #calculates all black piece positions
@@ -80,12 +44,11 @@ function parse(pathToDatabase)
         targety = get(targetyNullable)
         sourcex = get(sourcexNullable)
         sourcey = get(sourceyNullable)
-        if !(isEmpty(board[targetx][targety]))# capture
+        if ( (targetx,targety) in keys(board))# Non-empty piece at target: capture
           #push(captures,board[targetx][targety])
         end
-        board[targetx][targety].piece = board[sourcex][sourcey].piece
-        board[targetx][targety].team = board[sourcex][sourcey].team
-        clear!(board[sourcex][sourcey])
+
+        board = BM.nextState(board,(sourcex,sourcey,targetx,targety))
 
       elseif move_type == "drop"
         option = get(optionNullable)
@@ -96,18 +59,18 @@ function parse(pathToDatabase)
         targety = get(targetyNullable)
         board[targetx][targety].piece = option
         if iseven(currentMoveID)
-          board[targetx][targety].team = 'w'
+         board[(targetx,targety)] = (option,'w')
         else
-          board[targetx][targety].team = 'b'
+          board[(targetx,targety)] = (option,'b')
         end
+        newBoard.currentPlayer = (newBoard.currentPlayer == 'b' ? 'w' : 'b')
       elseif move_type == "resign"
         #Do nothing
       end
 
     end
 
-  ST.saveBoard(board)
-  return board
+  return (board,gameType,seed,lastMoveID)
 end #End function
 
 

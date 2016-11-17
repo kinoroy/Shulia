@@ -12,34 +12,45 @@ end
 
 function startTestGame()
     board = Dict()
-    board[(1,2)] = ('k','b')
-    board[(1,3)] = ('k','w')
+    board[(1,4)] = ('r','b')
+    board[(4,4)] = ('k','b')
+    board[(1,1)] = ('k','w')
     return Board(board, 'b')
 end
 
 function startGame(gameType)
   board = Dict()
   if gameType == "standard"
-    board[5,1] = ('k','w')
-    board[5,9] = ('k','b')
-    board[[4,6],1] = ('g','w')
-    board[[4,6],9] = ('g','b')
-    board[[3,7],1] = ('s','w')
-    board[[3,7],9] = ('s','b')
-    board[[2,8],1] = ('n','w')
-    board[[2,8],9] = ('n','b')
-    board[[1,9],1] = ('l','w')
-    board[[1,9],9] = ('l','b')
-    board[2,2] = ('b','w')
-    board[8,8] = ('b','b')
-    board[8,2] = ('r','w')
-    board[2,8] = ('r','b')
-    board[1:9,3] = ('p','w')
-    board[1:9,7] = ('p','b')
+    board[(5,1)] = ('k','w')
+    board[(5,9)] = ('k','b')
+    board[(4,1)] = ('g','w')
+    board[(6,1)] = ('g','w')
+    board[(4,9)] = ('g','b')
+    board[(6,9)] = ('g','b')
+    board[(3,1)] = ('s','w')
+    board[(7,1)] = ('s','w')
+    board[(3,9)] = ('s','b')
+    board[(7,9)] = ('s','b')
+    board[(2,1)] = ('n','w')
+    board[(8,1)] = ('n','w')
+    board[(2,9)] = ('n','b')
+    board[(8,9)] = ('n','b')
+    board[(1,1)] = ('l','w')
+    board[(9,1)] = ('l','w')
+    board[(1,9)] = ('l','b')
+    board[(9,9)] = ('l','b')
+    board[(2,2)] = ('b','w')
+    board[(8,8)] = ('b','b')
+    board[(8,2)] = ('r','w')
+    board[(2,8)] = ('r','b')
+    for i in 1:9
+      board[(i,3)] = ('p','w')
+      board[(i,7)] = ('p','b')
+    end
 
     else
 
-    board[1,1] = ('k','w')
+    #=board[1,1] = ('k','w')
     board[5,5] = ('k','b')
     board[1,2] = ('g','w')
     board[5,4] = ('g','b')
@@ -50,7 +61,7 @@ function startGame(gameType)
     board[1,5] = ('r','w')
     board[5,1] = ('r','b')
     board[2,1] = ('p','w')
-    board[4,5] = ('p','b')
+    board[4,5] = ('p','b')=#
   end
   return Board(board, 'b')
 end
@@ -101,15 +112,15 @@ function legalPlays(board::Board)
     return legalMovesPlayer(board.state, board.currentPlayer)
 end
 
-function winner(stateHist)
-  if !( ('k','b') in values(stateHist[size(stateHist)[1]]) )
+function winner(state)
+  if !( ('k','b') in values(state)) #=Hist[size(stateHist)[1]]) )=#
     return 'w'
-  elseif !( ('k','w') in values(stateHist[size(stateHist)[1]]) )
+  elseif !( ('k','w') in values(state))
     return 'b'
   else
     return '?'
   end
-
 end
+
 export winner,legalPlays,next_state,nextState,currentPlayer,startTestGame,startGame
 end

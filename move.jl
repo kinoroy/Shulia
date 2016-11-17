@@ -1,75 +1,27 @@
 #=move.jl - Updates the game file with a move, accepts 1 command line argument,<filename> => database
 =#
-
-  include("dParse.jl")
-  include("AIHelp.jl")
+include("AI.jl")
+include("dParse.jl")
 module move
-using ST
-  using dParse
+using dParse
+using BM
+using AI
+using SQLite
 
-  using SQLite
-using Tree
   #=----Parses the database and determines where pieces are on the board----=#
 
   #= ---- Opens the Database for reading ---- =#
   database = ARGS[1] #/path/to/database/file {string}
   db = SQLite.DB(database) #Opens the database gamefile
 
-  #= ---- Determines whos turn it is (white or black) ---- =#
+  (board,gameType,seed,lastMoveID) = dParse.Parse(database)
 
-  res = SQLite.query(db, """SELECT max("move_number") from moves;""") #Finds the last played move (maximum move_number)
-  lastMoveIDNullable = res[1,1] #SQL query with max move_number (POSSIBLY "NULL" if no moves have been made)
+  AI.init(gameType,board,seed)
 
-  if (!isnull(lastMoveIDNullable)) #Checks that lastMoveID was not NULL
-    lastMoveID = get(res[1,1])#Parses the last move move_number as an Int
-
-  else #lastMoveID is NULL
-    lastMoveID = 0 #move_number "0" is unsused. This implies no moves have been made
-
-  end
-
-  #=---- Determines a move to make (AI integration below)----=#
-  move_number = lastMoveID+1 #The current move is move#: move_number
-  if (iseven(move_number))
-    currentPlayer = 'w'
-  else
-    currentPlayer = 'b'
-  end
-
-
-randomMove(randomUnit()[1],randomUnit[2],randomUnit[3])
-#=
-  SQLite.query(db,"""INSERT INTO moves (move_number, move_type, sourcex, sourcey, targetx, targety, option, i_am_cheating)
-  VALUES ("$(move_number)","$(move_type)","$sourcex","$sourcey","$targetx","$targety", "$option", "$(i_am_cheating)")""";)
-=#
-
-  function randomUnit(moveNumber)
-    if (even(moveNumber) == true)
-      team = "w"
-    else
-      team = "b"
-    end
-
-    for x in 1:9
-      for y in 1:9
-        if (isEmpty(board[x][y]) == false) && (board[x][y].team == team)
-          unit = board[x][y].piece
-          return (unit,x,y)
-      end
-    end
-  end
-
-  function randomMove(unit, sourcex, sourcey,moveNumber)
-    for x in 4:9
-      for y in 1:9
-        if ( moveValidate(unit, "move", board[sourcex][sourcey].team, sourcex, sourcey, x, y) == true)
-          move = "move"
-          SQLite.query(db,"INSERT INTO moves (move_number, move_type, sourcex, sourcey, targetx, targety)
-          VALUES ($(moveNumber),$move,$sourcex, $sourcey,$x, $y;")
-        end
-      end
-    end
-  end
-
+  (sourcex,sourcey,targetx,targety) = AI.get_play()
+  move_number = lastMoveID+1
+  move_type = "move"
+  SQLite.query(db,"""INSERT INTO moves (move_number, move_type, sourcex, sourcey, targetx, targety, i_am_cheating)
+  VALUES ("$(move_number)","$(move_type)","$sourcex","$sourcey","$targetx","$targety", "false")""";)
 
 end

@@ -1,14 +1,25 @@
 include("board.jl")
+module AI
+using AIHelp
 using BM
-gameType = "standard"
-board = startGame(gameType)
+
 global states = Array(Dict{Tuple{Int64,Int64},Tuple{Char,Char}},0)
-push!(states,board.state)
-seed = time()
-calculationTime = 100 #Max calculation time permitted in seconds
+global gameType,board,seed
+
+function init(igameType,iboard,iseed)
+  global states
+  global gameType = igameType
+  global board = iboard
+  global seed = iseed
+  push!(states,board.state)
+end
+#gameType = "standard"
+#board = startGame(gameType)
+
+
+#seed = time()
+calculationTime = 20 #Max calculation time permitted in seconds
 max_moves = 500
-#global wins = Dict('w'=>Dict(),'b'=>Dict())
-#global plays = Dict('w'=>Dict(),'b'=>Dict())
 global wins = Dict()
 global plays = Dict()
 global C = 1.4
@@ -22,7 +33,7 @@ function get_play()
   global max_depth = 0
   state = states[size(states)[1]]
   player = currentPlayer(states)
-  legal = legalMovesPlayer(state,player)
+  legal = AIHelp.legalMovesPlayer(state,player)
 
   if size(legal)[1] == 0
     return
@@ -68,7 +79,7 @@ function run_simulation() #2,3,5
   for i in 2:(max_moves+1)
     state = states_copy[size(states_copy)[1]]
     player = currentPlayer(states_copy)
-    legalC  = legalMovesPlayer(state,player)
+    legalC  = AIHelp.legalMovesPlayer(state,player)
     moves_states = collect( (p,next_state(state,p)) for p in legalC)
 
 
@@ -117,4 +128,6 @@ function run_simulation() #2,3,5
       wins[(player,state)] += 1
     end
   end
+end
+
 end
