@@ -48,20 +48,25 @@ function startGame(gameType)
       board[(i,7)] = ('p','b')
     end
 
-    else
+  elseif gameType=="mini"
 
-    #=board[1,1] = ('k','w')
-    board[5,5] = ('k','b')
-    board[1,2] = ('g','w')
-    board[5,4] = ('g','b')
-    board[1,3] = ('s','w')
-    board[5,3] = ('s','b')
-    board[1,4] = ('b','w')
-    board[5,2] = ('b','b')
-    board[1,5] = ('r','w')
-    board[5,1] = ('r','b')
-    board[2,1] = ('p','w')
-    board[4,5] = ('p','b')=#
+    board[(1,1)] = ('k','w')
+    board[(5,5)] = ('k','b')
+    board[(1,2)] = ('g','w')
+    board[(5,4)] = ('g','b')
+    board[(1,3)] = ('s','w')
+    board[(5,3)] = ('s','b')
+    board[(1,4)] = ('b','w')
+    board[(5,2)] = ('b','b')
+    board[(1,5)] = ('r','w')
+    board[(5,1)] = ('r','b')
+    board[(2,1)] = ('p','w')
+    board[(4,5)] = ('p','b')
+
+  elseif gameType=="chu"
+
+  elseif gameType=="tenjiku"
+    
   end
   return Board(board, 'b')
 end
