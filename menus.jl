@@ -20,11 +20,22 @@ set_value(rb, "option 1")   ## initialize
 menu_add(omenu, rb)     ## second argument is Tk_Radio instance
 
 
-
-
-
-
-
+global JRMvalue
+JRMvalue = false
+global VARvalue
+VARvalue = "no shogi"
+global DIFFvalue
+DIFFvalue = "not normal"
+global CHEATvalue
+CHEATvalue = false
+global FIRSTvalue
+FIRSTvalue = false
+global TIMEvalue
+TIMEvalue = false
+global LIMITvalue
+LIMITvalue = "infinity"
+global TheTimeLimit
+TheTimeLimit = 0
 
 
 
@@ -49,6 +60,16 @@ pack(q, expand=true, fill="both")
 
 function callbackLIMIT(path)
 
+  global JRMvalue
+  global VARvalue
+  global DIFFvalue
+  global CHEATvalue
+  global FIRSTvalue
+  global TIMEvalue
+  global LIMITvalue
+  global TheTimeLimit
+
+
   z = Toplevel()
   f = Frame(z); pack(f, expand=true, fill="both")
 
@@ -59,7 +80,7 @@ function callbackLIMIT(path)
 e = Entry(f)
 b = Button(f, "Ok")
 
-formlayout(e, "Time Limit:")
+formlayout(e, "Time Limit (seconds):")
 formlayout(b, nothing)
 focus(e)            ## put keyboard focus on widget
 
@@ -81,12 +102,124 @@ function callbackLIMITTIME(path)
   println("$LIMITvalue")
   #msg = "You have a nice name $val"
   #Messagebox(w,  msg)
+  global TheTimeLimit
+  if  TIMEvalue == true
+    if parse(Int64,LIMITvalue) >= 1
+      TheTimeLimit = parse(Int64,LIMITvalue)
+      println("the time limit is :$TheTimeLimit")
+    end
+  end
+
+  JRM = false
+  if  JRMvalue == true
+      JRM = JRMvalue
+      println("japanese roulette mode? :$JRM")
+  end
+
+
+
+
+  shvar = " "
+  if  VARvalue != "no shogi"
+      shvar = VARvalue
+      println("shogi variant :$shvar")
+  else
+    shvar = "yes shogi"
+    println("shogi variant :$shvar")
+  end
+
+
+
+  dfvar = " "
+  if  DIFFvalue != "not normal"
+      dfvar = DIFFvalue
+      println("difficulty :$dfvar")
+  else
+    dfvar = "normal"
+    println("difficulty :$dfvar")
+  end
+
+
+
+  CHEAT = false
+  if  CHEATvalue == true
+      CHEAT = CHEATvalue
+      println("cheating? :$CHEAT")
+  end
+
+
+
+
+  FIRST = false
+  if  FIRSTvalue == true
+      FIRST = FIRSTvalue
+      println("going first? :$FIRST")
+  end
+
   return LIMITvalue
 end
 
 bind(b, "command", callbackLIMITTIME)
 bind(b, "<Return>", callbackLIMITTIME)
 bind(e, "<Return>", callbackLIMITTIME)  ## bind to a certain key press event
+
+#=
+if  TIMEvalue == true
+  if parse(Int64,LIMITvalue) >= 1
+    TheTimeLimit = parse(Int64,LIMITvalue)
+    println("the time limit is :$TheTimeLimit")
+  end
+end
+
+
+JRM = false
+if  JRMvalue == true
+    JRM = JRMvalue
+    println("japanese roulette mode? :$JRM")
+end
+
+
+
+
+shvar = " "
+if  VARvalue != "no shogi"
+    shvar = VARvalue
+    println("shogi variant :$shvar")
+else
+  shvar = "yes shogi"
+  println("shogi variant :$shvar")
+end
+
+
+
+dfvar = " "
+if  DIFFvalue != "not normal"
+    dfvar = DIFFvalue
+    println("difficulty :$dfvar")
+else
+  dfvar = "normal"
+  println("difficulty :$dfvar")
+end
+
+
+
+CHEAT = false
+if  CHEATvalue == true
+    CHEAT = CHEATvalue
+    println("cheating? :$CHEAT")
+end
+
+
+
+
+FIRST = false
+if  FIRSTvalue == true
+    FIRST = FIRSTvalue
+    println("going first? :$FIRST")
+end
+
+=#
+
 
 end
 
@@ -103,7 +236,7 @@ function callbackr(path)
 end
 
 
-function callbacknOPT(path)
+function callbacknVSAIOPT(path)
   y = Toplevel("Options")
   f = Frame(y)
   pack(f, expand=true, fill="both")
@@ -112,19 +245,19 @@ function callbacknOPT(path)
 
 
   global JRMvalue
-  JRMvalue = false
+#  JRMvalue = false
   global VARvalue
-  VARvalue = "shogi"
+#  VARvalue = "shogi"
   global DIFFvalue
-  DIFFvalue = "normal"
+#  DIFFvalue = "normal"
   global CHEATvalue
-  CHEATvalue = false
+#  CHEATvalue = false
   global FIRSTvalue
-  FIRSTvalue = false
+#  FIRSTvalue = false
   global TIMEvalue
-  TIMEvalue = false
+#  TIMEvalue = false
   global LIMITvalue
-  LIMITvalue = "infinity"
+#  LIMITvalue = "infinity"
 
 
 
@@ -292,6 +425,800 @@ pack(bOK, expand=true, fill="both")
 
 end
 
+function callbacknVSHOPT(path)
+  y = Toplevel("Options")
+  f = Frame(y)
+  pack(f, expand=true, fill="both")
+
+
+
+
+  global JRMvalue
+#  JRMvalue = false
+  global VARvalue
+#  VARvalue = "shogi"
+  #global DIFFvalue
+  #DIFFvalue = "normal"
+  #global CHEATvalue
+  #CHEATvalue = false
+  #global FIRSTvalue
+  #FIRSTvalue = false
+  global TIMEvalue
+#  TIMEvalue = false
+  global LIMITvalue
+#  LIMITvalue = "infinity"
+
+
+
+  cbcJRM =Checkbutton(f, "Japanese roulette mode")
+  #pack(cbcJRM)
+  pack(cbcJRM, expand=true, fill="both")
+
+#=
+  sepextra = Label(f, "                         ")
+
+
+
+  cbcCHEAT =Checkbutton(f, "Permit AI to cheat")
+  map(u -> pack(u, anchor="w"), (sepextra, cbcCHEAT))
+=#
+  #=
+  pack(sepextra, expand=true, fill="both")
+  pack(cbcCHEAT, expand=true, fill="both")
+=#
+
+
+#=
+  sepextra1 = Label(f, "                         ")
+
+
+
+  cbcFIRST =Checkbutton(f, "Go First")
+  map(u -> pack(u, anchor="w"), (sepextra1, cbcFIRST))
+
+  =#
+  #=
+  pack(sepextra1, expand=true, fill="both")
+  pack(cbcFIRST, expand=true, fill="both")
+
+  =#
+  sepextra2 = Label(f, "                         ")
+
+
+
+  cbcTIME =Checkbutton(f, "Use time limit")
+  map(u -> pack(u, anchor="w"), (sepextra2, cbcTIME))
+  #=
+  pack(sepextra2, expand=true, fill="both")
+  pack(cbcTIME, expand=true, fill="both")
+
+  =#
+
+
+
+
+  sep1 = Label(f, "                         ")
+
+
+  varmes  = Label(f, "shogi variant:")
+  vartype = Radio(f, ["shogi", "minishogi", "chu shogi", "tenjiku shogi"])
+  #b  = Button(f, "ok") #at the end
+  map(u -> pack(u, anchor="w"), (sep1, varmes, vartype))     ## pack in left to right
+#=
+  pack(sep1, expand=true, fill="both")
+  pack(varmes, expand=true, fill="both")
+  pack(vartype, expand=true, fill="both")
+=#
+#=
+  sep2 = Label(f, "                         ")
+
+
+  diffmes  = Label(f, "difficulty:")
+  difftype = Radio(f, ["normal", "hard", "suicidal", "protracted death", "random AI"])
+  #b  = Button(f, "ok") #at the end
+  map(u -> pack(u, anchor="w"), (sep2, diffmes, difftype))     ## pack in left to right
+
+
+=#
+#=
+  pack(sep2, expand=true, fill="both")
+  pack(diffmes, expand=true, fill="both")
+  pack(difftype, expand=true, fill="both")
+=#
+
+bOK = Button(y, "Ok")
+pack(bOK, expand=true, fill="both")
+
+
+
+
+
+
+
+
+
+
+  function callbackJRM(path)        ## callbacks have at least one argument
+    global JRMvalue = get_value(cbcJRM)
+    println("$JRMvalue")
+    return JRMvalue
+  end
+
+#=
+  function callbackCHEAT(path)        ## callbacks have at least one argument
+    global CHEATvalue = get_value(cbcCHEAT)
+    println("$CHEATvalue")
+    return CHEATvalue
+  end
+
+  function callbackFIRST(path)        ## callbacks have at least one argument
+    global FIRSTvalue = get_value(cbcFIRST)
+    println("$FIRSTvalue")
+    return FIRSTvalue
+  end
+=#
+
+
+  function callbackTIME(path)        ## callbacks have at least one argument
+    global TIMEvalue = get_value(cbcTIME)
+    println("$TIMEvalue")
+    return TIMEvalue
+  end
+
+
+  function callbackvar(path)
+  #=  msg = (get_value(rb) == "apples") ? "Good choice!  An apple a day keeps the doctor away!" :
+                                        "Good choice!  Oranges are full of Vitamin C!"
+=#
+    global VARvalue = get_value(vartype)
+    println("$VARvalue")
+  #  Messagebox(w, msg)
+    return VARvalue
+  end
+
+
+#  function callbackdiff(path)
+  #=  msg = (get_value(rb) == "apples") ? "Good choice!  An apple a day keeps the doctor away!" :
+                                        "Good choice!  Oranges are full of Vitamin C!"
+=#
+  #  global DIFFvalue = get_value(difftype)
+  #  println("$DIFFvalue")
+  #  Messagebox(w, msg)
+  #  return DIFFvalue
+  #end
+
+
+
+
+
+
+  bind(cbcJRM, "command", callbackJRM)   ## bind to command option
+#  println("$JRMvalue")
+
+#  bind(cbcCHEAT, "command", callbackCHEAT)   ## bind to command option
+
+#  bind(cbcFIRST, "command", callbackFIRST)   ## bind to command option
+
+  bind(cbcTIME, "command", callbackTIME)   ## bind to command option
+
+
+
+  bind(vartype, "command", callbackvar)
+
+
+#  bind(difftype, "command", callbackdiff)
+
+#  bind(bOK, "command", callback)
+#  bind(bOK, "<Return>", callback)
+
+
+  #if TIMEvalue == true
+    bind(bOK, "command", callbackLIMIT)
+    bind(bOK, "<Return>", callbackLIMIT)
+    callback_add(bOK, callbackLIMIT)
+  #end
+
+
+
+
+end
+function callbacknHAIOPT(path)
+  y = Toplevel("Options")
+  f = Frame(y)
+  pack(f, expand=true, fill="both")
+
+
+
+
+  global JRMvalue
+#  JRMvalue = false
+  global VARvalue
+#  VARvalue = "shogi"
+  #global DIFFvalue
+  #DIFFvalue = "normal"
+  #global CHEATvalue
+  #CHEATvalue = false
+  #global FIRSTvalue
+  #FIRSTvalue = false
+  global TIMEvalue
+#  TIMEvalue = false
+  global LIMITvalue
+#  LIMITvalue = "infinity"
+
+
+
+  cbcJRM =Checkbutton(f, "Japanese roulette mode")
+  #pack(cbcJRM)
+  pack(cbcJRM, expand=true, fill="both")
+
+#=
+  sepextra = Label(f, "                         ")
+
+
+
+  cbcCHEAT =Checkbutton(f, "Permit AI to cheat")
+  map(u -> pack(u, anchor="w"), (sepextra, cbcCHEAT))
+=#
+  #=
+  pack(sepextra, expand=true, fill="both")
+  pack(cbcCHEAT, expand=true, fill="both")
+=#
+
+
+#=
+  sepextra1 = Label(f, "                         ")
+
+
+
+  cbcFIRST =Checkbutton(f, "Go First")
+  map(u -> pack(u, anchor="w"), (sepextra1, cbcFIRST))
+
+  =#
+  #=
+  pack(sepextra1, expand=true, fill="both")
+  pack(cbcFIRST, expand=true, fill="both")
+
+  =#
+  sepextra2 = Label(f, "                         ")
+
+
+
+  cbcTIME =Checkbutton(f, "Use time limit")
+  map(u -> pack(u, anchor="w"), (sepextra2, cbcTIME))
+  #=
+  pack(sepextra2, expand=true, fill="both")
+  pack(cbcTIME, expand=true, fill="both")
+
+  =#
+
+
+
+
+  sep1 = Label(f, "                         ")
+
+
+  varmes  = Label(f, "shogi variant:")
+  vartype = Radio(f, ["shogi", "minishogi", "chu shogi", "tenjiku shogi"])
+  #b  = Button(f, "ok") #at the end
+  map(u -> pack(u, anchor="w"), (sep1, varmes, vartype))     ## pack in left to right
+#=
+  pack(sep1, expand=true, fill="both")
+  pack(varmes, expand=true, fill="both")
+  pack(vartype, expand=true, fill="both")
+=#
+#=
+  sep2 = Label(f, "                         ")
+
+
+  diffmes  = Label(f, "difficulty:")
+  difftype = Radio(f, ["normal", "hard", "suicidal", "protracted death", "random AI"])
+  #b  = Button(f, "ok") #at the end
+  map(u -> pack(u, anchor="w"), (sep2, diffmes, difftype))     ## pack in left to right
+
+
+=#
+#=
+  pack(sep2, expand=true, fill="both")
+  pack(diffmes, expand=true, fill="both")
+  pack(difftype, expand=true, fill="both")
+=#
+
+bOK = Button(y, "Ok")
+pack(bOK, expand=true, fill="both")
+
+
+
+
+
+
+
+
+
+
+  function callbackJRM(path)        ## callbacks have at least one argument
+    global JRMvalue = get_value(cbcJRM)
+    println("$JRMvalue")
+    return JRMvalue
+  end
+
+#=
+  function callbackCHEAT(path)        ## callbacks have at least one argument
+    global CHEATvalue = get_value(cbcCHEAT)
+    println("$CHEATvalue")
+    return CHEATvalue
+  end
+
+  function callbackFIRST(path)        ## callbacks have at least one argument
+    global FIRSTvalue = get_value(cbcFIRST)
+    println("$FIRSTvalue")
+    return FIRSTvalue
+  end
+=#
+
+
+  function callbackTIME(path)        ## callbacks have at least one argument
+    global TIMEvalue = get_value(cbcTIME)
+    println("$TIMEvalue")
+    return TIMEvalue
+  end
+
+
+  function callbackvar(path)
+  #=  msg = (get_value(rb) == "apples") ? "Good choice!  An apple a day keeps the doctor away!" :
+                                        "Good choice!  Oranges are full of Vitamin C!"
+=#
+    global VARvalue = get_value(vartype)
+    println("$VARvalue")
+  #  Messagebox(w, msg)
+    return VARvalue
+  end
+
+
+#  function callbackdiff(path)
+  #=  msg = (get_value(rb) == "apples") ? "Good choice!  An apple a day keeps the doctor away!" :
+                                        "Good choice!  Oranges are full of Vitamin C!"
+=#
+  #  global DIFFvalue = get_value(difftype)
+  #  println("$DIFFvalue")
+  #  Messagebox(w, msg)
+  #  return DIFFvalue
+  #end
+
+
+
+
+
+
+  bind(cbcJRM, "command", callbackJRM)   ## bind to command option
+#  println("$JRMvalue")
+
+#  bind(cbcCHEAT, "command", callbackCHEAT)   ## bind to command option
+
+#  bind(cbcFIRST, "command", callbackFIRST)   ## bind to command option
+
+  bind(cbcTIME, "command", callbackTIME)   ## bind to command option
+
+
+
+  bind(vartype, "command", callbackvar)
+
+
+#  bind(difftype, "command", callbackdiff)
+
+#  bind(bOK, "command", callback)
+#  bind(bOK, "<Return>", callback)
+
+
+  #if TIMEvalue == true
+    bind(bOK, "command", callbackLIMIT)
+    bind(bOK, "<Return>", callbackLIMIT)
+    callback_add(bOK, callbackLIMIT)
+  #end
+
+
+
+
+end
+
+
+
+
+
+function callbacknHHOPT(path)
+  y = Toplevel("Options")
+  f = Frame(y)
+  pack(f, expand=true, fill="both")
+
+
+
+
+  global JRMvalue
+#  JRMvalue = false
+  global VARvalue
+#  VARvalue = "shogi"
+  #global DIFFvalue
+  #DIFFvalue = "normal"
+  #global CHEATvalue
+  #CHEATvalue = false
+  #global FIRSTvalue
+  #FIRSTvalue = false
+  global TIMEvalue
+#  TIMEvalue = false
+  global LIMITvalue
+#  LIMITvalue = "infinity"
+
+
+
+  cbcJRM =Checkbutton(f, "Japanese roulette mode")
+  #pack(cbcJRM)
+  pack(cbcJRM, expand=true, fill="both")
+
+#=
+  sepextra = Label(f, "                         ")
+
+
+
+  cbcCHEAT =Checkbutton(f, "Permit AI to cheat")
+  map(u -> pack(u, anchor="w"), (sepextra, cbcCHEAT))
+=#
+  #=
+  pack(sepextra, expand=true, fill="both")
+  pack(cbcCHEAT, expand=true, fill="both")
+=#
+
+
+#=
+  sepextra1 = Label(f, "                         ")
+
+
+
+  cbcFIRST =Checkbutton(f, "Go First")
+  map(u -> pack(u, anchor="w"), (sepextra1, cbcFIRST))
+
+  =#
+  #=
+  pack(sepextra1, expand=true, fill="both")
+  pack(cbcFIRST, expand=true, fill="both")
+
+  =#
+  sepextra2 = Label(f, "                         ")
+
+
+
+  cbcTIME =Checkbutton(f, "Use time limit")
+  map(u -> pack(u, anchor="w"), (sepextra2, cbcTIME))
+  #=
+  pack(sepextra2, expand=true, fill="both")
+  pack(cbcTIME, expand=true, fill="both")
+
+  =#
+
+
+
+
+  sep1 = Label(f, "                         ")
+
+
+  varmes  = Label(f, "shogi variant:")
+  vartype = Radio(f, ["shogi", "minishogi", "chu shogi", "tenjiku shogi"])
+  #b  = Button(f, "ok") #at the end
+  map(u -> pack(u, anchor="w"), (sep1, varmes, vartype))     ## pack in left to right
+#=
+  pack(sep1, expand=true, fill="both")
+  pack(varmes, expand=true, fill="both")
+  pack(vartype, expand=true, fill="both")
+=#
+#=
+  sep2 = Label(f, "                         ")
+
+
+  diffmes  = Label(f, "difficulty:")
+  difftype = Radio(f, ["normal", "hard", "suicidal", "protracted death", "random AI"])
+  #b  = Button(f, "ok") #at the end
+  map(u -> pack(u, anchor="w"), (sep2, diffmes, difftype))     ## pack in left to right
+
+
+=#
+#=
+  pack(sep2, expand=true, fill="both")
+  pack(diffmes, expand=true, fill="both")
+  pack(difftype, expand=true, fill="both")
+=#
+
+bOK = Button(y, "Ok")
+pack(bOK, expand=true, fill="both")
+
+
+
+
+
+
+
+
+
+
+  function callbackJRM(path)        ## callbacks have at least one argument
+    global JRMvalue = get_value(cbcJRM)
+    println("$JRMvalue")
+    return JRMvalue
+  end
+
+#=
+  function callbackCHEAT(path)        ## callbacks have at least one argument
+    global CHEATvalue = get_value(cbcCHEAT)
+    println("$CHEATvalue")
+    return CHEATvalue
+  end
+
+  function callbackFIRST(path)        ## callbacks have at least one argument
+    global FIRSTvalue = get_value(cbcFIRST)
+    println("$FIRSTvalue")
+    return FIRSTvalue
+  end
+=#
+
+
+  function callbackTIME(path)        ## callbacks have at least one argument
+    global TIMEvalue = get_value(cbcTIME)
+    println("$TIMEvalue")
+    return TIMEvalue
+  end
+
+
+  function callbackvar(path)
+  #=  msg = (get_value(rb) == "apples") ? "Good choice!  An apple a day keeps the doctor away!" :
+                                        "Good choice!  Oranges are full of Vitamin C!"
+=#
+    global VARvalue = get_value(vartype)
+    println("$VARvalue")
+  #  Messagebox(w, msg)
+    return VARvalue
+  end
+
+
+#  function callbackdiff(path)
+  #=  msg = (get_value(rb) == "apples") ? "Good choice!  An apple a day keeps the doctor away!" :
+                                        "Good choice!  Oranges are full of Vitamin C!"
+=#
+  #  global DIFFvalue = get_value(difftype)
+  #  println("$DIFFvalue")
+  #  Messagebox(w, msg)
+  #  return DIFFvalue
+  #end
+
+
+
+
+
+
+  bind(cbcJRM, "command", callbackJRM)   ## bind to command option
+#  println("$JRMvalue")
+
+#  bind(cbcCHEAT, "command", callbackCHEAT)   ## bind to command option
+
+#  bind(cbcFIRST, "command", callbackFIRST)   ## bind to command option
+
+  bind(cbcTIME, "command", callbackTIME)   ## bind to command option
+
+
+
+  bind(vartype, "command", callbackvar)
+
+
+#  bind(difftype, "command", callbackdiff)
+
+#  bind(bOK, "command", callback)
+#  bind(bOK, "<Return>", callback)
+
+
+  #if TIMEvalue == true
+    bind(bOK, "command", callbackLIMIT)
+    bind(bOK, "<Return>", callbackLIMIT)
+    callback_add(bOK, callbackLIMIT)
+  #end
+
+
+
+
+end
+
+function callbacknEOPT(path)
+  y = Toplevel("Options")
+  f = Frame(y)
+  pack(f, expand=true, fill="both")
+
+
+
+
+  global JRMvalue
+#  JRMvalue = false
+  global VARvalue
+#  VARvalue = "shogi"
+  #global DIFFvalue
+  #DIFFvalue = "normal"
+  #global CHEATvalue
+  #CHEATvalue = false
+  #global FIRSTvalue
+  #FIRSTvalue = false
+  global TIMEvalue
+#  TIMEvalue = false
+  global LIMITvalue
+#  LIMITvalue = "infinity"
+
+
+
+  cbcJRM =Checkbutton(f, "Japanese roulette mode")
+  #pack(cbcJRM)
+  pack(cbcJRM, expand=true, fill="both")
+
+#=
+  sepextra = Label(f, "                         ")
+
+
+
+  cbcCHEAT =Checkbutton(f, "Permit AI to cheat")
+  map(u -> pack(u, anchor="w"), (sepextra, cbcCHEAT))
+=#
+  #=
+  pack(sepextra, expand=true, fill="both")
+  pack(cbcCHEAT, expand=true, fill="both")
+=#
+
+
+#=
+  sepextra1 = Label(f, "                         ")
+
+
+
+  cbcFIRST =Checkbutton(f, "Go First")
+  map(u -> pack(u, anchor="w"), (sepextra1, cbcFIRST))
+
+  =#
+  #=
+  pack(sepextra1, expand=true, fill="both")
+  pack(cbcFIRST, expand=true, fill="both")
+
+  =#
+  sepextra2 = Label(f, "                         ")
+
+
+
+  cbcTIME =Checkbutton(f, "Use time limit")
+  map(u -> pack(u, anchor="w"), (sepextra2, cbcTIME))
+  #=
+  pack(sepextra2, expand=true, fill="both")
+  pack(cbcTIME, expand=true, fill="both")
+
+  =#
+
+
+
+
+  sep1 = Label(f, "                         ")
+
+
+  varmes  = Label(f, "shogi variant:")
+  vartype = Radio(f, ["shogi", "minishogi", "chu shogi", "tenjiku shogi"])
+  #b  = Button(f, "ok") #at the end
+  map(u -> pack(u, anchor="w"), (sep1, varmes, vartype))     ## pack in left to right
+#=
+  pack(sep1, expand=true, fill="both")
+  pack(varmes, expand=true, fill="both")
+  pack(vartype, expand=true, fill="both")
+=#
+#=
+  sep2 = Label(f, "                         ")
+
+
+  diffmes  = Label(f, "difficulty:")
+  difftype = Radio(f, ["normal", "hard", "suicidal", "protracted death", "random AI"])
+  #b  = Button(f, "ok") #at the end
+  map(u -> pack(u, anchor="w"), (sep2, diffmes, difftype))     ## pack in left to right
+
+
+=#
+#=
+  pack(sep2, expand=true, fill="both")
+  pack(diffmes, expand=true, fill="both")
+  pack(difftype, expand=true, fill="both")
+=#
+
+bOK = Button(y, "Ok")
+pack(bOK, expand=true, fill="both")
+
+
+
+
+
+
+
+
+
+
+  function callbackJRM(path)        ## callbacks have at least one argument
+    global JRMvalue = get_value(cbcJRM)
+    println("$JRMvalue")
+    return JRMvalue
+  end
+
+#=
+  function callbackCHEAT(path)        ## callbacks have at least one argument
+    global CHEATvalue = get_value(cbcCHEAT)
+    println("$CHEATvalue")
+    return CHEATvalue
+  end
+
+  function callbackFIRST(path)        ## callbacks have at least one argument
+    global FIRSTvalue = get_value(cbcFIRST)
+    println("$FIRSTvalue")
+    return FIRSTvalue
+  end
+=#
+
+
+  function callbackTIME(path)        ## callbacks have at least one argument
+    global TIMEvalue = get_value(cbcTIME)
+    println("$TIMEvalue")
+    return TIMEvalue
+  end
+
+
+  function callbackvar(path)
+  #=  msg = (get_value(rb) == "apples") ? "Good choice!  An apple a day keeps the doctor away!" :
+                                        "Good choice!  Oranges are full of Vitamin C!"
+=#
+    global VARvalue = get_value(vartype)
+    println("$VARvalue")
+  #  Messagebox(w, msg)
+    return VARvalue
+  end
+
+
+#  function callbackdiff(path)
+  #=  msg = (get_value(rb) == "apples") ? "Good choice!  An apple a day keeps the doctor away!" :
+                                        "Good choice!  Oranges are full of Vitamin C!"
+=#
+  #  global DIFFvalue = get_value(difftype)
+  #  println("$DIFFvalue")
+  #  Messagebox(w, msg)
+  #  return DIFFvalue
+  #end
+
+
+
+
+
+
+  bind(cbcJRM, "command", callbackJRM)   ## bind to command option
+#  println("$JRMvalue")
+
+#  bind(cbcCHEAT, "command", callbackCHEAT)   ## bind to command option
+
+#  bind(cbcFIRST, "command", callbackFIRST)   ## bind to command option
+
+  bind(cbcTIME, "command", callbackTIME)   ## bind to command option
+
+
+
+  bind(vartype, "command", callbackvar)
+
+
+#  bind(difftype, "command", callbackdiff)
+
+#  bind(bOK, "command", callback)
+#  bind(bOK, "<Return>", callback)
+
+
+  #if TIMEvalue == true
+    bind(bOK, "command", callbackLIMIT)
+    bind(bOK, "<Return>", callbackLIMIT)
+    callback_add(bOK, callbackLIMIT)
+  #end
+
+
+
+
+end
 
 
 function callbackq(path)
@@ -309,11 +1236,11 @@ function callbackn(path)
 
   nVSAI = Button(x, "• Start a game against the AI")
   pack(nVSAI, expand=true, fill="both")
-  callback_add(nVSAI, callbacknOPT)
+  callback_add(nVSAI, callbacknVSAIOPT)
 
   nVSH = Button(x, "• Start a game against a human on the same computer")
   pack(nVSH, expand=true, fill="both")
-  callback_add(nVSH, callback)
+  callback_add(nVSH, callbacknVSHOPT)
 
   nJOIN = Button(x, "• Join a game against a remote program")
   pack(nJOIN, expand=true, fill="both")
@@ -322,57 +1249,117 @@ function callbackn(path)
 
   nHAI = Button(x, "• Host a game, using your AI as the player")
   pack(nHAI, expand=true, fill="both")
-  callback_add(nHAI, callback)
+  callback_add(nHAI, callbacknHAIOPT)
 
   nHH = Button(x, "• Host a game, with a human as the player")
   pack(nHH, expand=true, fill="both")
-  callback_add(nHH, callback)
+  callback_add(nHH, callbacknHHOPT)
 
   nE = Button(x, "• Start a new game over email")
   pack(nE, expand=true, fill="both")
-  callback_add(nE, callback)
+  callback_add(nE, callbacknEOPT)
 
 
 end
 
 
+function callbacko(path)
+  x = Toplevel("New Game", 400, 300)
+  tcl("pack", "propagate", x, false) ## or pack_stop_propagate(w)
 
-# do checkbutton for new game/continue
+  mb = Menu(x)
+
+  oLOCAL = Button(x, "• Continue a local game")
+  pack(oLOCAL, expand=true, fill="both")
+  #open local game
+  callback_add(oLOCAL, callback)
+
+
+
+  oEMAIL = Button(x, "• • Take a turn in an email game")
+  pack(oEMAIL, expand=true, fill="both")
+  #open email game
+  callback_add(oEMAIL, callback)
+
+
+end
+
+
+function callbackr(path)
+  a=1
+  #open saved file
+end
+
+
+
 
 
 callback_add(n, callbackn)   ## generic way to add callback for most common event
-callback_add(o, callback)
-callback_add(r, callback)
+callback_add(o, callbacko)
+callback_add(r, callbackr)
 callback_add(q, callbackq)
 
 #=
 
-bind(okk, "<Return>", callbackr)
+TheTimeLimit = 0
+if  TIMEvalue == true
+  if parse(Int64,LIMITvalue) >= 1
+    TheTimeLimit = parse(Int64,LIMITvalue)
+    println("the time limit is :$TheTimeLimit")
+  end
+end
 
-#okk =
-println(okk)
-#bind(okk, "command", callbackr)
 
 
-if okk == "Ok"
-  println("yes")
+
+JRM = false
+if  JRMvalue == true
+    JRM = JRMvalue
+    println("japanese roulette mode? :$JRM")
+end
+
+
+
+
+shvar = " "
+if  VARvalue != "no shogi"
+    shvar = VARvalue
+    println("shogi variant :$shvar")
+else
+  shvar = "yes shogi"
+  println("shogi variant :$shvar")
+end
+
+
+
+dfvar = " "
+if  DIFFvalue != "not normal"
+    dfvar = DIFFvalue
+    println("difficulty :$dfvar")
+else
+  dfvar = "normal"
+  println("difficulty :$dfvar")
+end
+
+
+
+CHEAT = false
+if  CHEATvalue == true
+    CHEAT = CHEATvalue
+    println("cheating? :$CHEAT")
+end
+
+
+
+
+FIRST = false
+if  FIRSTvalue == true
+    FIRST = FIRSTvalue
+    println("going first? :$FIRST")
 end
 
 =#
 
-#=
-
-x = Toplevel()
-tcl("pack", "propagate", x, false) ## or pack_stop_propagate(w)
-
-mb = Menu(x)
 
 
-
-
-
-
-n1 = Button(x, "• Start a new game options")
-pack(n1, expand=true, fill="both")
-callback_add(n1, callbackr)
-=#
+#send extracted data to gamefile
