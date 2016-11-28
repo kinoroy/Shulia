@@ -1,6 +1,7 @@
 include("square.jl")
 include("dparse.jl")
 include("validate.jl") #for pre-existing functions types
+include("board.jl")
 
 #==== TO DO LIST ===#
 #1. unit functions
@@ -209,20 +210,480 @@ function tenjikuMoveValidate(unit, moveType, team, sourcex, sourcey, targetx, ta
 
 end #tenjikuMoveValidate
 
+#if lower rank can capture
+function lowerRank(unit, targetUnit)
+
+  if unit == "vicegeneral"
+    if targetUnit == "king" || targetUnit == "prince" || targetUnit == "greatgeneral" || targetUnit == "vicegeneral"
+      return false #cannot jump
+    else
+      return true #jump
+    end
+
+  elseif unit == "greatgeneral"
+    if targetUnit == "king" || targetUnit == "prince" || targetUnit == "greatgeneral"
+      return false
+    else
+      return true
+    end
+
+  elseif unit == "bishopgeneral" || unit == "rookgeneral"
+    if targetUnit == "king" || targetUnit == "prince" || targetUnit == "greatgeneral" || targetUnit == "vicegeneral" || targetUnit == "rookgeneral"
+      return false
+    else
+      return true
+    end
+  end
+
+  return false
+end #lowerRank
+
+#checks if the captured piece can be captured by jumping
+function jumpCapture(unit , targetUnit)
+
+  if unit == "vicegeneral" || unit == "greatgeneral" || unit == "bishopgeneral" || unit == "rookgeneral"
+    if targetUnit == "king" || targetUnit == "prince"
+      return false #cannot jumpCapture
+    else
+      return true
+    end
+  end
+
+  return false
+end #jumpCapture
+
+#moveUpValidate <=== Return true if unit can move veritcally upwards to target ===>
+function rangeUpValidate(sourcex, sourcey, targetx, targety, unit)
+  if (sourcey != targety)
+    return false
+  end
+
+  unitCheck = abs(sourcex - targetx) - 1
+  x = sourcex - 1
+  jumpFlag = false
+
+  for unit in 1:unitCheck
+    if !((x,targety) in keys(board))
+      x = x - 1
+    elseif lowerRank(unit, board[(x,targety)][1]) == true #tagetUnit is lower rank
+      jumpFlag = true
+      x = x - 1
+    else
+      return false
+    end
+  end
+
+  if jumpFlag == true
+    if (jumpCapture(unit, board[targetx,targety][1]) == false) #jump capturing something that is higher rank
+      return false
+    end
+  end
+
+  return true
+end #moveUpValidate
+
+#moveDownValidate <=== Return true if unit can move veritcally downwards to target ===>
+function rangeDownValidate(sourcex, sourcey, targetx, targety, unit)
+  if (sourcey != targety)
+    return false
+  end
+
+  unitCheck = abs(sourcex - targetx) - 1
+  x = sourcex + 1
+  jumpFlag = false
+
+  for unit in 1:unitCheck
+    if !((x,targety) in keys(board))
+      x = x + 1
+    elseif lowerRank(unit, board[(x,targety)][1]) == true
+      jumpFlag = true
+      x = x + 1
+    else
+      return false
+    end
+  end
+
+  if jumpFlag == true
+    if (jumpCapture(unit, board[targetx,targety][1]) == false) #jump capturing something that is higher rank
+      return false
+    end
+  end
+
+  return true
+end #moveDownValidate
+
+#moveLeftValidate <=== Return true if unit can move horizontally left to target ===>
+function rangeLeftValidate(sourcex, sourcey, targetx, targety, unit)
+  if (sourcex != targetx)
+    return false
+  end
+
+  unitCheck = abs(sourcey - targety) - 1
+  y = sourcey - 1
+  jumpFlag = false;
+
+  for unit in 1:unitCheck
+    if !((targetx,y) in keys(board))
+      y = y - 1
+    elseif lowerRank(unit, board[(sourcex,y)][1]) == true
+      jumpFlag = true;
+      y = y - 1
+    else
+      return false
+    end
+  end
+
+  if jumpFlag == true
+    if (jumpCapture(unit, board[targetx,targety][1]) == false) #jump capturing something that is higher rank
+      return false
+    end
+  end
+
+  return true
+end #moveLeftValidate
+
+#moveRightValidate <=== Return true if unit can move horizontally Right to target ===>
+function rangeRightValidate(sourcex, sourcey, targetx, targety, unit)
+  if (sourcex != targetx)
+    return false
+  end
+
+  unitCheck = abs(sourcey - targety) - 1
+  y = sourcey + 1
+  jumpFlag = false
+
+  for unit in 1:unitCheck
+    if !((targetx,y) in keys(board))
+      y = y + 1
+    elseif lowerRank(unit, board[(sourcex,y)][1]) == true
+      jumpFlag = true;
+      y = y + 1
+    else
+      return false
+    end
+  end
+
+  if jumpFlag == true
+    if (jumpCapture(unit, board[targetx,targety][1]) == false) #jump capturing something that is higher rank
+      return false
+    end
+  end
+
+  return true
+end #moveLeftValidate
+
+#diagonalUpLeft <=== Return true if unit can move diagonally upleft to target ===>
+function rangeUpLeftValidate(sourcex, sourcey, targetx, targety, unit)
+  if (sourcex - targetx) == (sourcey - targety)
+    if (sourcex > targetx) #moving diagonal up left
+      unitCheck == abs(sourcex - targetx) - 1
+      x = sourcex - 1
+      y = sourcey - 1
+      jumpFlag = false
+
+      for unit in 1:unitCheck
+        if !((x,y) in keys(board))
+          x = x - 1
+          y = y - 1
+        elseif lowerRank(unit, board[(x,y)][1]) == true
+          jumpFlag = true
+          x = x - 1
+          y = y - 1
+        else
+          return false
+        end
+      end
+
+      if jumpFlag == true
+        if (jumpCapture(unit, board[targetx,targety][1]) == false) #jump capturing something that is higher rank
+          return false
+        end
+      end
+
+      return true
+    end
+  end
+
+  return false
+end #diagonalUpLeftValidate
+
+#digonalUpRight <=== Return true if unit can move diagonally upleft to target ===>
+function rangeUpRightValidate(sourcex, sourcey, targetx, targety, unit)
+  if (sourcex - targetx) == (targety - sourcey)
+    if (sourcex > targetx) #moving diagonal up right
+      unitCheck == abs(sourcex - targetx) - 1
+      x = sourcex - 1
+      y = sourcey + 1
+      jumpFlag = false
+
+      for unit in 1:unitCheck
+        if !((x,y) in keys(board))
+          x = x - 1
+          y = y + 1
+        elseif lowerRank(unit, board[(x,y)][1]) == true
+          jumpFlag = true
+          x = x - 1
+          y = y + 1
+        else
+          return false
+        end
+      end
+
+      if jumpFlag == true
+        if (jumpCapture(unit, board[targetx,targety][1]) == false) #jump capturing something that is higher rank
+          return false
+        end
+      end
+
+      return true
+    end
+  end
+
+  return false
+end #diagonalUpRightValidate
+
+#diagonalDownLeft <=== Return true if unit can move diagonally downleft to target ===>
+function rangeDownLeftValidate(sourcex, sourcey, targetx, targety, unit)
+  if (sourcex - targetx) == (targety - sourcey)
+    if (sourcex < targetx) #moving diagonal down left
+      unitCheck == abs(sourcex - targetx) - 1
+      x = sourcex + 1
+      y = sourcey - 1
+      jumpFlag = false
+
+      for unit in 1:unitCheck
+        if !((x,y) in keys(board))
+          x = x + 1
+          y = y - 1
+        elseif lowerRank(unit, board[(x,y)][1]) == true
+          jumpFlag = true;
+          x = x + 1
+          y = y - 1
+        else
+          return false
+        end
+      end
+
+      if jumpFlag == true
+        if (jumpCapture(unit, board[targetx,targety][1]) == false) #jump capturing something that is higher rank
+          return false
+        end
+      end
+
+      return true
+    end
+  end
+
+  return false
+end #diagonalDownLeftValidate
+
+#diagonalDownRight
+function rangeDownRightValidate(sourcex, sourcey, targetx, targety, unit)
+  if (sourcex - targetx) == (sourcey - targety)
+    if (sourcex < targetx) #moving diagonal down left
+      unitCheck == abs(sourcex - targetx) - 1
+      x = sourcex + 1
+      y = sourcey + 1
+      jumpFlag = false
+
+      for unit in 1:unitCheck
+        if !((x,y) in keys(board))
+          x = x + 1
+          y = y + 1
+        elseif lowerRank(unit, board[(x,y)][1]) == true
+          jumpFlag = true
+          x = x + 1
+          y = y + 1
+        else
+          return false
+        end
+      end
+
+      if jumpFlag == true
+        if (jumpCapture(unit, board[targetx,targety][1]) == false) #jump capturing something that is higher rank
+          return false
+        end
+      end
+
+  return false
+end #diagonalDownRightValidate
+
+
 #case 5
-function viceGeneralValidate(team, sourcex, sourcey, targetx, targety, targetx2, target2, targetx3, targety3)
+function viceGeneralValidate(team, sourcex, sourcey, targetx, targety, targetx2, targety2, targetx3, targety3)
+
+  target2 = true
+  target3 = true
+  if (targetx2 == -1 || targety2 == -1)
+    target2 == false;
+  if (targetx3 == -1 || targety3 == -1)
+    target3 == false;
+
+  #area move
+  if (abs(sourcex - targetx) == 1) || (abs(sourcex - targetx) == 0)
+    if (abs(sourcey - targety) == 1) || (abs(sourcey - targety) == 0)
+      if ! ((targetx,targety) in keys(board)) # Empty
+        if (abs(targetx2 - targetx) == 1) || (abs(targetx2 - targetx) == 0)
+          if (abs(targety2 - targety) == 1) || (abs(targety2 - targety) == 0)
+            if ! ((targetx2,targety2) in keys(board)) # Empty
+              if (abs(targetx2 - targetx3) == 1) || (abs(targetx2 - targetx3) == 0)
+                if (abs(targety2 - targety3) == 1) || (abs(targety2 - targety3) == 0)
+                  return true;
+                end
+              end
+            else
+              if (target3 == false)
+                return true;
+              end
+            end
+          end
+        end
+      else
+        if (target2 == false) && (target3 == false)
+          return true;
+      end
+    end
+  end
+
+  #Range Jump
+  if (target2 == false && target3 == false)
+    if (sourcex < targetx) #move down
+      if (sourcey < targety) #move down Right
+        if (rangeDownRightValidate(sourcex, sourcey, targetx, targety, "vicegeneral") == true)
+          return true
+        end
+      else #move down left
+        if (rangeDownLeftValidate(sourcex, sourcey, targetx, targety, "vicegeneral") == true)
+          return true
+        end
+      end
+    else #move up
+      if (sourcey < targety) #move up Right
+        if (rangeUpRightValidate(sourcex, sourcey, targetx, targety, "vicegeneral") == true)
+          return true
+        end
+      else #move down left
+        if (rangeUpLeftValidate(sourcex, sourcey, targetx, targety, "vicegeneral") == true)
+          return true
+        end
+      end
+    end
+  end
+
+  return false
 end #viceGeneralValidate
 
 #case 6
 function greatGeneralValidate(team, sourcex, sourcey, targetx, targety)
+  #moves like bishop
+  if (abs(sourcex - targetx) == abs(sourcey - targety)) #moves diagonally
+    if (sourcex < targetx) #downwards
+      if (sourcey < targety) #diagonalDownRight
+        if (rangeDownRightValidate(sourcex,sourcey,targetx,targety) == true)
+          return true
+        end
+      else #diagonalDownLeft
+        if (rangeDownLeftValidate(sourcex,sourcey,targetx,targety) == true)
+          return true
+        end
+      end
+    else #upwards
+      if (sourcey < targety) #diagonalUpRightValidate
+        if (rangeUpRightValidate(sourcex,sourcey,targetx,targety) == true)
+          return true
+        end
+      else #diagonalUpLeft
+        if (rangeUpLeftValidate(sourcex,sourcey,targetx,targety) == true)
+          return true
+        end
+      end
+    end
+  end
+
+  #moves like rook
+  if (sourcex == targetx) && (sourcey != targety) #moving horizontally
+    if (sourcey > targety) #horizontal left
+      if (rangeLeftValidate(sourcex,sourcey,targetx,targety) == true)
+        return true
+      end
+    else #horizontal right
+      if (rangeRightValidate(sourcex,sourcey,targetx,targety) == true)
+        return true
+      end
+    end
+
+  elseif (sourcey == targety) && (sourcex != targetx) #moving vertically
+    if (sourcex > targetx) #vertical up
+      if (rangeUpValidate(sourcex,sourcey,targetx,targety) == true)
+        return true
+      end
+    else #vertical down
+      if (rangeDownValidate(sourcex,sourcey,targetx,targety) == true)
+        return true
+      end
+    end
+  end
+
+  return false
 end #greatGeneralValidate
 
 #case 7
 function bishopGeneralValidate(team, sourcex, sourcey, targetx, targety)
+  #moves like bishop
+  if (abs(sourcex - targetx) == abs(sourcey - targety)) #moves diagonally
+    if (sourcex < targetx) #downwards
+      if (sourcey < targety) #diagonalDownRight
+        if (rangeDownRightValidate(sourcex,sourcey,targetx,targety) == true)
+          return true
+        end
+      else #diagonalDownLeft
+        if (rangeDownLeftValidate(sourcex,sourcey,targetx,targety) == true)
+          return true
+        end
+      end
+    else #upwards
+      if (sourcey < targety) #diagonalUpRightValidate
+        if (rangeUpRightValidate(sourcex,sourcey,targetx,targety) == true)
+          return true
+        end
+      else #diagonalUpLeft
+        if (rangeUpLeftValidate(sourcex,sourcey,targetx,targety) == true)
+          return true
+        end
+      end
+    end
+  end
+
+  return false
 end #bishopGeneralValidate
 
 #case 8
 function rookGeneralValidate(team, sourcex, sourcey, targetx, targety)
+  #moves like rook
+  if (sourcex == targetx) && (sourcey != targety) #moving horizontally
+    if (sourcey > targety) #horizontal left
+      if (rangeLeftValidate(sourcex,sourcey,targetx,targety) == true)
+        return true
+      end
+    else #horizontal right
+      if (rangeRightValidate(sourcex,sourcey,targetx,targety) == true)
+        return true
+      end
+    end
+
+  elseif (sourcey == targety) && (sourcex != targetx) #moving vertically
+    if (sourcex > targetx) #vertical up
+      if (rangeUpValidate(sourcex,sourcey,targetx,targety) == true)
+        return true
+      end
+    else #vertical down
+      if (rangeDownValidate(sourcex,sourcey,targetx,targety) == true)
+        return true
+      end
+    end
+  end
+
+  return false
 end #rookGeneralValidate
 
 #case 18
@@ -332,7 +793,7 @@ end #dogValidate
 
 
 #implement functions
-#case 5,6,7,8,18,19,20,21,22,23,25,26,27,38,40
-#done case: 22,25,40
+#case 18,19,20,21,22,23,25,26,27,38,40
+#done case: 5,6,7,8,22,25,40
 #Pre-existing functions
 #case 1,2,3,4,9,10,11,12,13,14,15,16,17,24,28,29,30,31,32,33,34,35,36,37,39,41,42,43,44,45
