@@ -298,7 +298,7 @@ gameType = "standard" #TO DO: don't hard code this
     unitCheck = abs(sourcex - targetx) - 1
     x = sourcex - 1
     for unit in 1:unitCheck
-      if ! ((targetx,targety) in keys(board)) #Empty
+      if !((x,targety) in keys(board)) #Empty
         x = x - 1
       else
         return false
@@ -316,7 +316,7 @@ gameType = "standard" #TO DO: don't hard code this
     unitCheck = abs(sourcex - targetx) - 1
     x = sourcex + 1
     for unit in 1:unitCheck
-      if !((targetx,targety) in keys(board)) #isEmpty
+      if !((x,targety) in keys(board)) #isEmpty
         x = x + 1
       else
         return false
@@ -335,7 +335,7 @@ gameType = "standard" #TO DO: don't hard code this
     unitCheck = abs(sourcey - targety) - 1
     y = sourcey - 1
     for unit in 1:unitCheck
-      if !((targetx,targety) in keys(board)) #isEmpty
+      if !((targetx,y) in keys(board)) #isEmpty
         y = y - 1
       else
         return false
@@ -354,7 +354,7 @@ gameType = "standard" #TO DO: don't hard code this
     unitCheck = abs(sourcey - targety) - 1
     y = sourcey + 1
     for unit in 1:unitCheck
-      if !((targetx,targety) in keys(board))
+      if !((targetx,y) in keys(board))
         y = y + 1
       else
         return false
@@ -372,7 +372,7 @@ gameType = "standard" #TO DO: don't hard code this
         x = sourcex - 1
         y = sourcey - 1
         for unit in 1:unitCheck
-          if !((targetx,targety) in keys(board)) #isEmpty
+          if !((x,y) in keys(board)) #isEmpty
             x = x - 1
             y = y - 1
           else
@@ -394,7 +394,7 @@ gameType = "standard" #TO DO: don't hard code this
         x = sourcex - 1
         y = sourcey + 1
         for unit in 1:unitCheck
-          if !((targetx,targety) in keys(board)) #isEmpty
+          if !((x,y) in keys(board)) #isEmpty
             x = x - 1
             y = y + 1
           else
@@ -416,7 +416,7 @@ gameType = "standard" #TO DO: don't hard code this
         x = sourcex + 1
         y = sourcey - 1
         for unit in 1:unitCheck
-          if !((targetx,targety) in keys(board)) #isEmpty
+          if !((x,y) in keys(board)) #isEmpty
             x = x + 1
             y = y - 1
           else
@@ -438,7 +438,7 @@ gameType = "standard" #TO DO: don't hard code this
         x = sourcex + 1
         y = sourcey + 1
         for unit in 1:unitCheck
-          if !((targetx,targety) in keys(board)) #isEmpty
+          if !((x, y) in keys(board)) #isEmpty
             x = x + 1
             y = y + 1
           else
@@ -1506,8 +1506,8 @@ gameType = "standard" #TO DO: don't hard code this
       sourcey = get(dataMove[1,4])
       targetx = get(dataMove[1,5])
       targety = get(dataMove[1,6])
-      targetx2 = get(dataMove[1,7])
-      targety2 = get(dataMove[1,8])
+      targetx2 = !isnull(dataMove[1,7]) ? get(dataMove[1,7]) : -1
+      targety2 = !isnull(dataMove[1,8]) ? get(dataMove[1,8]) : -1
       gameType = get(metaMove[1,1])
       (unitType,team) = get(board,(sourcex,sourcey),('x','x'))
       if (moveValidate(unitType, moveType, gameType, team, sourcex, sourcey, targetx, targety, targetx2, targety2))
