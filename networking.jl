@@ -1,8 +1,8 @@
-t #=networking.jl - Auth: Kino Roy for Shogi, an assignment for CMPT276:
+#=networking.jl - Auth: Kino Roy for Shogi, an assignment for CMPT276:
  provides a server on port 8080 where up to two client
 may connect to play Shogi.
-Current state: accepts starting payload to set game settings, sends back to
-all clients =#
+Current state: accepts starting payload to set game settings, allows users to make
+moves with wincode 2, sends move to opponent =#
 
 function getAt(arr, index,backup)
   local res
@@ -19,6 +19,9 @@ function serverStart()
   global settingsSet = false
   global output = ""
   global player1
+  global player2
+  global whosTurn
+  global moveNumber = 1
 #  global wincode,sL
   global connections = Dict() #Array(TCPSocket,0)
   listenForClientsTask = Task(listenForClients)
@@ -81,12 +84,9 @@ getAt(sL,1,-1),getAt(sL,1,-1),getAt(sL,1,-1),getAt(sL,1,-1))=# #possibly iterate
         # message recieved
         global settingsSet
         if wincode == 0 && !settingsSet
-          settingsSet = true
           #"<wincode>: <gametype>: <legality>: <timelimit>: <limitadd>"
           (gametype,legality,timelimit,limitadd) = (sL[2],sL[3],sL[4],sL[5])
           global output = "$gametype:$legality:$timelimit:$limitadd"
-          global player1 = port
-
           #prints to player 1
           #=try
             write(connections[player1],"0:$(player1*10^3):$gametype:$legality:$timelimit:$limitadd")
@@ -98,25 +98,42 @@ getAt(sL,1,-1),getAt(sL,1,-1),getAt(sL,1,-1),getAt(sL,1,-1))=# #possibly iterate
         elseif wincode == 1 #Quit the game
         elseif wincode == 2 #Play a move
           (wincode,authString,movenum,movetype,sourcex,sourcey,targetx,targety,option,cheating,
-  targetx2,targety2) = (getAt(sL,1,-1),getAt(sL,2,-1),getAt(sL,3,-1),getAt(sL,1,-1),getAt(sL,1,-1),getAt(sL,1,-1),
-  getAt(sL,1,-1),getAt(sL,1,-1),getAt(sL,1,-1),getAt(sL,1,-1))
+  targetx2,targety2) = (getAt(sL,1,-1),getAt(sL,2,-1),getAt(sL,3,-1),getAt(sL,4,-1),getAt(sL,5,-1),getAt(sL,6,-1),
+  getAt(sL,7,-1),getAt(sL,8,-1),getAt(sL,9,-1),getAt(sL,10,-1),getAt(sL,11,-1),getAt(sL,12,-1))
+
+          if whosTurn == port #check if its the clients turn
+            opponent = client == player1 ? player2 : player1
+            write(opponent,"9:$movenum:$movetype:$sourcex:$sourcey:$targetx:$targety:$option:$cheating
+$targetx2:$targety2") #send move to opponent
+          else
+          #  println("$whosTurn:$port")
+            write(client,"8")
+          end
+          (host1,port1) = getsockname(player1)
+          (host2,port2) = getsockname(player2)
+          global whosTurn = port1 == port ? port2 : port1  #After move is made, change the turn
         elseif wincode == 3 #Accuse opponent of cheating
+
         elseif wincode == 10 #Bad payload
 
         end
-        bothPlayersConnected = false
-        while !(size(collect(keys(connections)))[1]==2) #waits until both players connected
-          sleep(.5)
-        end
-        bothPlayersConnected = size(collect(keys(connections)))[1]==2
+        if !settingsSet
+          global settingsSet = true
+          bothPlayersConnected = false
+          while !(size(collect(keys(connections)))[1]==2) #waits until both players connected
+            sleep(.5)
+          end
+          bothPlayersConnected = size(collect(keys(connections)))[1]==2
 
-        if bothPlayersConnected
-          #Roll to determine player 1 and player 2
-          player1index = rand([1,2])
-          player2index = player1index == 1 ? 2 : 1
-          player1 = collect(values(connections))[player1index]
-          player2 = collect(values(connections))[player2index]
-
+          if bothPlayersConnected
+            #Roll to determine player 1 and player 2
+            player1index = rand([1,2])
+            player2index = player1index == 1 ? 2 : 1
+            global player1 = collect(values(connections))[player1index]
+            global player2 = collect(values(connections))[player2index]
+            (host1,port1) = getsockname(player1)
+            global whosTurn = port1
+            println("$port1:first turn")
             try
               (host1,port1) = getsockname(player1)
               (host2,port2) = getsockname(player2)
@@ -125,10 +142,11 @@ getAt(sL,1,-1),getAt(sL,1,-1),getAt(sL,1,-1),getAt(sL,1,-1))=# #possibly iterate
             catch err
               println("$err")
             end
+          end
 
         end
         #Prints output to all connections
-      #=  for i in values(connections)
+      #= for i in values(connections)
           try
             global output
             write(i,output)
