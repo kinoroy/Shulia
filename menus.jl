@@ -36,10 +36,14 @@ global LIMITvalue
 LIMITvalue = "infinity"
 global TheTimeLimit
 TheTimeLimit = 0
-
-
-
-
+global VSAI
+VSAI = false
+global VSH
+VSH = false
+global HAI
+VSAI = false
+global HSH
+VSH = false
 
 
 
@@ -68,8 +72,10 @@ function callbackLIMIT(path)
   global TIMEvalue
   global LIMITvalue
   global TheTimeLimit
-
-
+  global VSAI
+  global VSH
+  global HAI
+  global HSH
   z = Toplevel()
   f = Frame(z); pack(f, expand=true, fill="both")
 
@@ -96,7 +102,7 @@ pack(cbcTIME, expand=true, fill="both")
 =#
 
 
-
+#make different functions for each path
 function callbackLIMITTIME(path)
   global LIMITvalue = get_value(e)
   println("$LIMITvalue")
@@ -258,8 +264,11 @@ function callbacknVSAIOPT(path)
 #  TIMEvalue = false
   global LIMITvalue
 #  LIMITvalue = "infinity"
-
-
+global VSAI
+VSAI = true
+global VSH
+global HAI
+global HSH
 
   cbcJRM =Checkbutton(f, "Japanese roulette mode")
   #pack(cbcJRM)
@@ -447,8 +456,11 @@ function callbacknVSHOPT(path)
 #  TIMEvalue = false
   global LIMITvalue
 #  LIMITvalue = "infinity"
-
-
+global VSAI
+global VSH
+VSH = true
+global HAI
+global HSH
 
   cbcJRM =Checkbutton(f, "Japanese roulette mode")
   #pack(cbcJRM)
@@ -644,7 +656,11 @@ function callbacknHAIOPT(path)
 #  TIMEvalue = false
   global LIMITvalue
 #  LIMITvalue = "infinity"
-
+global VSAI
+global VSH
+global HAI
+VSAI = true
+global HSH
 
 
   cbcJRM =Checkbutton(f, "Japanese roulette mode")
@@ -846,7 +862,11 @@ function callbacknHHOPT(path)
 #  TIMEvalue = false
   global LIMITvalue
 #  LIMITvalue = "infinity"
-
+global VSAI
+global VSH
+global HAI
+global HSH
+VSH = true
 
 
   cbcJRM =Checkbutton(f, "Japanese roulette mode")
@@ -1044,7 +1064,10 @@ function callbacknEOPT(path)
 #  TIMEvalue = false
   global LIMITvalue
 #  LIMITvalue = "infinity"
-
+global VSAI
+global VSH
+global HAI
+global HSH
 
 
   cbcJRM =Checkbutton(f, "Japanese roulette mode")
@@ -1244,7 +1267,9 @@ function callbackn(path)
 
   nJOIN = Button(x, "• Join a game against a remote program")
   pack(nJOIN, expand=true, fill="both")
+  #join a game(networking)
   callback_add(nJOIN, callback)
+  #callback_add(nJOIN, callbacknJOIN)
 
 
   nHAI = Button(x, "• Host a game, using your AI as the player")
@@ -1258,7 +1283,11 @@ function callbackn(path)
   nE = Button(x, "• Start a new game over email")
   pack(nE, expand=true, fill="both")
   callback_add(nE, callbacknEOPT)
-
+#=
+As play by email, I meant: Produce a game file that the other side would read.
+Your program does not do the sending. Just create a game file database
+and tell the user where it is. The user does the emailing.
+=#
 
 end
 
