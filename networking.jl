@@ -20,8 +20,12 @@ function serverStart()
   global output = ""
   global player1
   global player2
+  global timeLeftPlayer1
+  global timeLeftPlayer2
   global whosTurn
-  global moveNumber = 1
+  global timeElapsed = Dict()
+  global limitAdd
+  global timeLimit
 #  global wincode,sL
   global connections = Dict() #Array(TCPSocket,0)
   listenForClientsTask = Task(listenForClients)
@@ -48,6 +52,7 @@ function listenForClients()
     end
     (host,port)=getsockname(client)
     connections[port] = client
+    timeElapsed[port] = 0
     clientCommTask = @task(handleClientComm(client))
     schedule(clientCommTask)
   end
@@ -57,11 +62,31 @@ function handleClientComm(client)
   (host,port) = getsockname(client)
   message = Array(UInt8,4096)
    while (true)
+      if timeElapsed[port]>timelimit #player went over time limit, player resigns
+        opponent = client == player1 ? player2 : player1
+        write(opponent,"\n9:0:3:0:0:0:0:0:0
+0:$0\n") #send resign move to opponent
+        write(client,"e:you ran out of time and were forced to resign")
+      end
        bytesRead = 1;
        local wincode,sL
        try
            #blocks until a client sends a message
+           if settingsSet
+             tic()
+           end
            message = chomp(readline(client))
+           if (isempty(message))
+             println("disconect")
+             close(client)
+             delete!(connections,port)
+             for i in values(connections)
+               try
+                 write(i,"\n3\n")
+               end
+             end
+             break;
+           end
            sL = split(message,r":",keep=false)
            wincode = parse(getAt(sL,1,-1))
         #=  (wincode,authString,movenum,movetype,sourcex,sourcey,targetx,targety,option,cheating,
@@ -74,18 +99,20 @@ getAt(sL,1,-1),getAt(sL,1,-1),getAt(sL,1,-1),getAt(sL,1,-1))=# #possibly iterate
         #   write(client,"e:Readline failed with $err")
            break;
        end
-       if (bytesRead == 0) #Doesnt detect
+       if (isempty(message)) #Doesnt detect
 
            #the client has disconnected from the server
-           println("Player on port $port disconected :(")
-           write(client,"e:sorry, player disconected")
-           break;
+           #println("Player on port $port disconected :(")
+           #write(client,"e:sorry, player disconected")
+          # break;
         end
         # message recieved
         global settingsSet
         if wincode == 0 && !settingsSet
           #"<wincode>: <gametype>: <legality>: <timelimit>: <limitadd>"
-          (gametype,legality,timelimit,limitadd) = (sL[2],sL[3],sL[4],sL[5])
+          global timeLimit
+          global limitAdd
+          (gametype,legality,timeLimit,limitAdd) = (sL[2],sL[3],sL[4],sL[5])
           global output = "$gametype:$legality:$timelimit:$limitadd"
           #prints to player 1
           #=try
@@ -96,18 +123,22 @@ getAt(sL,1,-1),getAt(sL,1,-1),getAt(sL,1,-1),getAt(sL,1,-1))=# #possibly iterate
           #prints to player 2
 
         elseif wincode == 1 #Quit the game
+          #Draw
+
         elseif wincode == 2 #Play a move
+          timeElapsedCurrentMove = toc()
           (wincode,authString,movenum,movetype,sourcex,sourcey,targetx,targety,option,cheating,
   targetx2,targety2) = (getAt(sL,1,-1),getAt(sL,2,-1),getAt(sL,3,-1),getAt(sL,4,-1),getAt(sL,5,-1),getAt(sL,6,-1),
   getAt(sL,7,-1),getAt(sL,8,-1),getAt(sL,9,-1),getAt(sL,10,-1),getAt(sL,11,-1),getAt(sL,12,-1))
 
+          timeElapsed[port]+=(timeElapsedCurrentMove-limitAdd)
           if whosTurn == port #check if its the clients turn
             opponent = client == player1 ? player2 : player1
-            write(opponent,"9:$movenum:$movetype:$sourcex:$sourcey:$targetx:$targety:$option:$cheating
-$targetx2:$targety2") #send move to opponent
+            write(opponent,"\n9:$movenum:$movetype:$sourcex:$sourcey:$targetx:$targety:$option:$cheating
+$targetx2:$targety2\n") #send move to opponent
           else
           #  println("$whosTurn:$port")
-            write(client,"8")
+            write(client,"\n8\n")
           end
           (host1,port1) = getsockname(player1)
           (host2,port2) = getsockname(player2)
@@ -133,28 +164,31 @@ $targetx2:$targety2") #send move to opponent
             global player2 = collect(values(connections))[player2index]
             (host1,port1) = getsockname(player1)
             global whosTurn = port1
-            println("$port1:first turn")
+          #  println("$port1:first turn")
             try
               (host1,port1) = getsockname(player1)
               (host2,port2) = getsockname(player2)
-                write(player1,"$(player1index-1):$(port1*10^3):$gametype:$legality:$timelimit:$limitadd")
-                write(player2,"$(player2index-1):$(port2*10^3):$gametype:$legality:$timelimit:$limitadd")
+                write(player1,"\n$(player1index-1):$(port1*10^3):$gametype:$legality:$timelimit:$limitadd\n")
+                write(player2,"\n$(player2index-1):$(port2*10^3):$gametype:$legality:$timelimit:$limitadd\n")
             catch err
-              println("$err")
+              println("\n$err\n")
             end
           end
 
         end
         #Prints output to all connections
-      #= for i in values(connections)
+
+
+    #= for i in values(connections)
           try
             global output
             write(i,output)
-          catch err
+          catch err #Someone disconected
+            disconects+=1
             println(err)
             continue
           end
-        end=#
-     end
+        end=# #need to check if socket is closed, then print to opponent wincode 3
+      end
 
 end
