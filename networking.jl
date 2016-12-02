@@ -1,8 +1,10 @@
+
 #=networking.jl - Auth: Kino Roy for Shogi, an assignment for CMPT276:
  provides a server on port 8080 where up to two client
 may connect to play Shogi.
 Current state: accepts starting payload to set game settings, allows users to make
 moves with wincode 2, sends move to opponent =#
+module networking
 
 function getAt(arr, index,backup)
   local res
@@ -190,5 +192,6 @@ $targetx2:$targety2\n") #send move to opponent
           end
         end=# #need to check if socket is closed, then print to opponent wincode 3
       end
+    end
 
-end
+end #end module

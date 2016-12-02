@@ -9,44 +9,47 @@ module move_user_move
 
   using ST
   using SQLite
-  board = ST.loadBoard()
-  database = ARGS[1] #/path/to/database/file {string}
-  sourcey = parse(Int,chomp(ARGS[2])) #x coordinate of piece {Int}
-  sourcex = parse(Int,chomp(ARGS[3])) #y coordinate of piece {Int}
-  targetx = parse(Int,chomp(ARGS[4])) #x coordinate to place piece {Int}
-  targety = parse(Int,chomp(ARGS[5])) #y coordinate to place piece {Int}
-  promoteDict = Dict("T" => true, "F" => false)
-  shouldPromote = promoteDict[ARGS[6]] #Promote the piece after moving {bool}
-  db = SQLite.DB(database) #Opens the database gamefile
+  function moveUserMove(database,sourcex,sourcey,targetx,targety,bool::promote)
 
-    #= ---- Determines the move_number ---- =#
+    board = ST.loadBoard()
+  #=  database = ARGS[1] #/path/to/database/file {string}
+    sourcey = parse(Int,chomp(ARGS[2])) #x coordinate of piece {Int}
+    sourcex = parse(Int,chomp(ARGS[3])) #y coordinate of piece {Int}
+    targetx = parse(Int,chomp(ARGS[4])) #x coordinate to place piece {Int}
+    targety = parse(Int,chomp(ARGS[5])) #y coordinate to place piece {Int}
+    promoteDict = Dict("T" => true, "F" => false)
+    shouldPromote = promoteDict[ARGS[6]] #Promote the piece after moving {bool}=#
+    db = SQLite.DB(database) #Opens the database gamefile
 
-    res = SQLite.query(db,"""SELECT MAX("move_number") FROM moves;""") #Finds the last played move (maximum move_number)
-    lastMoveIDNullable = res[1,1] #SQL query with max move_number (POSSIBLY "NULL" if no moves have been made)
+      #= ---- Determines the move_number ---- =#
 
-    if (!isnull(lastMoveIDNullable)) #Checks that lastMoveID was not NULL
-      lastMoveID = get(res[1,1]) #Parses the last move move_number as an Int
+      res = SQLite.query(db,"""SELECT MAX("move_number") FROM moves;""") #Finds the last played move (maximum move_number)
+      lastMoveIDNullable = res[1,1] #SQL query with max move_number (POSSIBLY "NULL" if no moves have been made)
 
-    else #lastMoveID is NULL
-      lastMoveID = 0 #move_number "0" is unsused. This implies no moves have been made
+      if (!isnull(lastMoveIDNullable)) #Checks that lastMoveID was not NULL
+        lastMoveID = get(res[1,1]) #Parses the last move move_number as an Int
 
+      else #lastMoveID is NULL
+        lastMoveID = 0 #move_number "0" is unsused. This implies no moves have been made
+
+      end
+      move_number = lastMoveID+1 #Current move number
+
+    #=-----UPDATE DATABASE & BOARD W/MOVE-----=#
+    if shouldPromote #Option will be '!'
+      SQLite.query(db,"""INSERT INTO "moves" (move_number, move_type, sourcex, sourcey, targetx, targety, option)
+      VALUES ($(move_number),'move',$sourcex, $sourcey,$targetx, $targety, !);""")
+      board[targetx,targety].piece = board[sourcex,sourcey].piece #Updates the board before next move
+      board[targetx,targety].team = board[sourcex,sourcey].team
+      ST.clear!(board[sourcex,sourcey])
+      ST.promote!(board[targetx,targety])
+    else #Option will be NULL
+      SQLite.query(db,"""INSERT INTO "moves" (move_number, move_type, sourcex, sourcey, targetx, targety)
+      VALUES ($(move_number),'move',$sourcex, $sourcey,$targetx, $targety);""")
+      board[targetx,targety].piece = board[sourcex,sourcey].piece #Updates the board before next move
+      board[targetx,targety].team = board[sourcex,sourcey].team
+      ST.clear!(board[sourcex,sourcey])
     end
-    move_number = lastMoveID+1 #Current move number
-
-  #=-----UPDATE DATABASE & BOARD W/MOVE-----=#
-  if shouldPromote #Option will be '!'
-    SQLite.query(db,"""INSERT INTO "moves" (move_number, move_type, sourcex, sourcey, targetx, targety, option)
-    VALUES ($(move_number),'move',$sourcex, $sourcey,$targetx, $targety, !);""")
-    board[targetx,targety].piece = board[sourcex,sourcey].piece #Updates the board before next move
-    board[targetx,targety].team = board[sourcex,sourcey].team
-    ST.clear!(board[sourcex,sourcey])
-    ST.promote!(board[targetx,targety])
-  else #Option will be NULL
-    SQLite.query(db,"""INSERT INTO "moves" (move_number, move_type, sourcex, sourcey, targetx, targety)
-    VALUES ($(move_number),'move',$sourcex, $sourcey,$targetx, $targety);""")
-    board[targetx,targety].piece = board[sourcex,sourcey].piece #Updates the board before next move
-    board[targetx,targety].team = board[sourcex,sourcey].team
-    ST.clear!(board[sourcex,sourcey])
-  end
-ST.saveBoard(board)
+  ST.saveBoard(board)
+end
 end

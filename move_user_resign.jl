@@ -3,9 +3,10 @@
 
 module move_user_resign
 
-  using SQLite
+using SQLite
+function resign(database)
 
-  database = ARGS[1] #/path/to/database/file {string}
+  #database = ARGS[1] #/path/to/database/file {string}
   db =  SQLite.DB(database) #Opens the database gamefile
 
   #= ---- Determines the move_number ---- =#
@@ -26,5 +27,5 @@ module move_user_resign
   #Option will be dropped pieces abv
     SQLite.query(db,"INSERT INTO moves (move_number, move_type)
     VALUES ($(move_number),'resign');")
-
+end
 end
