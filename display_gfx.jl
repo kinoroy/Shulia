@@ -1,5 +1,6 @@
-#include("dParse.jl")
+include("dParse.jl")
 
+using BM
 using Tk
 
 #change from board to tuples for all ifs
@@ -12,7 +13,7 @@ if gametype = S
 
 
 
-  iboard = ST.loadBoard()
+  iboard = BM.startGame("minishogi")
   board = Array(Tuple{Char,Char},9,9)
   for x in 1:size(board)[1]
     for y in 1:size(board)[2]

@@ -2,15 +2,16 @@
 from start to finish, displaying the current game state.
 Accepts 1 command line argument,<filename> => database
 =#
-include("square.jl")
+#include("square.jl")
 include("dParse.jl")
-using ST
+include("board.jl")
+using BM
 
 #include("start.jl")
 using SQLite
 pathToDatabase = ARGS[1]
 db = SQLite.DB(pathToDatabase) #Opens the database gamefile
-global board = ST.loadBoard()
+#global board = ST.loadBoard()
 #calculates all black piece positions
 res = SQLite.query(db,"""SELECT "value" FROM meta WHERE "key" = 'type';""")
 gameType = get(res[1,1])
@@ -30,10 +31,10 @@ currentMoveID=1
 
 #=Helper functions=#
 function displaymini()
-  board = ST.loadBoard()
+  board = BM.startGame(gameType)
   global dboard = Array(Char,9,9)
-  for i in eachindex(iboard)
-    board[i]=iboard[i].piece
+  for (x,y) in keys(board)
+    dboard[(x,y)]=board[(x,y)][1]
   end
 
   for x_index in (1:11)
@@ -72,11 +73,11 @@ function displaymini()
         if rem(x_index,2)==1
           print("-")
         else
-          if board[div(x_index,2),(6-div(y_index,2))]=='k' || board[div(x_index,2),(6-div(y_index,2))]=='K'
-            print_with_color(:yellow, "$(board[div(x_index,2),(6-div(y_index,2))])")
+          if dboard[(div(x_index,2),(6-div(y_index,2)))]=='k' || dboard[(div(x_index,2),(6-div(y_index,2)))]=='K'
+            print_with_color(:yellow, "$(dboard[div(x_index,2),(6-div(y_index,2))])")
             continue
           end
-          print(board[div(x_index,2),(6-div(y_index,2))])
+          print(dboard[(div(x_index,2),(6-div(y_index,2)))])
         end
       end
     end
@@ -88,10 +89,10 @@ end
 
 function displaystandard()
 
-  iboard = ST.loadBoard()
-  board = Array(Char,9,9)
-  for i in eachindex(board)
-    board[i]=iboard[i].piece
+  board = BM.startGame(gameType)
+  global dboard = Array(Char,9,9)
+  for (x,y) in keys(board)
+    dboard[(x,y)]=board[(x,y)][1]
   end
 
 for x_index in (1:19)
@@ -130,11 +131,11 @@ for x_index in (1:19)
       if rem(x_index,2)==1
         print("-")
       else
-        if board[div(x_index,2),(10-div(y_index,2))]=='k' || board[div(x_index,2),(10-div(y_index,2))]=='K'
-          print_with_color(:yellow, "$(board[div(x_index,2),(10-div(y_index,2))])")
+        if dboard[(div(x_index,2),(10-div(y_index,2)))]=='k' || dboard[(div(x_index,2),(10-div(y_index,2)))]=='K'
+          print_with_color(:yellow, "$(dboard[(div(x_index,2),(10-div(y_index,2)))])")
           continue
         end
-        print(board[div(x_index,2),(10-div(y_index,2))])
+        print(dboard[(div(x_index,2),(10-div(y_index,2)))])
       end
     end
   end
@@ -209,6 +210,21 @@ println("Enter b to go backward, or enter f to go forward\nTo exit viewing the d
 
 instruction=readline(STDIN)
 
+function backward()#function to go backward
+  currentMoveID-=1
+  if currentMoveID<1
+    println("This is the first move")
+    continue
+  end
+  Setupboard()
+end
+
+  if gameType == "standard"
+    displaystandard()
+  else
+    displaymini()
+  end
+
 while instruction!="quit\n"
   global board
   if instruction=="b\n"
@@ -241,3 +257,4 @@ while instruction!="quit\n"
   end
   instruction=readline(STDIN)
 end
+export backward
