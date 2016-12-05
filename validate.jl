@@ -11,6 +11,7 @@ Pawn, knight, lance cannot be dropped on the furthest rank
 Pawn cannot be dropped on the same column (y) as another unpromoted pawn
 Pawn cannot checkmate only checks
 =#
+module validateMod
 
 include("board.jl")
 include("dParse.jl")
@@ -364,6 +365,43 @@ gameType = "standard" #TO DO: don't hard code this
     return true
   end #moveLeftValidate
 
+  function moveOrthogonalValidate(sourcex,sourcey,targetx,targety)
+    #checks for moves like rook
+    if (sourcex == targetx) #horizontal
+      if (sourcey < targety) #move right
+        if (moveRightValidate(sourcex,sourcey,targetx,targety) == true)
+          return true
+        end
+      else #move left
+        if (moveLeftValidate(sourcex,sourcey,targetx,targety) == true)
+          return true
+        end
+      end
+    elseif (sourcey == targety) #vertical
+      if (sourcex < targetx) #move down
+        if (moveDownValidate(sourcex,sourcey,targetx,targety) == true)
+          return true
+        end
+      else #move up
+        if (moveUpValidate(sourcex,sourcey,targetx,targety) == true)
+          return true
+        end
+      end
+    end
+
+    return false
+  end
+
+  function moveAdjacentValidate(sourcex,sourcey,targetx,targety)
+    if ((abs(sourcex - targetx) == 1) || (abs(sourcex - targetx) == 0))
+      if ((abs(sourcey - targety) == 1) || (abs(sourcey - targety) == 0))
+        return true
+      end
+    end
+
+    return false
+  end
+
   #diagonalUpLeft <=== Return true if unit can move diagonally upleft to target ===>
   function diagonalUpLeftValidate(sourcex, sourcey, targetx, targety)
     if (sourcex - targetx) == (sourcey - targety)
@@ -452,31 +490,39 @@ gameType = "standard" #TO DO: don't hard code this
     return false
   end #diagonalDownRightValidate
 
-  #case 1 #moves diagonally by any
-  function bishopValidate(team, sourcex, sourcey, targetx, targety)
+  function moveDiagonalValidate(sourcex, sourcey, targetx, targety)
+    #moves like bishop
     if (abs(sourcex - targetx) == abs(sourcey - targety)) #moves diagonally
-
-      #SW x increase, y decreases
-      if (sourcex < targetx) && (sourcey > targety)
-        if (diagonalDownLeftValidate(sourcex,sourcey,targetx,targety) == true)
+      if (sourcex < targetx) #downwards
+        if (sourcey < targety) #diagonalDownRight
+          if (diagonalDownRightValidate(sourcex,sourcey,targetx,targety) == true)
             return true
+          end
+        else #diagonalDownLeft
+          if (diagonalDownLeftValidate(sourcex,sourcey,targetx,targety) == true)
+            return true
+          end
         end
-      #SE x increases, y increases
-      elseif (sourcex < targetx) && (sourcey < targety)
-        if (diagonalDownRightValidate(sourcex,sourcey,targetx,targety) == true)
+      else #upwards
+        if (sourcey < targety) #diagonalUpRightValidate
+          if (diagonalUpRightValidate(sourcex,sourcey,targetx,targety) == true)
             return true
-        end
-      #NW x decreases, y decreases
-      elseif (sourcex > targetx) && (sourcey > targety)
-        if (diagonalUpLeftValidate(sourcex,sourcey,targetx,targety) == true)
+          end
+        else #diagonalUpLeft
+          if (diagonalUpLeftValidate(sourcex,sourcey,targetx,targety) == true)
             return true
-        end
-      #NE x decreases, y increases
-      elseif (sourcex > targetx) && (sourcey < targety)
-        if (diagonalUpRightValidate(sourcex,sourcey,targetx,targety) == true)
-            return true
+          end
         end
       end
+    end
+
+    return false
+  end
+
+  #case 1 #moves diagonally by any
+  function bishopValidate(team, sourcex, sourcey, targetx, targety)
+    if (moveDiagonalValidate(sourcex,sourcey,targetx,targety) == true)
+      return true
     end
 
     #Not moving diagonally
@@ -494,29 +540,8 @@ gameType = "standard" #TO DO: don't hard code this
     end
 
     #checks moves like normal bishop
-    if (abs(sourcex - targetx) == abs(sourcey - targety)) #moves diagonally
-
-      #SW x increase, y decreases
-      if (sourcex < targetx) && (sourcey > targety)
-        if (diagonalDownLeftValidate(sourcex,sourcey,targetx,targety) == true)
-            return true
-        end
-      #SE x increases, y increases
-      elseif (sourcex < targetx) && (sourcey < targety)
-        if (diagonalDownRightValidate(sourcex,sourcey,targetx,targety) == true)
-            return true
-        end
-      #NW x decreases, y decreases
-      elseif (sourcex > targetx) && (sourcey > targety)
-        if (diagonalUpRightValidate(sourcex,sourcey,targetx,targety) == true)
-            return true
-        end
-      #NE x decreases, y increases
-      elseif (sourcex > targetx) && (sourcey < targety)
-        if (diagonalUpLeftValidate(sourcex,sourcey,targetx,targety) == true)
-            return true
-        end
-      end
+    if (moveDiagonalValidate(sourcex,sourcey,targetx,targety) == true)
+      return true
     end
 
     return false #does not move like king or bishop
@@ -553,11 +578,10 @@ gameType = "standard" #TO DO: don't hard code this
 
   #case 3 king #moves any by 1
   function kingValidate(team,sourcex,sourcey,targetx,targety)
-    if ((abs(sourcex - targetx) == 1) || (abs(sourcex - targetx) == 0))
-      if ((abs(sourcey - targety) == 1) || (abs(sourcey - targety) == 0))
-        return true
-      end
+    if (moveAdjacentValidate(sourcex,sourcey,targetx,targety) == true)
+      return true
     end
+
     return false
   end #kingValidate end
 
@@ -630,32 +654,8 @@ gameType = "standard" #TO DO: don't hard code this
   #case 7 rook
   function rookValidate(team,sourcex,sourcey,targetx,targety)
     #moving horizontally
-    if (sourcex == targetx) && (sourcey != targety)
-      #horizontal left
-      if (sourcey > targety)
-        if (moveLeftValidate(sourcex,sourcey,targetx,targety) == true)
-          return true
-        end
-      #horizontal right
-      else
-        if (moveRightValidate(sourcex,sourcey,targetx,targety) == true)
-          return true
-        end
-      end
-
-    #moving vertically
-    elseif (sourcey == targety) && (sourcex != targetx)
-      #vertical up
-      if (sourcex > targetx)
-        if (moveUpValidate(sourcex,sourcey,targetx,targety) == true)
-          return true
-        end
-      #vertical down
-      else
-        if (moveDownValidate(sourcex,sourcey,targetx,targety) == true)
-          return true
-        end
-      end
+    if (moveOrthogonalValidate(sourcex,sourcey,targetx,targety) == true)
+      return true
     end
 
     return false
@@ -839,33 +839,13 @@ gameType = "standard" #TO DO: don't hard code this
   #case 11 dragonKingValidate #moves like king and rook
   function dragonKingValidate(team,sourcex,sourcey,targetx,targety)
     #checks for moves like king
-    if ((abs(sourcex - targetx) == 1) || (abs(sourcex - targetx) == 0))
-      if ((abs(sourcey - targety) == 1) || (abs(sourcey - targety) == 0))
-        return true
-      end
+    if (moveAdjacentValidate(sourcex,sourcey,targetx,targety) == true)
+      return true
     end
 
     #checks for moves like rook
-    if (sourcex == targetx) #horizontal
-      if (sourcey < targety) #move right
-        if (moveRightValidate(sourcex,sourcey,targetx,targety) == true)
-          return true
-        end
-      else #move left
-        if (moveLeftValidate(sourcex,sourcey,targetx,targety) == true)
-          return true
-        end
-      end
-    elseif (sourcey == targety) #vertical
-      if (sourcex < targetx) #move down
-        if (moveDownValidate(sourcex,sourcey,targetx,targety) == true)
-          return true
-        end
-      else #move up
-        if (moveUpValidate(sourcex,sourcey,targetx,targety) == true)
-          return true
-        end
-      end
+    if (moveOrthogonalValidate(sourcex,sourcey,targetx,targety) == true)
+      return true
     end
 
     return false
@@ -1018,35 +998,13 @@ gameType = "standard" #TO DO: don't hard code this
   #case 14 dragonHorseValidate
   function dragonHorseValidate(team,sourcex,sourcey,targetx,targety)
     #check for moves like king
-    if ((abs(sourcex - targetx) == 1) || (abs(sourcex - targetx) == 0))
-      if ((abs(sourcey - targety) == 1) || (abs(sourcey - targety) == 0))
-        return true
-      end
+    if (moveAdjacentValidate(sourcex,sourcey,targetx,targety) == true)
+      return true
     end
 
     #check for moves like bishop
-    if (abs(sourcex - targetx) == abs(sourcey - targety)) #moves diagonally
-      if (sourcex < targetx) #downwards
-        if (sourcey < targety) #diagonalDownRight
-          if (diagonalDownRightValidate(sourcex,sourcey,targetx,targety) == true)
-            return true
-          end
-        else #diagonalDownLeft
-          if (diagonalDownLeftValidate(sourcex,sourcey,targetx,targety) == true)
-            return true
-          end
-        end
-      else #upwards
-        if (sourcey < targety) #diagonalUpRightValidate
-          if (diagonalUpRightValidate(sourcex,sourcey,targetx,targety) == true)
-            return true
-          end
-        else #diagonalUpLeft
-          if (diagonalUpLeftValidate(sourcex,sourcey,targetx,targety) == true)
-            return true
-          end
-        end
-      end
+    if (moveDiagonalValidate(sourcex,sourcey, targetx, targety) == true)
+      return true
     end
 
     return false
@@ -1058,29 +1016,9 @@ gameType = "standard" #TO DO: don't hard code this
     #range moves
     if isnull(targetx2) && isnull(targety2)
 
-      #Check for diagonal moves
-      if (abs(sourcex - targetx) == abs(sourcey - targety)) #moves diagonally
-        if (sourcex < targetx) #downwards
-          if (sourcey < targety) #diagonalDownRight
-            if (diagonalDownRightValidate(sourcex,sourcey,targetx,targety) == true)
-              return true
-            end
-          else #diagonalDownLeft
-            if (diagonalDownLeftValidate(sourcex,sourcey,targetx,targety) == true)
-              return true
-            end
-          end
-        else #upwards
-          if (sourcey < targety) #diagonalUpRightValidate
-            if (diagonalUpRightValidate(sourcex,sourcey,targetx,targety) == true)
-              return true
-            end
-          else #diagonalUpLeft
-            if (diagonalUpLeftValidate(sourcex,sourcey,targetx,targety) == true)
-              return true
-            end
-          end
-        end
+      #check if moves like bishop
+      if (moveDiagonalValidate(sourcex,sourcey,targetx,targety) == true)
+        return true
       end
 
       #Check for vertical down moves and jump 2 forward
@@ -1154,16 +1092,24 @@ gameType = "standard" #TO DO: don't hard code this
   #case 15 lionValidate
   function lionValidate(team,sourcex,sourcey,targetx,targety,targetx2,targety2)
 
-#=
-    #Case 1: Eat without moving
-    if()
-    if (sourcex == targetx2) && (sourcey == targety2)
-      if (abs(sourcex - targetx) == 1) && (abs(sourcey - targety) == 1)
-        return true
-    #Case 2: Jump
-    if (abs(sourcex))
+    flag2 = false
+    if (targetx2 != -1 || targety2 != -1)
+      flag2 = true
+    end
 
-    =#
+    #double move
+    if flag2 == true
+      if (abs(sourcex - targetx) == 1 || abs(sourcex - targetx) == 0) && ((abs(sourcey - targety) == 1) || (abs(sourcey2 - targety) == 0))
+        if (abs(targetx2 - targetx) == 1 || abs(targetx2 - targetx) == 0) && ((abs(targety2 - targety) == 1) || (abs(targety2 - targety2) == 0))
+          return true
+        end
+      end
+
+    else
+      if (abs(sourcex - targetx) == 2 || abs(soucey - targety) == 2)
+        return true
+      end
+    end
 
   end #lionValidate end
 
@@ -1173,28 +1119,8 @@ gameType = "standard" #TO DO: don't hard code this
   function freeBoarValidate(team,sourcex,sourcey,targetx,targety)
 
     #check if moves like bishop
-    if (abs(sourcex - targetx) == abs(sourcey - targety)) #moves diagonally
-      if (sourcex < targetx) #downwards
-        if (sourcey < targety) #diagonalDownRight
-          if (diagonalDownRightValidate(sourcex,sourcey,targetx,targety) == true)
-            return true
-          end
-        else #diagonalDownLeft
-          if (diagonalDownLeftValidate(sourcex,sourcey,targetx,targety) == true)
-            return true
-          end
-        end
-      else #upwards
-        if (sourcey < targety) #diagonalUpRightValidate
-          if (diagonalUpRightValidate(sourcex,sourcey,targetx,targety) == true)
-            return true
-          end
-        else #diagonalUpLeft
-          if (diagonalUpLeftValidate(sourcex,sourcey,targetx,targety) == true)
-            return true
-          end
-        end
-      end
+    if (moveDiagonalValidate(sourcex,sourcey,targetx,targety) == true)
+      return true
     end
 
     #check if it moves like side mover
@@ -1253,10 +1179,8 @@ gameType = "standard" #TO DO: don't hard code this
   #case 18.2 flygingstagvalidate
   function flyingStagValidate(team,sourcex,sourcey,targetx,targety)
     #moves like king
-    if ((abs(sourcex - targetx) == 1) || (abs(sourcex - targetx) == 0))
-      if ((abs(sourcey - targety) == 1) || (abs(sourcey - targety) == 0))
-        return true
-      end
+    if (moveAdjacentValidate(sourcex,sourcey,targetx,targety) == true)
+      return true
     end
 
     #moves like vertical mover
@@ -1278,53 +1202,14 @@ gameType = "standard" #TO DO: don't hard code this
   #case 19 queenValidate #moves like rook and bhishop
   function queenValidate(team,sourcex,sourcey,targetx,targety)
 
-    #moves like bishop
-    if (abs(sourcex - targetx) == abs(sourcey - targety)) #moves diagonally
-      if (sourcex < targetx) #downwards
-        if (sourcey < targety) #diagonalDownRight
-          if (diagonalDownRightValidate(sourcex,sourcey,targetx,targety) == true)
-            return true
-          end
-        else #diagonalDownLeft
-          if (diagonalDownLeftValidate(sourcex,sourcey,targetx,targety) == true)
-            return true
-          end
-        end
-      else #upwards
-        if (sourcey < targety) #diagonalUpRightValidate
-          if (diagonalUpRightValidate(sourcex,sourcey,targetx,targety) == true)
-            return true
-          end
-        else #diagonalUpLeft
-          if (diagonalUpLeftValidate(sourcex,sourcey,targetx,targety) == true)
-            return true
-          end
-        end
-      end
+    #check if moves like bishop
+    if (moveDiagonalValidate(sourcex,sourcey,targetx,targety) == true)
+      return true
     end
 
     #moves like rook
-    if (sourcex == targetx) && (sourcey != targety) #moving horizontally
-      if (sourcey > targety) #horizontal left
-        if (moveLeftValidate(sourcex,sourcey,targetx,targety) == true)
-          return true
-        end
-      else #horizontal right
-        if (moveRightValidate(sourcex,sourcey,targetx,targety) == true)
-          return true
-        end
-      end
-
-    elseif (sourcey == targety) && (sourcex != targetx) #moving vertically
-      if (sourcex > targetx) #vertical up
-        if (moveUpValidate(sourcex,sourcey,targetx,targety) == true)
-          return true
-        end
-      else #vertical down
-        if (moveDownValidate(sourcex,sourcey,targetx,targety) == true)
-          return true
-        end
-      end
+    if (moveOrthogonalValidate(sourcex,sourcey,targetx,targety) == true)
+      return true
     end
 
     return false
@@ -1359,29 +1244,9 @@ gameType = "standard" #TO DO: don't hard code this
   #case 20.2 flyingOxValidate #moves like bishop and vertical mover
   function flyingOxValidate(team,sourcex,sourcey,targetx,targety)
 
-    #moves like bishop
-    if (abs(sourcex - targetx) == abs(sourcey - targety)) #moves diagonally
-      if (sourcex < targetx) #downwards
-        if (sourcey < targety) #diagonalDownRight
-          if (diagonalDownRightValidate(sourcex,sourcey,targetx,targety) == true)
-            return true
-          end
-        else #diagonalDownLeft
-          if (diagonalDownLeftValidate(sourcex,sourcey,targetx,targety) == true)
-            return true
-          end
-        end
-      else #upwards
-        if (sourcey < targety) #diagonalUpRightValidate
-          if (diagonalUpRightValidate(sourcex,sourcey,targetx,targety) == true)
-            return true
-          end
-        else #diagonalUpLeft
-          if (diagonalUpLeftValidate(sourcex,sourcey,targetx,targety) == true)
-            return true
-          end
-        end
-      end
+    #check if moves like bishop
+    if (moveDiagonalValidate(sourcex,sourcey,targetx,targety) == true)
+      return true
     end
 
     #moves like vertical mover
@@ -1490,6 +1355,8 @@ gameType = "standard" #TO DO: don't hard code this
 
     return false
   end #whiteHorseValidate end
+
+end #validateMod
 
 #<====== MISSING LIONVALIDATE AND LION MOVE FOR SOARING EAGLE =====> #
 
