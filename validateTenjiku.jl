@@ -1,4 +1,4 @@
-include("square.jl")
+#include("square.jl")
 include("dparse.jl")
 include("validate.jl") #for pre-existing functions types
 include("board.jl")
@@ -606,6 +606,8 @@ function greatGeneralValidate(team, sourcex, sourcey, targetx, targety)
       if (rangeLeftValidate(sourcex,sourcey,targetx,targety) == true)
         return true
       end
+
+
     else #horizontal right
       if (rangeRightValidate(sourcex,sourcey,targetx,targety) == true)
         return true
@@ -688,18 +690,185 @@ end #rookGeneralValidate
 
 #case 18
 function fireDemonValidate(team, sourcex, sourcey, targetx, targety, targetx2, targety2, targetx3, targety3)
+  #range
+  if (validateMod.moveDiagonalValidate(sourcex,sourcey,targetx,targety) == true)
+    return true
+  end
+
+  if (validateMod.moveRightValidate(sourcex,sourcey,targetx,targety) == true)
+    return true
+  end
+
+  if (validateMod.moveLeftValidate(sourcex,sourcey,targetx,targety) == true)
+    return true
+  end
+
+  #Area move
+  flag2 = false
+  flag3 = false
+
+  if (targetx2 != -1 || targety2 != -1)
+    flag2 = true
+  end
+
+  if (targetx3 != -1 || targety3 != -1)
+    flag3 = true
+  end
+
+  if (abs(sourcex - targetx) == 1 || abs(sourcex - targetx) == 0) && ((abs(sourcey - targety) == 1) || abs(sourcey - targety == 0))
+    if flag2 = true
+      if ((targetx,targety) in keys(board)) #captured a piece
+        return false
+      else
+        if (abs(targetx2 - targetx) == 1 || abs(targetx2 - targetx) == 0) && ((abs(targety2 - targety) == 1) || abs(targety2 - targety == 0))
+          if flag3 = true
+            if ((targetx2,targety2) in keys(board))
+                return false
+            else
+              if (abs(targetx2 - targetx3) == 1 || abs(targetx2 - targetx3) == 0) && ((abs(targety2 - targety3) == 1) || abs(targety2 - targety3 == 0))
+                return true
+              end
+            end
+          else
+            return true
+          end
+        end
+      end
+    else #flag2 = false
+      return true
+    end
+  end
 end #fireDemonValidate
 
 #case 19
 function heavenlyTetrarchValidate(team, sourcex, sourcey, targetx, targety, targetx2, targety2)
+
+  flag2 = false
+  if (targetx2 != -1 || targety2 != -1)
+    flag2 = true
+  end
+
+  #igui
+  if flag2 == true
+    if (abs(sourcex - targetx) == 1) || (abs(sourcex - targetx) == 0)
+      if (abs(sourcey - targety) == 1) || (abs(sourcey - targety) == 0)
+        if (sourcex == targetx2) && (sourcey == targety2)
+          return true
+        end
+      end
+    end
+  end
+
+  #range
+  if flag2 == false
+    if (abs(sourcex - targetx) == 1) || (abs(sourcex - targetx) == 0)
+      if (abs(sourcey - targety) == 1) || (abs(sourcey - targety) == 0)
+        return false
+      end
+
+    #side ways
+    else if (sourcex == targetx)
+      if (abs(sourcey  - targety) == 3)
+        if sourcey < targety #move right
+          if (validateMod.moveRightValidate(sourcex,sourcey+1,targetx,targety) == true)
+            return true
+          end
+        else #move left
+          if (validateMod.moveLeftValidate(sourcex,sourcey-1,targetx,targety) == true)
+            return true
+          end
+        end
+      end
+
+    #diagonalUpLeft
+    else if abs(sourcex - targetx) == abs(sourcey - targety)
+      if sourcex < targetx #move down
+        if sourcey < targety #move right
+          if (validateMod.diagonalDownRightValidate(sourcex+1,sourcey+1,targetx,targety) == true)
+            return true
+          end
+        else #move left
+          if (validateMod.diagonalDownLeftValidate(sourcex+1,sourcey-1,targetx,targety) == true)
+            return true
+          end
+        end
+      else #move up
+        if sourcey < targety #move right
+          if (validateMod.diagonalUpRightValidate(sourcex-1,sourcey+1,targetx,targety) == true)
+            return true
+          end
+        else #move left
+          if (validateMod.diagonalUpLeftValidate(sourcex-1,sourcey-1,targetx,targety) == true)
+            return true
+          end
+        end
+      end
+    end
+  end
+
+  return false
 end #heavenlyTetrarchValidate
 
 #case 20
 function waterBuffaloValidate(team, sourcex, sourcey, targetx, targety)
+
+  #check if moves like bishop
+  if (validateMod.moveDiagonalValidate(sourcex,sourcey,targetx,targety) == true)
+    return true
+  end
+
+  #moves sideways
+  if (sourcex == targetx)
+    if (sourcey < targety) #move right
+      if (validateMod.moveRightValidate(sourcex,sourcey,targetx,targety) == true)
+        return true
+      end
+    else #move left
+      if (validateMod.moveLeftValidate(sourcex,sourcey,targetx,targety) == true)
+        return true
+      end
+    end
+  end
+
+  #two up or down
+  if (sourcey == targety)
+    if (abs(sourcex - targetx) == 2)
+      return true
+    end
+  end
+
+  return false
 end #waterBuffaloValidate
 
 #case 21
 function chariotSoldierValidate(team, sourcex, sourcey, targetx, targety)
+
+  #moves like bishop
+  if (validateMod.moveDiagonalValidate(sourcex,sourcey,targetx,targety) == true)
+    return true
+  end
+
+  #moves vertically
+  if (sourcey == targety)
+    if (sourcex < targetx) #move down
+      if (validateMod.moveDownValidate(sourcex,sourcey,targetx,targety) == true)
+        return true
+      end
+    else #move up
+      if (validateMod.moveUpValidate(sourcex,sourcey,targetx,targety) == true)
+        return true
+      end
+    end
+  end
+
+  #move two left or right
+  if (sourcex == targetx)
+    if (abs(sourcey - targety) == 2)
+      return true
+    end
+  end
+
+  return false
 end #chariotSoldierValidate
 
 #case 22
@@ -710,10 +879,10 @@ function sideSoldierValidate(team, sourcex, sourcey, targetx, targety)
         return true
     else #move left or right
       if (sourcey < targety) #move right
-        if (moveRightValidate(sourcex,sourcey,targetx,targety) == true)
+        if (validateMod.moveRightValidate(sourcex,sourcey,targetx,targety) == true)
           return true
       else #move left
-        if (moveLeftValidate(sourcex,sourcey,targetx,targety) == true)
+        if (validateMod.moveLeftValidate(sourcex,sourcey,targetx,targety) == true)
           return true
       end
     end
@@ -723,10 +892,10 @@ function sideSoldierValidate(team, sourcex, sourcey, targetx, targety)
         return true
     else #move left or right
       if (sourcey < targety) #move right
-        if (moveRightValidate(sourcex,sourcey,targetx,targety) == true)
+        if (validateMod.moveRightValidate(sourcex,sourcey,targetx,targety) == true)
           return true
       else #move left
-        if (moveLeftValidate(sourcex,sourcey,targetx,targety) == true)
+        if (validateMod.moveLeftValidate(sourcex,sourcey,targetx,targety) == true)
           return true
       end
     end
@@ -737,6 +906,44 @@ end #sideSoldierValidate
 
 #case 23
 function verticalSoldierValidate(team, sourcex, sourcey, targetx, targety)
+
+  #sideways two
+  if (sourcex == targetx)
+    if (abs(sourcey - targety) == 2)
+      return true
+    end
+  end
+
+  if (team == 'b')
+    #move forward
+    if (sourcey == targety)
+      if (sourcex < targetx) #move down
+        if ((targetx - sourcex) == 1)
+          return true
+        end
+      else #move up
+        if (validateMod.moveUpValidate(sourcex,sourcey,targetx,targety) == true)
+          return true
+        end
+      end
+    end
+
+  elseif (team == 'w')
+    #move forward
+    if (sourcey == targety)
+      if (sourcex > targetx)
+        if ((targetx - sourcex) == 1)
+          return true
+        end
+      else
+        if (validateMod.moveUpValidate(sourcex,sourcey,targetx,targety) == true)
+          return true
+        end
+      end
+    end
+  end
+
+  return false
 end #verticalSoldierValidate
 
 #case 25
@@ -760,14 +967,106 @@ end #ironGeneralValidate
 
 #case 26
 function freeEagleValidate(team, sourcex, sourcey, targetx, targety, targetx2, targety2)
+
+  #Double move
+  if (targetx2 != -1 || targety2 != -1)
+    if (abs(sourcex - targetx) == 1 && abs(sourcey - targety) == 1 && (!((targetx,targety) in keys(board))))
+      if (abs(targetx - targetx2) == 1 && abs(targety - targety2) == 1)
+        return true
+      end
+    end
+
+  #move diagonal
+  else if (validateMod.moveDiagonalValidate(sourcex,sourcey,targetx,targety) == true)
+    return true
+
+  #move orthogonal
+  else if (validateMod.moveOrthogonalValidate(sourcex,sourcey,targetx,targety) == true)
+    return true
+  end
+
+  return false
 end #freeEagleValidate
 
 #case 27
 function lionHawkValidate(team, sourcex, sourcey, targetx, targety, targetx2, targety2)
+
+  #lion move
+  flag2 = false
+  if (targetx2 == -1 || targety2 == -1)
+    flag2 = true
+  end
+
+  if flag2 == true
+    if (abs(sourcex - targetx) == 1 || abs(sourcex - targetx) == 0) && ((abs(sourcey - targety) == 1) || (abs(sourcey2 - targety) == 0))
+      if (abs(targetx2 - targetx) == 1 || abs(targetx2 - targetx) == 0) && ((abs(targety2 - targety) == 1) || (abs(targety2 - targety2) == 0))
+        return true
+      end
+    end
+
+  #move diagonal
+  else if (validateMod.moveDiagonalValidate(sourcex,sourcey,targetx,targety) == true)
+    return true
+  end
+
+  return false
 end #lionHawkValidate
 
 #case 38
 function multiGeneralValidate(team, sourcex, sourcey, targetx, targety)
+  if (team =='b')
+    #move up
+    if (sourcey == targety)
+      if (sourcex > targetx) #move up
+        if (validateMod.moveUpValidate(sourcex,sourcey,targetx,targety) == true)
+          return true
+        end
+      end
+    end
+
+    #diagonal down left or right
+    if (abs(sourcex - targetx) == abs(sourcey - targety)) #moving diagonally
+      if (targetx > sourcex) #move down
+        if (targety < sourcey) #move left
+          if (validateMod.diagonalDownLeftValidate(sourcex,sourcey,targetx,targety) == true)
+            return true
+          end
+        else #move right
+          if (validateMod.diagonalDownRightValidate(sourcex,sourcey,targetx,targety) == true)
+            return true
+          end
+        end
+      end
+    end
+
+  elseif (team =='w')
+    #move up
+    if (sourcey == targety)
+      if (sourcex < targetx) #move down
+        if (validateMod.moveDownValidate(sourcex,sourcey,targetx,targety) == true)
+          return true
+        end
+      end
+    end
+
+    #diagonal down left or right
+    if (abs(sourcex - targetx) == abs(sourcey - targety)) #moving diagonally
+      if (targetx < sourcex) #move up
+        if (targety > sourcey) #move right
+          if (validateMod.diagonalUpRightValidate(sourcex,sourcey,targetx,targety) == true)
+            return true
+          end
+        else #move right
+          if (validateMod.diagonalUpLeftValidate(sourcex,sourcey,targetx,targety) == true)
+            return true
+          end
+        end
+      end
+    end
+
+  end
+
+  return false
 end #multiGeneralValidate
 
 #40
@@ -793,7 +1092,7 @@ end #dogValidate
 
 
 #implement functions
-#case 18,19,20,21,22,23,25,26,27,38,40
-#done case: 5,6,7,8,22,25,40
+#case 18,19
+#done case: 5,6,7,8,20,21,22,23,25,26,27,38,40
 #Pre-existing functions
 #case 1,2,3,4,9,10,11,12,13,14,15,16,17,24,28,29,30,31,32,33,34,35,36,37,39,41,42,43,44,45
