@@ -73,10 +73,10 @@ function displaymini()
           print("-")
         else
           if board[div(x_index,2),(6-div(y_index,2))]=='k' || board[div(x_index,2),(6-div(y_index,2))]=='K'
-            print_with_color(:yellow, "$(dboard[div(x_index,2),(6-div(y_index,2))])")
+            print_with_color(:yellow, "$(board[div(x_index,2),(6-div(y_index,2))])")
             continue
           end
-          print(dboard[div(x_index,2),(6-div(y_index,2))])
+          print(board[div(x_index,2),(6-div(y_index,2))])
         end
       end
     end
@@ -94,43 +94,43 @@ function displaystandard()
     dboard[(x,y)]=board[(x,y)][1]
   end
 
-for x_index in (1:19)
+for x_index in (19:1)
   for y_index in (1:19)
     if y_index==1
       if x_index==1
-        print("┌")
+        print("┐")
       elseif x_index==19
-        print("└")
+        print("┌")
       elseif rem(x_index,2)==0
-        print("|")
+        print("-")
       else
-        print("├")
+        print("┬")
       end
     elseif y_index==19
       if x_index==1
-        print("┐")
-      elseif x_index==19
         print("┘")
+      elseif x_index==19
+        print("└")
       elseif rem(x_index,2)==0
-        print("|")
+        print("-")
       else
-        print("┤")
+        print("┴")
       end
     elseif rem(y_index,2)==1
       if x_index==1
-        print("┬")
+        print("┤")
       elseif x_index==19
-        print("┴")
+        print("├")
       elseif rem(x_index,2)==1
         print("┼")
       else
-        print("|")
+        print("-")
       end
     else
       if rem(x_index,2)==1
-        print("-")
+        print("|")
       else
-        if board[div(x_index,2),(10-div(y_index,2))]=='k' || board[div(x_index,2),(10-div(y_index,2))]=='K'
+        if dboard[div(x_index,2),(10-div(y_index,2))]=='k' || dboard[div(x_index,2),(10-div(y_index,2))]=='K'
           print_with_color(:yellow, "$(dboard[div(x_index,2),(10-div(y_index,2))])")
           continue
         end
