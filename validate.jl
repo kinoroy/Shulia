@@ -27,7 +27,7 @@ gameType = "standard" #TO DO: don't hard code this
   function moveValidate(unit, moveType, gameType, team, sourcex, sourcey, targetx, targety, targetx2, targety2)
 
     #edge 0, sourcex or source y are null but it is not drop
-    if ( (isnull(sourcex) || isnull(sourcey)) && moveType != "drop")
+    if ( (sourcex == -1 || sourcey == -1) && moveType != "drop")
       return false
     end
 
@@ -37,15 +37,15 @@ gameType = "standard" #TO DO: don't hard code this
     end
 
     #edge 2, source or target are out of bounds
-    if (gameType == 'S') #normalShogi
+    if (gameType == "standard") #normalShogi
       if  (~(sourcex >= 1 && sourcex <= 9) || ~(sourcey >= 1 && sourcey <= 9) || ~(targetx >= 1 && targetx <= 9) || ~(targety >= 1 && targety <= 9))
         return false
       end
-    elseif (gameType == 'M') #miniShogi
+    elseif (gameType == "minishogi") #miniShogi
       if  (~(sourcex >= 1 && sourcex <= 5) || ~(sourcey >= 1 && sourcey <= 5) || ~(targetx >= 1 && targetx <= 5) || ~(targety >= 1 && targety <= 5))
         return false
       end
-    elseif (gameType == 'C') #chuShogi
+    elseif (gameType == "chu") #chuShogi
       if  (~(sourcex >= 1 && sourcex <= 12) || ~(sourcey >= 1 && sourcey <= 12) || ~(targetx >= 1 && targetx <= 12) || ~(targety >= 1 && targety <= 12))
         return false
       end
@@ -55,7 +55,7 @@ gameType = "standard" #TO DO: don't hard code this
     if (moveType == "drop")
 
       #Chu Shogi has no drops
-      if (moveType == 'C')
+      if (moveType == "chu")
         return false
       end
 
@@ -65,7 +65,7 @@ gameType = "standard" #TO DO: don't hard code this
       end
 
       #drop case 2: Pawn, Knight, Lance cannot be dropped on the furthest rank
-      if (unit == 'p' || unit == 'N' || unit == 'l')
+      if (unit == "pawn" || unit == "knight" || unit == "lance")
         if (team == 'b') #team black
           if (targetx == 1)
             return false
@@ -78,14 +78,14 @@ gameType = "standard" #TO DO: don't hard code this
       end
 
       #drop case3: It is not promoted
-      if (unit == 'B' || unit == 'L' || unit == 'N' || unit == 'p' || unit == 'R' || unit == 'S')
+      if (unit == "promotedbishop" || unit == "promotedlance" || unit == "promotedknight" || unit == "promotedpawn" || unit == "promotedrook" || unit == "promotedsilver")
         return false
       end
 
       #drop case4: Pawns cannot be dropped on the same column as another unpromoted pawn
-      if (unit == 'p')
+      if (unit == "pawn")
         for x in 1:9
-          if (board[(x,targety)][1] == 'p') #there is a pawn
+          if (board[(x,targety)][1] == "pawn") #there is a pawn
             return false
           end
         end
@@ -98,196 +98,154 @@ gameType = "standard" #TO DO: don't hard code this
     end
 
     #case 1 bishop
-    if unit == 'b'
+    if unit == "bishop"
       return bishopValidate(team,sourcex,sourcey,targetx,targety)
 
     #case 1.2 promoted bishop or dragon Horse
-    elseif unit == 'B'
-      if (gameType == 'C')
-        return dragonHorseValidate(team,sourcex,sourcey,targetx,targety)
-      elseif (gameType == 'S')
+    elseif unit == "promotedbishop"
         return pBishopValidate(team,sourcex,sourcey,targetx,targety)
       end
 
     #case 2 gold general
-    elseif unit == 'g'
+    elseif unit == "goldgeneral"
       return goldGeneralValidate(team,sourcex,sourcey,targetx,targety)
 
-    #case 2.3 Chu shogi, gold general promotes to rook
-    elseif unit == 'G' && gameType == 'C'
-      return rookValidate(team,sourcex,sourcey,targetx,targety)
-
     #case 3 king
-    elseif unit == 'k'
+    elseif unit == "king"
       return kingValidate(team,sourcex,sourcey,targetx,targety)
 
     #case 4 lance
-    elseif unit == 'l'
+    elseif unit == "lance"
       return lanceValidate(team,sourcex,sourcey,targetx,targety)
 
-    #case 4.2 promoted lance or white Horse
-    elseif unit == 'L'
-      if (gameType == 'C')
-        return whiteHorseValidate(team,sourcex,sourcey,targetx,targety)
-      elseif (gameType == 'S')
+    #case 4.2 promoted lance
+    elseif unit == "promotedlance"
       #promotedLance moves same as gold general
-        return goldGeneralValidate(team,sourcex,sourcey,targetx,targety)
-      end
+      return goldGeneralValidate(team,sourcex,sourcey,targetx,targety)
 
     #case 5 knight or Kirin
-    elseif unit == 'n'
-      if (gameType == 'C')
-        return kirinValidate(team,sourcex,sourcey,targetx,targety)
-      elseif (gameType == 'S')
-        return knightValidate(team,sourcex,sourcey,targetx,targety)
-      end
+    elseif unit == "knight"
+      return knightValidate(team,sourcex,sourcey,targetx,targety)
 
-    #case 5.2 promoted knight or kirin
-    elseif unit == 'N'
-      #kirin promotes to lion
-      if (gameType == 'C')
-        return lionValidate(team,sourcex,sourcey,targetx,targety,targetx2,targety2)
-      elseif (gameType == 'S')
-        #promotedKnight moves same as gold general
-        return goldGeneralValidate(team,sourcex,sourcey,targetx,targety)
-      end
+    elseif unit == "kirin" && gameType == "chu"
+      return kirinValidate(team,sourcex,sourcey,targetx,targety)
+
+    #case 5.2 promoted knight
+    elseif unit == "promotedknight"
+      #promotedKnight moves same as gold general
+      return goldGeneralValidate(team,sourcex,sourcey,targetx,targety)
 
     #case 6 pawn
-    elseif unit == 'p'
+    elseif unit == "pawn"
       return pawnValidate(team,sourcex,sourcey,targetx,targety)
 
     #case 6.2 promoted pawn
-    elseif unit == 'P'
+    elseif unit == "promotedpawn"
       #promotedPawn moves same as gold general
       return goldGeneralValidate(team,sourcex,sourcey,targetx,targety)
 
     #case 7 rook
-    elseif unit == 'r'
+    elseif unit == "rook"
       return rookValidate(team,sourcex,sourcey,targetx,targety)
 
     #case 7.2 promoted rook or dragon king
-    elseif unit == 'R'
-      if (gameType == 'C')
-        return dragonKingValidate(team,sourcex,sourcey,targetx,targety)
-      elseif (gameType == 'S')
-        return pRookValidate(team,sourcex,sourcey,targetx,targety)
-      end
+    elseif unit == "promotedrook"
+      return pRookValidate(team,sourcex,sourcey,targetx,targety)
 
     #case 8 silver general
-    elseif unit == 's'
+    elseif unit == "silvergeneral"
       return silverGeneralValidate(team,sourcex,sourcey,targetx,targety)
 
     #case 8.2 promoted silver general or veritcal mover
-    elseif unit == 'S'
-      if (gameType == 'C')
-        return verticalMoverValidate(team,sourcex,sourcey,targetx,targety)
-      elseif (gameType == 'S')
-        #promoted silver general moves same as gold general
-        return goldGeneralValidate(team,sourcex,sourcey,targetx,targety)
-      end
+    elseif unit == "promotedsilver"
+      #promoted silver general moves same as gold general
+      return goldGeneralValidate(team,sourcex,sourcey,targetx,targety)
 
     #CHU SHOGI
     #case 9 Reverse Chariot promotes to whale
-    elseif unit == 'a' && gameType == 'C'
+    elseif unit == "reversechariot" && gameType == "chu"
       return reverseChariotValidate(team,sourcex,sourcey,targetx,targety)
 
     #case 9.2 whale
-    elseif unit == 'a' && gameType == 'C'
+    elseif unit == "whale" && gameType == "chu"
       return whaleValidate(team,sourcex,sourcey,targetx,targety)
 
     #case 10 Copper general promotes to side mover
-    elseif unit == 'c' && gameType == 'C'
+    elseif unit == "coppergeneral" && gameType == "chu"
       return copperGeneralValidate(team,sourcex,sourcey,targetx,targety)
 
-    #case 10.2 side mover
-    elseif unit == 'c' && gameType == 'C'
-      return sideMoverValidate(team,sourcex,sourcey,targetx,targety)
-
     #case 11 Dragon King promotes to soaring eagle
-    elseif unit == 'd' && gameType == 'C'
+    elseif unit == "dragonking" && gameType == "chu"
       return dragonKingValidate(team,sourcex,sourcey,targetx,targety)
 
     #case 11.2 Soaring eagle
-    elseif unit == 'd' && gameType == 'C'
+    elseif unit == "soaringeagle" && gameType == "chu"
       return soaringEagleValidate(team,sourcex,sourcey,targetx,targety,targetx2,targety2)
 
     #case 12 Drunk Elephant promotes to prince
-    elseif unit == 'e' && gameType == 'C'
+    elseif unit == "drunkelephant" && gameType == "chu"
       return drunkElephantValidate(team,sourcex,sourcey,targetx,targety)
 
     #case 12.2 prince
-    elseif unit == 'E' && gameType == 'C'
+    elseif unit == "prince" && gameType == "chu"
       #move like king
       return kingValidate(team,sourcex,sourcey,targetx,targety)
 
     #case 13 ferocious leopard promotes bishop
-    elseif unit == 'f' && gameType == 'C'
+    elseif unit == "ferociousleopard" && gameType == "chu"
       return ferociousLeopardValidate(team,sourcex,sourcey,targetx,targety)
 
-    #case 13.2 bishop
-    elseif unit == 'F' && gameType == 'C'
-      return bishopValidate(team,sourcex,sourcey,targetx,targety)
-
     #case 14 Dragon Horse promotes to horned falcon
-    elseif unit == 'h' && gameType == 'C'
+    elseif unit == "dragonhorse" && gameType == "chu"
       return dragonHorseValidate(team,sourcex,sourcey,targetx,targety)
 
     #case 14.2 horned falcon
-    elseif unit == 'H' && gameType == 'C'
+    elseif unit == "hornedfalcon" && gameType == "chu"
       return hornedFalconValidate(team,sourcex,sourcey,targetx,targety,targetx2,targety2)
 
     #case 15 Lion
-    elseif unit == 'i' && gameType == 'C'
+    elseif unit == "lion" && gameType == "chu"
       return lionValidate(team,sourcex,sourcey,targetx,targety,targetx2,targety2)
 
     #case 16 Side Mover promotes to free boar
-    elseif unit == 'm' && gameType == 'C'
+    elseif unit == "sidemover" && gameType == "chu"
       return sideMoverValidate(team,sourcex,sourcey,targetx,targety)
 
     #case 16.2 free boar
-    elseif unit == 'M' && gameType == 'C'
+    elseif unit == "freeboar" && gameType == "chu"
       return freeBoarValidate(team,sourcex,sourcey,targetx,targety)
 
     #case 17 Go-between promotes to drunk Elephant
-    elseif unit == 'o' && gameType == 'C'
+    elseif unit == "gobetween" && gameType == "chu"
       return goBetweenValidate(team,sourcex,sourcey,targetx,targety)
 
-    #case 17.2 drunk elephant
-    elseif unit == 'O' && gameType == 'C'
-      return drunkElephantValidate(team,sourcex,sourcey,targetx,targety)
-
     #case 18 Blind tiger promotes to flying stag
-    elseif unit == 't' && gameType == 'C'
+    elseif unit == "blindtiger" && gameType == "chu"
       return blindTigerValidate(team,sourcex,sourcey,targetx,targety)
 
     #case 18.2 flying stag
-    elseif unit == 'T' && gameType == 'C'
+    elseif unit == "flyingstag" && gameType == "chu"
       return flyingStagValidate(team,sourcex,sourcey,targetx,targety)
 
     #case 19 Queen
-    elseif unit == 'q' && gameType == 'C'
+    elseif unit == "queen" && gameType == "chu"
       return queenValidate(team,sourcex,sourcey,targetx,targety)
 
     #case 20 Vertical Mover promotes to flying ox
-    elseif unit == 'v' && gameType == 'C'
+    elseif unit == "verticalmover" && gameType == "chu"
       return verticalMoverValidate(team,sourcex,sourcey,targetx,targety)
 
     #case 20.2
-    elseif unit == 'V' && gameType == 'C'
+    elseif unit == "flyingox" && gameType == "chu"
       return flyingOxValidate(team,sourcex,sourcey,targetx,targety)
 
     #case 21 Phoenix promotes to queen
-    elseif unit == 'x' && gameType == 'C'
+    elseif unit == "phoenix" && gameType == "chu"
       return phoenixValidate(team,sourcex,sourcey,targetx,targety)
-
-    #case 21.2
-    elseif unit == 'X' && gameType == 'C'
-      return queenValidate(team,sourcex,sourcey,targetx,targety)
 
     else
       return false #no valid unit
     end
-
   end
 
   #moveUpValidate <=== Return true if unit can move veritcally upwards to target ===>
@@ -365,6 +323,7 @@ gameType = "standard" #TO DO: don't hard code this
     return true
   end #moveLeftValidate
 
+  #moveOrthogonalValidate <=== Return true if unit can NESW directions ===>
   function moveOrthogonalValidate(sourcex,sourcey,targetx,targety)
     #checks for moves like rook
     if (sourcex == targetx) #horizontal
@@ -392,6 +351,7 @@ gameType = "standard" #TO DO: don't hard code this
     return false
   end
 
+  #moveAdjacentValidate <=== Return true if unit can move 1 UNIT adjacent ===>
   function moveAdjacentValidate(sourcex,sourcey,targetx,targety)
     if ((abs(sourcex - targetx) == 1) || (abs(sourcex - targetx) == 0))
       if ((abs(sourcey - targety) == 1) || (abs(sourcey - targety) == 0))
@@ -468,7 +428,7 @@ gameType = "standard" #TO DO: don't hard code this
     return false
   end #diagonalDownLeftValidate
 
-  #diagonalDownRight
+  #diagonalDownRight <=== Return true if unit can move diagonally downright to target ===>
   function diagonalDownRightValidate(sourcex, sourcey, targetx, targety)
     if (sourcex - targetx) == (sourcey - targety)
       if (sourcex < targetx) #moving diagonal down left
@@ -490,6 +450,7 @@ gameType = "standard" #TO DO: don't hard code this
     return false
   end #diagonalDownRightValidate
 
+  #moveDiagonalValidate <=== Return true if unit can move diagonally===>
   function moveDiagonalValidate(sourcex, sourcey, targetx, targety)
     #moves like bishop
     if (abs(sourcex - targetx) == abs(sourcey - targety)) #moves diagonally
@@ -1368,14 +1329,14 @@ end #validateMod
     dataMove = SQLite.query(db, """SELECT move_number, move_type, sourcex, sourcey, targetx, targety, targetx2, targety2, option, i_am_cheating FROM moves WHERE "move_number" = $x""" )
     if (!isnull(dataMove[1,5]) && !isnull(dataMove[1,3]) && !isnull(dataMove[1,6])) #targetx and targety not null
 
-      moveType = get(dataMove[1,2])
-      sourcex = get(dataMove[1,3])
-      sourcey = get(dataMove[1,4])
-      targetx = get(dataMove[1,5])
-      targety = get(dataMove[1,6])
+      gameType = get(metaMove[1,1])
+      moveType = !isnull(dataMove[1,2]) ? get(dataMove[1,2]) : -1
+      sourcex = !isnull(dataMove[1,3]) ? get(dataMove[1,3]) : -1
+      sourcey = !isnull(dataMove[1,4]) ? get(dataMove[1,4]) : -1
+      targetx = !isnull(dataMove[1,5]) ? get(dataMove[1,5]) : -1
+      targety = !isnull(dataMove[1,6]) ? get(dataMove[1,6]) : -1
       targetx2 = !isnull(dataMove[1,7]) ? get(dataMove[1,7]) : -1
       targety2 = !isnull(dataMove[1,8]) ? get(dataMove[1,8]) : -1
-      gameType = get(metaMove[1,1])
       (unitType,team) = get(board,(sourcex,sourcey),('x','x'))
       if (moveValidate(unitType, moveType, gameType, team, sourcex, sourcey, targetx, targety, targetx2, targety2))
         #validSoFar
