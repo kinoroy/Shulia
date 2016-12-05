@@ -3,7 +3,7 @@ is equal to ”T” then promote the piece after it has completed the move.
 Accepts 6 command line args : <filename> => database, <xsource> => xSource
 <ysource> => ySource <xtarget> =>xTarget <ytarget> =>yTarget <promote> => promote
 =#
-include("square.jl")
+#include("square.jl")
 include("dParse.jl")
 module move_user_move
 
