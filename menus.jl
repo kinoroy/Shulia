@@ -5,6 +5,7 @@ include("move_user_move.jl")
 include("move_user_resign.jl")
 include("networking.jl")
 include("start.jl")
+include("board.jl")
 
 
 

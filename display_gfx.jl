@@ -101,13 +101,15 @@ w = Toplevel("Grid")
 f = Frame(w, padding = 10); pack(f, expand=true, fill="both")
 
 
-imgDict = Dict(('_','_')=>emptyimg,('k','b')=>kingimg,('b','b')=>bishopimg,('g','b')=>gold_generalimg,
- ('n','b')=>knightimg,('l','b')=>lanceimg, ('B','b')=>promoted_bishopimg,('N','b')=>promoted_lanceimg,('P','b')=>promoted_pawnimg,
- ('R','b')=>promoted_rookimg,('S','b')=>promoted_silver_generalimg,('r','b')=>rookimg,('s','b')=>silver_generalimg,
- ('p','b')=>pawnimg,('k','w')=>kingrimg,('b','w')=>bishoprimg,('g','w')=>gold_generalrimg,
-  ('n','w')=>knightrimg,('l','w')=>lancerimg, ('B','w')=>promoted_bishoprimg,('N','w')=>promoted_lancerimg,('P','w')=>promoted_pawnrimg,
-  ('R','w')=>promoted_rookrimg,('S','w')=>promoted_silver_generalrimg,('r','w')=>rookrimg,('s','w')=>silver_generalrimg,
-  ('p','w')=>pawnrimg)
+shogiimgDict = Dict(('_','_')=>emptyimg,("king",'b')=>kingimg,("bishop",'b')=>bishopimg,("gold general",'b')=>gold_generalimg,
+ ("knight",'b')=>knightimg,("lance",'b')=>lanceimg, ("promotedbishop",'b')=>promoted_bishopimg,("promotedlance",'b')=>promoted_lanceimg,("promotedpawn",'b')=>promoted_pawnimg,
+ ("promotedrook",'b')=>promoted_rookimg,("promotedsilver",'b')=>promoted_silver_generalimg,("rook",'b')=>rookimg,("silver general",'b')=>silver_generalimg,
+ ("pawn",'b')=>pawnimg,("king",'w')=>kingrimg,("bishop",'w')=>bishoprimg,("gold general",'w')=>gold_generalrimg,
+  ("knight",'w')=>knightrimg,("lance",'w')=>lancerimg, ("promotedbishop",'w')=>promoted_bishoprimg,
+  ("promotedlance",'w')=>promoted_lancerimg,("promotedpawn",'w')=>promoted_pawnrimg,
+  ("promotedrook",'w')=>promoted_rookrimg,("promotedsilver",'w')=>promoted_silver_generalrimg,("rook",'w')=>rookrimg,("silver general",'w')=>silver_generalrimg,
+  ("pawn",'w')=>pawnrimg)
+
 
 
 pimg = Button(f, "",pawnimg)
@@ -130,7 +132,7 @@ emptypicimg = Button(f, "", emptyimg)
 =#
 for x in 1:9
   for y in 1:9
-    grid(Button(f, "",imgDict[board[x,y]]),x,y)
+    grid(Button(f, "",shogiimgDict[board[x,y]]),x,y)
   end
 end
 
@@ -146,6 +148,8 @@ if gametype = M
 #
 
 function rest()
+
+
   iboard = ST.loadBoard()
   board = Array(Tuple{Char,Char},5,5)
   for x in 1:size(board)[1]
@@ -229,13 +233,19 @@ w = Toplevel("Grid")
 f = Frame(w, padding = 10); pack(f, expand=true, fill="both")
 
 
-imgDict = Dict(('_','_')=>emptyimg,('k','b')=>kingimg,('b','b')=>bishopimg,('g','b')=>gold_generalimg,
- ('n','b')=>knightimg,('l','b')=>lanceimg, ('B','b')=>promoted_bishopimg,('N','b')=>promoted_lanceimg,('P','b')=>promoted_pawnimg,
- ('R','b')=>promoted_rookimg,('S','b')=>promoted_silver_generalimg,('r','b')=>rookimg,('s','b')=>silver_generalimg,
- ('p','b')=>pawnimg,('k','w')=>kingrimg,('b','w')=>bishoprimg,('g','w')=>gold_generalrimg,
-  ('n','w')=>knightrimg,('l','w')=>lancerimg, ('B','w')=>promoted_bishoprimg,('N','w')=>promoted_lancerimg,('P','w')=>promoted_pawnrimg,
-  ('R','w')=>promoted_rookrimg,('S','w')=>promoted_silver_generalrimg,('r','w')=>rookrimg,('s','w')=>silver_generalrimg,
-  ('p','w')=>pawnrimg)
+minishogiimgDict = Dict(('_','_')=>emptyimg,("king",'b')=>kingimg,("bishop",'b')=>bishopimg,("gold general",'b')=>gold_generalimg,
+ ("knight",'b')=>knightimg,("lance",'b')=>lanceimg, ("promotedbishop",'b')=>promoted_bishopimg,("promotedlance",'b')=>promoted_lanceimg,("promotedpawn",'b')=>promoted_pawnimg,
+ ("promotedrook",'b')=>promoted_rookimg,("promotedsilver",'b')=>promoted_silver_generalimg,("rook",'b')=>rookimg,("silver general",'b')=>silver_generalimg,
+ ("pawn",'b')=>pawnimg,("king",'w')=>kingrimg,("bishop",'w')=>bishoprimg,("gold general",'w')=>gold_generalrimg,
+  ("knight",'w')=>knightrimg,("lance",'w')=>lancerimg, ("promotedbishop",'w')=>promoted_bishoprimg,
+  ("promotedlance",'w')=>promoted_lancerimg,("promotedpawn",'w')=>promoted_pawnrimg,
+  ("promotedrook",'w')=>promoted_rookrimg,("promotedsilver",'w')=>promoted_silver_generalrimg,("rook",'w')=>rookrimg,("silver general",'w')=>silver_generalrimg,
+  ("pawn",'w')=>pawnrimg)
+
+
+
+
+
 
 
 pimg = Button(f, "",pawnimg)
@@ -258,7 +268,7 @@ emptypicimg = Button(f, "", emptyimg)
 =#
 for x in 1:5
   for y in 1:5
-    grid(Button(f, "",imgDict[board[x,y]]),x,y)
+    grid(Button(f, "",minishogiimgDict[board[x,y]]),x,y)
   end
 end
 
@@ -356,13 +366,52 @@ w = Toplevel("Grid")
 f = Frame(w, padding = 10); pack(f, expand=true, fill="both")
 
  # add to img Dict
-imgDict = Dict(('_','_')=>emptyimg,('k','b')=>kingimg,('b','b')=>bishopimg,('g','b')=>gold_generalimg,
- ('n','b')=>knightimg,('l','b')=>lanceimg, ('B','b')=>promoted_bishopimg,('N','b')=>promoted_lanceimg,('P','b')=>promoted_pawnimg,
- ('R','b')=>promoted_rookimg,('S','b')=>promoted_silver_generalimg,('r','b')=>rookimg,('s','b')=>silver_generalimg,
- ('p','b')=>pawnimg,('k','w')=>kingrimg,('b','w')=>bishoprimg,('g','w')=>gold_generalrimg,
-  ('n','w')=>knightrimg,('l','w')=>lancerimg, ('B','w')=>promoted_bishoprimg,('N','w')=>promoted_lancerimg,('P','w')=>promoted_pawnrimg,
-  ('R','w')=>promoted_rookrimg,('S','w')=>promoted_silver_generalrimg,('r','w')=>rookrimg,('s','w')=>silver_generalrimg,
-  ('p','w')=>pawnrimg)
+imgDict = Dict(('_','_')=>emptyimg,("king",'b')=>kingimg,("bishop",'b')=>bishopimg,("gold general",'b')=>gold_generalimg,
+ ("knight",'b')=>knightimg,("lance",'b')=>lanceimg, ("promotedbishop",'b')=>promoted_bishopimg,("promotedlance",'b')=>promoted_lanceimg,("promotedpawn",'b')=>promoted_pawnimg,
+ ("promotedrook",'b')=>promoted_rookimg,("promotedsilver",'b')=>promoted_silver_generalimg,("rook",'b')=>rookimg,("silver general",'b')=>silver_generalimg,
+ ("pawn",'b')=>pawnimg,("king",'w')=>kingrimg,("bishop",'w')=>bishoprimg,("gold general",'w')=>gold_generalrimg,
+  ("knight",'w')=>knightrimg,("lance",'w')=>lancerimg, ("promotedbishop",'w')=>promoted_bishoprimg,
+  ("promotedlance",'w')=>promoted_lancerimg,("promotedpawn",'w')=>promoted_pawnrimg,
+  ("promotedrook",'w')=>promoted_rookrimg,("promotedsilver",'w')=>promoted_silver_generalrimg,("rook",'w')=>rookrimg,("silver general",'w')=>silver_generalrimg,
+  ("pawn",'w')=>pawnrimg)
+
+
+  "bishop" => bishop, "gold general" => goldGeneral, "king" => king, "lance" => lance, "knight" => knight,
+   "pawn" => pawn, "rook" => rook, "silver general" => silverGeneral,
+  "phoenix" => phoenix, "vertical mover" => verticalMover, "go-between" => goBetween,
+   "queen" => queen, "lion" => lion, "dragon king" => dragonKing, "dragon horse", dragonHorse, "side mover" => sideMover,
+  "kirin" => kirin, "blind tiget"=> blindTiger, "reverse chariot" => reverseChariot,
+   "drunk elephant" => drunkElephant, "ferocious leopard" => ferociousLeopard, "blind tiger" => blindTiger)
+
+
+   board[(2,1)] = ("ferocious leopard",'w')
+   board[(2,12)] = ("ferocious leopard",'b')
+   board[(3,1)] = ("copper general",'w')
+   board[(3,12)] = ("copper general",'b')
+   board[(7,1)] = ("drunk elephant",'w')
+   board[(6,12)] = ("drunk elephant",'b')
+   board[(1,2)] = ("reverse chariot",'w')
+   board[(1,11)] = ("reverse chariot",'b')
+   board[(5,2)] = ("blind tiger",'w')
+   board[(5,11)] = ("blind tiger",'b')
+   board[(6,2)] = ("kirin",'w')
+   board[(7,11)] = ("kirin",'b')
+   board[(7,2)] = ("phoenix",'w')
+   board[(6,11)] = ("phoenix",'b')
+   board[(1,3)] = ("side mover",'w')
+   board[(1,10)] = ("side mover",'b')
+   board[(2,3)] = ("vertical mover",'w')
+   board[(2,10)] = ("vertical mover",'b')
+   board[(4,3)] = ("dragon horse",'w')
+   board[(4,10)] = ("dragon horse",'b')
+   board[(5,3)] = ("dragon king",'w')
+   board[(5,10)] = ("dragon king",'b')
+   board[(6,3)] = ("lion",'w')
+   board[(7,10)] = ("lion",'b')
+   board[(7,3)] = ("queen",'w')
+   board[(6,10)] = ("queen",'b')
+   board[(4,5)] = ("go-between",'w')
+   board[(4,8)] = ("go-between",'b')
 
 
 pimg = Button(f, "",pawnimg)
