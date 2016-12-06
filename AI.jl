@@ -4,10 +4,11 @@ using AIHelp
 using BM
 
 global states = Array(Dict{Tuple{Int64,Int64},Tuple{Char,Char}},0)
-global gameType,board,seed
+global gameType,board,seed,calculationTime
 
 function init(igameType,iboard,iseed,difficulty)
-  difficultyDict = Dict("normal"=>100,"hard"=>300,"suicidal"=>5,"protacted death"=>5)
+  global difficultyDict = Dict("normal"=>100,"hard"=>300,"suicidal"=>5,"protacted death"=>5)
+  global calculationTime = difficultyDict[difficulty]
   global states
   global gameType = igameType
   global board = iboard
@@ -19,7 +20,7 @@ end
 
 
 #seed = time()
-calculationTime = difficultyDict[difficulty] #Max calculation time permitted in seconds
+ #Max calculation time permitted in seconds
 max_moves = 500
 global wins = Dict()
 global plays = Dict()
