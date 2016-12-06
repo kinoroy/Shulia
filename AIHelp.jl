@@ -802,7 +802,7 @@ function legalMoves(board,x,y)
 #  println("$unit at $x , $y")
   funDict = Dict("bishop" => bishop, "gold general" => goldGeneral, "king" => king, "lance" => lance, "knight" => knight, "pawn" => pawn, "rook" => rook, "silver general" => silverGeneral,
   "phoenix" => phoenix, "vertical mover" => verticalMover, "go-between" => goBetween, "queen" => queen, "lion" => lion, "dragon king" => dragonKing, "dragon horse", dragonHorse, "side mover" => sideMover,
-  "kirin" => kirin, "blind tiget"=> blindTiger, "reverse chariot" => reverseChariot, "drunk elephant" => drunkElephant, "ferocious leopard" => ferociousLeopard, "blind tiger" => blindTiger)
+  "kirin" => kirin, "blind tiger"=> blindTiger, "reverse chariot" => reverseChariot, "drunk elephant" => drunkElephant, "ferocious leopard" => ferociousLeopard, "blind tiger" => blindTiger)
   funDict[unit](board,x,y)
 end
 
