@@ -800,7 +800,9 @@ function legalMoves(board,x,y)
   target = board[(x,y)]
   unit = target[1]
 #  println("$unit at $x , $y")
-  funDict = Dict('b' => bishop, 'g' => goldGeneral, 'k' => king, 'l' => lance, 'n' => knight, 'p' => pawn, 'r' => rook, 's' => silverGeneral)
+  funDict = Dict("bishop" => bishop, "gold general" => goldGeneral, "king" => king, "lance" => lance, "knight" => knight, "pawn" => pawn, "rook" => rook, "silver general" => silverGeneral,
+  "phoenix" => phoenix, "vertical mover" => verticalMover, "go-between" => goBetween, "queen" => queen, "lion" => lion, "dragon king" => dragonKing, "dragon horse", dragonHorse, "side mover" => sideMover,
+  "kirin" => kirin, "blind tiget"=> blindTiger, "reverse chariot" => reverseChariot, "drunk elephant" => drunkElephant, "ferocious leopard" => ferociousLeopard, "blind tiger" => blindTiger)
   funDict[unit](board,x,y)
 end
 
@@ -818,7 +820,9 @@ function legalMovesPlayer(board,team,shogiType)
     end
   end=#
   for (x,y) in keys(board)
-    append!(legalC,legalMoves(board,x,y))
+    if y == currentTeam
+      append!(legalC,legalMoves(board,x,y))
+    end
   end
   return legalC
 end

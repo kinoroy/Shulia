@@ -6,7 +6,8 @@ using BM
 global states = Array(Dict{Tuple{Int64,Int64},Tuple{Char,Char}},0)
 global gameType,board,seed
 
-function init(igameType,iboard,iseed)
+function init(igameType,iboard,iseed,difficulty)
+  difficultyDict = Dict("normal"=>100,"hard"=>300,"suicidal"=>5,"protacted death"=>5)
   global states
   global gameType = igameType
   global board = iboard
@@ -18,7 +19,7 @@ end
 
 
 #seed = time()
-calculationTime = 20 #Max calculation time permitted in seconds
+calculationTime = difficultyDict[difficulty] #Max calculation time permitted in seconds
 max_moves = 500
 global wins = Dict()
 global plays = Dict()
