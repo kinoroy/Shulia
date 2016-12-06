@@ -257,4 +257,4 @@ while instruction!="quit\n"
   end
   instruction=readline(STDIN)
 end
-export backward
+export backward, Setupboard

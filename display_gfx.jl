@@ -1,4 +1,10 @@
 include("dParse.jl")
+include("move.jl")
+include("move_user_drop.jl")
+include("move_user_move.jl")
+include("move_user_resign.jl")
+include("networking.jl")
+include("start.jl")
 
 using BM
 using Tk
@@ -6,14 +12,14 @@ using Tk
 #change from board to tuples for all ifs
 
 
-#=
-if gametype = S
-=#
+
+#if gametype = S
+
+function dispgfx()
 
 
 
-
-  iboard = BM.startGame("minishogi")
+  iboard = BM.startGame("shogi")
   board = Array(Tuple{Char,Char},9,9)
   for x in 1:size(board)[1]
     for y in 1:size(board)[2]
@@ -129,7 +135,7 @@ for x in 1:9
 end
 
 #start playing game
-
+end
 #end
 
 
@@ -137,9 +143,9 @@ end
 if gametype = M
 =#
 
+#
 
-
-
+function rest()
   iboard = ST.loadBoard()
   board = Array(Tuple{Char,Char},5,5)
   for x in 1:size(board)[1]
@@ -513,3 +519,6 @@ end
 #start playing game
 
 #end
+end
+
+export dispgfx

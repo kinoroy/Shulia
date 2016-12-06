@@ -1,3 +1,19 @@
+include("display_gfx.jl")
+include("move.jl")
+include("move_user_drop.jl")
+include("move_user_move.jl")
+include("move_user_resign.jl")
+include("networking.jl")
+include("start.jl")
+
+
+
+
+
+
+
+
+
 w = Toplevel("SHOGI", 400, 300)
 tcl("pack", "propagate", w, false) ## or pack_stop_propagate(w)
 
@@ -104,6 +120,18 @@ pack(cbcTIME, expand=true, fill="both")
 
 #make different functions for each path
 function callbackLIMITTIME(path)
+  global JRMvalue
+  global VARvalue
+  global DIFFvalue
+  global CHEATvalue
+  global FIRSTvalue
+  global TIMEvalue
+  global TheTimeLimit
+  global VSAI
+  global VSH
+  global HAI
+  global HSH
+
   global LIMITvalue = get_value(e)
   println("$LIMITvalue")
   #msg = "You have a nice name $val"
@@ -112,10 +140,10 @@ function callbackLIMITTIME(path)
   if  TIMEvalue == true
     if parse(Int64,LIMITvalue) >= 1
       TheTimeLimit = parse(Int64,LIMITvalue)
-      println("the time limit is :$TheTimeLimit")
+    #  println("the time limit is :$TheTimeLimit")
     end
   end
-
+#=
   JRM = false
   if  JRMvalue == true
       JRM = JRMvalue
@@ -161,8 +189,13 @@ function callbackLIMITTIME(path)
       FIRST = FIRSTvalue
       println("going first? :$FIRST")
   end
+=#
+  #return LIMITvalue
 
-  return LIMITvalue
+
+while true
+  dispgfx()
+
 end
 
 bind(b, "command", callbackLIMITTIME)
