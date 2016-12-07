@@ -3,7 +3,7 @@ include("move.jl")
 include("move_user_drop.jl")
 include("move_user_move.jl")
 include("move_user_resign.jl")
-include("networking.jl")
+include("server.jl")
 include("start.jl")
 
 using BM
@@ -15,16 +15,16 @@ using Tk
 
 #if gametype = S
 
-function dispgfx()
+
+function dispgfx(boardSize)
 
 
 
-  iboard = BM.startGame("shogi")
-  board = Array(Tuple{Char,Char},9,9)
-  for x in 1:size(board)[1]
-    for y in 1:size(board)[2]
-      board[y,x]=(iboard[x,y].piece,iboard[x,y].team)
-    end
+  sboard = BM.startGame("shogi")
+  board = Array(Tuple{String,Char},boardSize,boardSize)
+  fill!(board,("_",'_'))
+  for (x,y) in keys(sboard.state)
+    board[y,x]=(sboard.state[(x,y)][1],sboard.state[(x,y)][2])
   end
 
 #FOR SHOGI
@@ -101,13 +101,13 @@ w = Toplevel("Grid")
 f = Frame(w, padding = 10); pack(f, expand=true, fill="both")
 
 
-shogiimgDict = Dict(('_','_')=>emptyimg,("king",'b')=>kingimg,("bishop",'b')=>bishopimg,("gold general",'b')=>gold_generalimg,
+shogiimgDict = Dict(("_",'_')=>emptyimg,("king",'b')=>kingimg,("bishop",'b')=>bishopimg,("gold general",'b')=>gold_generalimg,
  ("knight",'b')=>knightimg,("lance",'b')=>lanceimg, ("promotedbishop",'b')=>promoted_bishopimg,("promotedlance",'b')=>promoted_lanceimg,("promotedpawn",'b')=>promoted_pawnimg,
- ("promotedrook",'b')=>promoted_rookimg,("promotedsilver general",'b')=>promoted_silver_generalimg,("rook",'b')=>rookimg,("silver general",'b')=>silver_generalimg,
+ ("promotedrook",'b')=>promoted_rookimg,("promotedsilver",'b')=>promoted_silver_generalimg,("rook",'b')=>rookimg,("silver general",'b')=>silver_generalimg,
  ("pawn",'b')=>pawnimg,("king",'w')=>kingrimg,("bishop",'w')=>bishoprimg,("gold general",'w')=>gold_generalrimg,
   ("knight",'w')=>knightrimg,("lance",'w')=>lancerimg, ("promotedbishop",'w')=>promoted_bishoprimg,
   ("promotedlance",'w')=>promoted_lancerimg,("promotedpawn",'w')=>promoted_pawnrimg,
-  ("promotedrook",'w')=>promoted_rookrimg,("promotedsilver general",'w')=>promoted_silver_generalrimg,("rook",'w')=>rookrimg,("silver general",'w')=>silver_generalrimg,
+  ("promotedrook",'w')=>promoted_rookrimg,("promotedsilver",'w')=>promoted_silver_generalrimg,("rook",'w')=>rookrimg,("silver general",'w')=>silver_generalrimg,
   ("pawn",'w')=>pawnrimg)
 
 
@@ -132,7 +132,7 @@ emptypicimg = Button(f, "", emptyimg)
 =#
 for x in 1:9
   for y in 1:9
-    grid(Button(f, "",shogiimgDict[board[x,y]]),x,y, )
+    grid(Button(f, "",shogiimgDict[board[x,y]]),x,y)
   end
 end
 
@@ -147,15 +147,14 @@ if gametype = M
 
 #
 
-function rest()
+function mini()
 
-
-  iboard = ST.loadBoard()
-  board = Array(Tuple{Char,Char},5,5)
-  for x in 1:size(board)[1]
-    for y in 1:size(board)[2]
-      board[y,x]=(iboard[x,y].piece,iboard[x,y].team)
-    end
+  boardSize=5
+  mboard = BM.startGame("mini")
+  board = Array(Tuple{String,Char},boardSize,boardSize)
+  fill!(board,("_",'_'))
+  for (x,y) in keys(mboard.state)
+    board[y,x]=(mboard.state[(x,y)][1],mboard.state[(x,y)][2])
   end
 
 #FOR MINISHOGI
@@ -233,13 +232,13 @@ w = Toplevel("Grid")
 f = Frame(w, padding = 10); pack(f, expand=true, fill="both")
 
 
-minishogiimgDict = Dict(('_','_')=>emptyimg,("king",'b')=>kingimg,("bishop",'b')=>bishopimg,("gold general",'b')=>gold_generalimg,
+minishogiimgDict = Dict(("_",'_')=>emptyimg,("king",'b')=>kingimg,("bishop",'b')=>bishopimg,("gold general",'b')=>gold_generalimg,
  ("knight",'b')=>knightimg,("lance",'b')=>lanceimg, ("promotedbishop",'b')=>promoted_bishopimg,("promotedlance",'b')=>promoted_lanceimg,("promotedpawn",'b')=>promoted_pawnimg,
- ("promotedrook",'b')=>promoted_rookimg,("promotedsilver general",'b')=>promoted_silver_generalimg,("rook",'b')=>rookimg,("silver general",'b')=>silver_generalimg,
+ ("promotedrook",'b')=>promoted_rookimg,("promotedsilver",'b')=>promoted_silver_generalimg,("rook",'b')=>rookimg,("silver general",'b')=>silver_generalimg,
  ("pawn",'b')=>pawnimg,("king",'w')=>kingrimg,("bishop",'w')=>bishoprimg,("gold general",'w')=>gold_generalrimg,
   ("knight",'w')=>knightrimg,("lance",'w')=>lancerimg, ("promotedbishop",'w')=>promoted_bishoprimg,
   ("promotedlance",'w')=>promoted_lancerimg,("promotedpawn",'w')=>promoted_pawnrimg,
-  ("promotedrook",'w')=>promoted_rookrimg,("promotedsilver general",'w')=>promoted_silver_generalrimg,("rook",'w')=>rookrimg,("silver general",'w')=>silver_generalrimg,
+  ("promotedrook",'w')=>promoted_rookrimg,("promotedsilver",'w')=>promoted_silver_generalrimg,("rook",'w')=>rookrimg,("silver general",'w')=>silver_generalrimg,
   ("pawn",'w')=>pawnrimg)
 
 
@@ -274,7 +273,7 @@ end
 
 #start playing game
 
-#end
+end
 
 #=
 if gametype = C
@@ -282,13 +281,13 @@ if gametype = C
 
 
 
-
-  iboard = ST.loadBoard()
-  board = Array(Tuple{Char,Char},12,12)
-  for x in 1:size(board)[1]
-    for y in 1:size(board)[2]
-      board[y,x]=(iboard[x,y].piece,iboard[x,y].team)
-    end
+function Chu()
+  boardSize=12
+  cboard = BM.startGame("chu")
+  board = Array(Tuple{String,Char},boardSize,boardSize)
+  fill!(board,("_",'_'))
+  for (x,y) in keys(cboard.state)
+    board[y,x]=(cboard.state[(x,y)][1],cboard.state[(x,y)][2])
   end
 
 #FOR CHU SHOGI
@@ -368,20 +367,20 @@ f = Frame(w, padding = 10); pack(f, expand=true, fill="both")
  # add to img Dict
 imgDict = Dict(('_','_')=>emptyimg,("king",'b')=>kingimg,("bishop",'b')=>bishopimg,("gold general",'b')=>gold_generalimg,
  ("knight",'b')=>knightimg,("lance",'b')=>lanceimg, ("promotedbishop",'b')=>promoted_bishopimg,("promotedlance",'b')=>promoted_lanceimg,("promotedpawn",'b')=>promoted_pawnimg,
- ("promotedrook",'b')=>promoted_rookimg,("promotedsilver general",'b')=>promoted_silver_generalimg,("rook",'b')=>rookimg,("silver general",'b')=>silver_generalimg,
+ ("promotedrook",'b')=>promoted_rookimg,("promotedsilver",'b')=>promoted_silver_generalimg,("rook",'b')=>rookimg,("silver general",'b')=>silver_generalimg,
  ("pawn",'b')=>pawnimg,("king",'w')=>kingrimg,("bishop",'w')=>bishoprimg,("gold general",'w')=>gold_generalrimg,
   ("knight",'w')=>knightrimg,("lance",'w')=>lancerimg, ("promotedbishop",'w')=>promoted_bishoprimg,
   ("promotedlance",'w')=>promoted_lancerimg,("promotedpawn",'w')=>promoted_pawnrimg,
-  ("promotedrook",'w')=>promoted_rookrimg,("promotedsilver general",'w')=>promoted_silver_generalrimg,("rook",'w')=>rookrimg,("silver general",'w')=>silver_generalrimg,
+  ("promotedrook",'w')=>promoted_rookrimg,("promotedsilver",'w')=>promoted_silver_generalrimg,("rook",'w')=>rookrimg,("silver general",'w')=>silver_generalrimg,
   ("pawn",'w')=>pawnrimg)
 
 
-  "bishop" => bishop, "gold general" => goldGeneral, "king" => king, "lance" => lance, "knight" => knight,
+  #="bishop" => bishop, "gold general" => goldGeneral, "king" => king, "lance" => lance, "knight" => knight,
    "pawn" => pawn, "rook" => rook, "silver general" => silverGeneral,
   "phoenix" => phoenix, "vertical mover" => verticalMover, "go-between" => goBetween,
    "queen" => queen, "lion" => lion, "dragon king" => dragonKing, "dragon horse", dragonHorse, "side mover" => sideMover,
   "kirin" => kirin, "blind tiget"=> blindTiger, "reverse chariot" => reverseChariot,
-   "drunk elephant" => drunkElephant, "ferocious leopard" => ferociousLeopard, "blind tiger" => blindTiger)
+   "drunk elephant" => drunkElephant, "ferocious leopard" => ferociousLeopard, "blind tiger" => blindTiger=#
 
 
    board[(2,1)] = ("ferocious leopard",'w')
@@ -434,12 +433,12 @@ emptypicimg = Button(f, "", emptyimg)
 =#
 for x in 1:12
   for y in 1:12
-    grid(Button(f, "",imgDict[board[x,y]]),x,y)
+    grid(Button(f, "c g"),x,y)
   end
 end
 #start playing game
 
-#end
+end
 
 
 
@@ -449,13 +448,13 @@ if gametype = T
 
 
 
-
-  iboard = ST.loadBoard()
-  board = Array(Tuple{Char,Char},16,16)
-  for x in 1:size(board)[1]
-    for y in 1:size(board)[2]
-      board[y,x]=(iboard[x,y].piece,iboard[x,y].team)
-    end
+function tenjiku()
+  boardSize=16
+  mboard = BM.startGame("tenjiku")
+  board = Array(Tuple{String,Char},boardSize,boardSize)
+  fill!(board,("_",'_'))
+  for (x,y) in keys(sboard.state)
+    board[y,x]=(sboard.state[(x,y)][1],sboard.state[(x,y)][2])
   end
 
 #FOR TENJIKU SHOGI
@@ -569,5 +568,9 @@ end
 
 #end
 end
-
+#dispgfx()
+mini()
+#emptybrdtest()
+#Chu()
+cd("../")
 export dispgfx
