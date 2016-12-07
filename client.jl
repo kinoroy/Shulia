@@ -41,7 +41,7 @@ function play(gameType,cheating,timeLimit,limitAdd)
     message = chomp(readline(connection))
     sL = split(message,r":",keep=false)
     wincode = getAt(sL,1,-1)
-
+    println(message)
    if wincode == "0"
       #I"m player 1
         global authString = getAt(sL,2,-1)[1]

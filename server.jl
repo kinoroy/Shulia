@@ -67,8 +67,8 @@ function handleClientComm(client)
   global timeLimit
       if timeElapsed[port]>timeLimit #player went over time limit, player resigns
         opponent = client == player1 ? player2 : player1
-        write(opponent,"\n9:0:3:0:0:0:0:0:0:0:0\n") #send resign move to opponent
-        write(client,"e:you ran out of time and were forced to resign")
+        write(opponent,"""9:0:3:0:0:0:0:0:0:0:0\n""") #send resign move to opponent
+        write(client,"""e:you ran out of time and were forced to resign\n""")
         prinln("resigned due to timeout")
       end
        bytesRead = 1;
@@ -178,8 +178,8 @@ $targetx2:$targety2\n") #send move to opponent
             try
               (host1,port1) = getsockname(player1)
               (host2,port2) = getsockname(player2)
-                write(player1,"$(player1index-1):$(port1*10^3):$gametype:$legality:$timeLimit:$limitAdd")
-                write(player2,"$(player2index-1):$(port2*10^3):$gametype:$legality:$timeLimit:$limitAdd")
+                write(player1,"""$(player1index-1):$(port1*10^3):$gametype:$legality:$timeLimit:$limitAdd\n""")
+                write(player2,"""$(player2index-1):$(port2*10^3):$gametype:$legality:$timeLimit:$limitAdd\n""")
             catch err
               println(err)
             end

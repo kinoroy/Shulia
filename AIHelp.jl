@@ -826,5 +826,5 @@ function legalMovesPlayer(board,team,shogiType)
   end
   return legalC
 end
-
+export legalMovesPlayer
 end #End module "AI"

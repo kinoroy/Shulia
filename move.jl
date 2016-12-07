@@ -18,7 +18,8 @@ function moveAI(database,difficulty) #Makes a move with the AI, returns the move
 
   (board,gameType,seed,lastMoveID) = dParse.Parse(database)
 
-  AI.init(gameType,board,seed,difficulty)
+  AI.init(gameType,board,seed,"normal")
+
 
   (sourcex,sourcey,targetx,targety) = AI.get_play()
   move_number = lastMoveID+1
@@ -29,5 +30,5 @@ function moveAI(database,difficulty) #Makes a move with the AI, returns the move
 return (sourcex,sourcey,targetx,targety)
 
 end
-
+export moveAI
 end
