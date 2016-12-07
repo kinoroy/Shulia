@@ -16,54 +16,13 @@ global trgt = Tuple{Int64,Int64}
 global x,y
 global thegrid = Array(Tk.Tk_Button,9,9)
 
-function callbacktrgt(path)        ## callbacks have at least one argument
-  global x,y
-  global trgt = (x,y)
-  println("$trgt")
-end
-function callbacksrc(path)        ## callbacks have at least one argument
-  global x,y
-  global src = (x,y)
-  callback_add(thegrid[x,y], callbacktrgt)
-  println("$src")
-end
-
-#=
-function callbackmove(path)        ## callbacks have at least one argument
-  m = Toplevel()
-  f = Frame(m); pack(f, expand=true, fill="both")
-
-  e = Entry(f)
-  b = Button(f, "Ok")
-
-  formlayout(e, "sourcex,sourcey")
-  formlayout(b, nothing)
-  focus(e)            ## put keyboard focus on widget
-
-  function callback(path)
-
-    val = get_value(e)
-    msg = "You have a nice name $val"
-    Messagebox(m,  msg)
-  end
-
-  bind(b, "command", callback)
-  bind(b, "<Return>", callback)
-  bind(e, "<Return>", callback)  ## bind to a certain key press event
-end
-=#
-
-#if gametype = S
-
-
-
 
 function dispgfx()
   global src
   global trgt
   boardSize=9
 
-  sboard = BM.startGame("shogi")
+  sboard = BM.startGame("standard")
   board = Array(Tuple{String,Char},boardSize,boardSize)
   fill!(board,("_",'_'))
   for (x,y) in keys(sboard.state)
@@ -183,9 +142,9 @@ for x in 1:9
 
     thegrid[x,y] = Button(f, "",shogiimgDict[board[x,y]])
     grid(thegrid[x,y],x,y)
-    bind(thegrid[x,y], "command", callbackmove)
-    bind(thegrid[x,y], "<Return>", callbackmove)
-    callback_add(thegrid[x,y], callbackmove)
+    #bind(thegrid[x,y], "command", callbackmove)
+    #bind(thegrid[x,y], "<Return>", callbackmove)
+    #callback_add(thegrid[x,y], callbackmove)
   end
 end
 
@@ -205,6 +164,27 @@ end
 
 #start playing game
 end
+#end
+
+
+
+
+
+#=
+start.startShogi("game.db","S","F","F",0,0,0)
+
+move_user_move.moveUserMove("game1122.db","normal")
+destroy(f)
+for x in 1:9
+  for y in 1:9
+    grid(Button(f, "",shogiimgDict[board[x,y]]),x,y)
+  end
+end
+=#
+
+
+#start playing game
+
 #end
 
 
@@ -635,9 +615,9 @@ end
 
 #end
 end
-dispgfx()
+#dispgfx()
 #mini()
 #emptybrdtest()
 #chu()
-cd("../")
+#cd("../")
 export dispgfx,mini
