@@ -11,14 +11,18 @@ using Tk
 using move
 
 #change from board to tuples for all ifs
-
+global src = Tuple{Int64,Int64}
+global trgt = Tuple{Int64,Int64}
 
 
 #if gametype = S
 
 
-function dispgfx()
 
+
+function dispgfx()
+  global src
+  global trgt
   boardSize=9
 
   sboard = BM.startGame("shogi")
@@ -131,12 +135,39 @@ simg = Button(f, "",silver_generalimg)
 emptypicimg = Button(f, "", emptyimg)
 
 =#
+
+
 for x in 1:9
   for y in 1:9
-    grid(Button(f, "",shogiimgDict[board[x,y]]),x,y)
+    thegrid = Array(Tuple{Int64,Int64},9,9)
+    thegrid[x,y] = Button(f, "",shogiimgDict[board[x,y]]
+    grid(thegrid[x,y],x,y)
+    callback_add(thegrid[x,y], callbacksrc)
+
+
+    function callbacksrc(path)        ## callbacks have at least one argument
+      global src = {x,y}
+      callback_add(thegrid[x,y], callbacktrgt)
+    end
+
+    function callbacktrgt(path)        ## callbacks have at least one argument
+      global trgt = {x,y}
+    end
+
+println("$src")
+println("$trgt")
+
+
+
+
+
   end
 end
 
+
+
+
+#=
 start.startShogi("game1122.db","S","F","F",0,0,0)
 
 move.moveAI("game1122.db","normal")
@@ -146,6 +177,9 @@ for x in 1:9
     grid(Button(f, "",shogiimgDict[board[x,y]]),x,y)
   end
 end
+=#
+
+
 #start playing game
 end
 #end

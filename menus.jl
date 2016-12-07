@@ -41,9 +41,9 @@ menu_add(omenu, rb)     ## second argument is Tk_Radio instance
 global JRMvalue
 JRMvalue = false
 global VARvalue
-VARvalue = "no shogi"
+VARvalue = "standard"
 global DIFFvalue
-DIFFvalue = "not normal"
+DIFFvalue = "normal"
 global CHEATvalue
 CHEATvalue = false
 global FIRSTvalue
