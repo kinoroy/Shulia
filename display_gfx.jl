@@ -13,6 +13,22 @@ using move
 #change from board to tuples for all ifs
 global src = Tuple{Int64,Int64}
 global trgt = Tuple{Int64,Int64}
+global x,y
+global thegrid = Array(Tk.Tk_Button,9,9)
+
+function callbacktrgt(path)        ## callbacks have at least one argument
+  global x,y
+  global trgt = (x,y)
+  println("$trgt")
+end
+function callbacksrc(path)        ## callbacks have at least one argument
+  global x,y
+  global src = (x,y)
+  callback_add(thegrid[x,y], callbacktrgt)
+  println("$src")
+end
+
+
 
 
 #if gametype = S
@@ -135,42 +151,27 @@ simg = Button(f, "",silver_generalimg)
 emptypicimg = Button(f, "", emptyimg)
 
 =#
+global x,y
+global src,trgt
+global thegrid = Array(Tk.Tk_Button,9,9)
 
 
 for x in 1:9
   for y in 1:9
-    thegrid = Array(Tuple{Int64,Int64},9,9)
-    thegrid[x,y] = Button(f, "",shogiimgDict[board[x,y]]
+
+    thegrid[x,y] = Button(f, "",shogiimgDict[board[x,y]])
     grid(thegrid[x,y],x,y)
-    callback_add(thegrid[x,y], callbacksrc)
-
-
-    function callbacksrc(path)        ## callbacks have at least one argument
-      global src = {x,y}
-      callback_add(thegrid[x,y], callbacktrgt)
-    end
-
-    function callbacktrgt(path)        ## callbacks have at least one argument
-      global trgt = {x,y}
-    end
-
-println("$src")
-println("$trgt")
-
-
-
-
-
+    #bind(thegrid[x,y], "command", callbacksrc)
+    #bind(thegrid[x,y], "<Return>", callbacksrc)
+    #callback_add(thegrid[x,y], callbacksrc)
   end
 end
 
 
-
-
 #=
-start.startShogi("game1122.db","S","F","F",0,0,0)
+start.startShogi("game.db","S","F","F",0,0,0)
 
-move.moveAI("game1122.db","normal")
+move_user_move.moveUserMove("game1122.db","normal")
 destroy(f)
 for x in 1:9
   for y in 1:9
