@@ -28,8 +28,30 @@ function callbacksrc(path)        ## callbacks have at least one argument
   println("$src")
 end
 
+#=
+function callbackmove(path)        ## callbacks have at least one argument
+  m = Toplevel()
+  f = Frame(m); pack(f, expand=true, fill="both")
 
+  e = Entry(f)
+  b = Button(f, "Ok")
 
+  formlayout(e, "sourcex,sourcey")
+  formlayout(b, nothing)
+  focus(e)            ## put keyboard focus on widget
+
+  function callback(path)
+
+    val = get_value(e)
+    msg = "You have a nice name $val"
+    Messagebox(m,  msg)
+  end
+
+  bind(b, "command", callback)
+  bind(b, "<Return>", callback)
+  bind(e, "<Return>", callback)  ## bind to a certain key press event
+end
+=#
 
 #if gametype = S
 
@@ -161,9 +183,9 @@ for x in 1:9
 
     thegrid[x,y] = Button(f, "",shogiimgDict[board[x,y]])
     grid(thegrid[x,y],x,y)
-    #bind(thegrid[x,y], "command", callbacksrc)
-    #bind(thegrid[x,y], "<Return>", callbacksrc)
-    #callback_add(thegrid[x,y], callbacksrc)
+    bind(thegrid[x,y], "command", callbackmove)
+    bind(thegrid[x,y], "<Return>", callbackmove)
+    callback_add(thegrid[x,y], callbackmove)
   end
 end
 
@@ -618,4 +640,4 @@ dispgfx()
 #emptybrdtest()
 #chu()
 cd("../")
-export dispgfx
+export dispgfx,mini

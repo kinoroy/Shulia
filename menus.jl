@@ -10,6 +10,7 @@ include("board.jl")
 
 
 =#
+include("display_gfx.jl")
 
 
 
@@ -197,6 +198,10 @@ function callbackLIMITTIME(path)
 
 #while true
 #  dispgfx()
+if VARvalue == "shogi"
+  dispgfx()
+else
+  mini()
 
 end
 
