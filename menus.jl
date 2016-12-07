@@ -13,7 +13,7 @@ include("board.jl")
 
 
 
-
+using Tk
 
 
 w = Toplevel("SHOGI", 400, 300)

@@ -8,7 +8,7 @@ module networking
 using start
 using move_user_move
 
-
+global connection
 function getAt(arr, index,backup)
   local res
   try
@@ -34,7 +34,8 @@ end
 
 function play(gameType,cheating,timeLimit,limitAdd)
   global connection
-  write(connection,"0:$gameType:$cheating:$timeLimit:$limitAdd")
+  wcheating = cheating == "F" ? 0 : 1
+  write(connection,"""0:$gameType:$wcheating:$timeLimit:$limitAdd\n""")
 
   while true
     message = chomp(readline(connection))

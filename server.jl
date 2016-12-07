@@ -114,14 +114,17 @@ getAt(sL,1,-1),getAt(sL,1,-1),getAt(sL,1,-1),getAt(sL,1,-1))=# #possibly iterate
         # message recieved
         global settingsSet
         if wincode == "0" && !settingsSet
-          #"<wincode>: <gametype>: <legality>: <timeLimit>: <limitadd>"
+
+          #"<wincode>: <gametype>: <legality>: <timeLimit>: <limitAdd>"
           global timeLimit
           global limitAdd
           (gametype,legality,timeLimit,limitAdd) = (sL[2],sL[3],sL[4],sL[5])
-          global output = "$gametype:$legality:$timeLimit:$limitadd"
+          timeLimit = parse(timeLimit)
+          limitAdd = parse(limitAdd)
+          global output = "$gametype:$legality:$timeLimit:$limitAdd"
           #prints to player 1
           #=try
-            write(connections[player1],"0:$(player1*10^3):$gametype:$legality:$timeLimit:$limitadd")
+            write(connections[player1],"0:$(player1*10^3):$gametype:$legality:$timeLimit:$limitAdd")
           catch err
             println("$err")
           end =#
@@ -155,6 +158,7 @@ $targetx2:$targety2\n") #send move to opponent
         end
         if !settingsSet
           global settingsSet = true
+            println("settings set")
           bothPlayersConnected = false
           while !(size(collect(keys(connections)))[1]==2) #waits until both players connected
             sleep(.5)
@@ -162,6 +166,7 @@ $targetx2:$targety2\n") #send move to opponent
           bothPlayersConnected = size(collect(keys(connections)))[1]==2
 
           if bothPlayersConnected
+            println("bothPlayersConnected")
             #Roll to determine player 1 and player 2
             player1index = rand([1,2])
             player2index = player1index == 1 ? 2 : 1
@@ -173,10 +178,10 @@ $targetx2:$targety2\n") #send move to opponent
             try
               (host1,port1) = getsockname(player1)
               (host2,port2) = getsockname(player2)
-                write(player1,"\n$(player1index-1):$(port1*10^3):$gametype:$legality:$timeLimit:$limitadd\n")
-                write(player2,"\n$(player2index-1):$(port2*10^3):$gametype:$legality:$timeLimit:$limitadd\n")
+                write(player1,"$(player1index-1):$(port1*10^3):$gametype:$legality:$timeLimit:$limitAdd")
+                write(player2,"$(player2index-1):$(port2*10^3):$gametype:$legality:$timeLimit:$limitAdd")
             catch err
-              println("\n$err\n")
+              println(err)
             end
           end
 
