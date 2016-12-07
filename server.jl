@@ -27,7 +27,7 @@ function serverStart()
   global whosTurn
   global timeElapsed = Dict()
   global limitAdd
-  global timeLimit
+  global timeLimit = 1
 #  global wincode,sL
   global connections = Dict() #Array(TCPSocket,0)
   listenForClientsTask = Task(listenForClients)
@@ -64,11 +64,12 @@ function handleClientComm(client)
   (host,port) = getsockname(client)
   message = Array(UInt8,4096)
    while (true)
-      if timeElapsed[port]>timelimit #player went over time limit, player resigns
+  global timeLimit
+      if timeElapsed[port]>timeLimit #player went over time limit, player resigns
         opponent = client == player1 ? player2 : player1
-        write(opponent,"\n9:0:3:0:0:0:0:0:0
-0:$0\n") #send resign move to opponent
+        write(opponent,"\n9:0:3:0:0:0:0:0:0:0:0\n") #send resign move to opponent
         write(client,"e:you ran out of time and were forced to resign")
+        prinln("resigned due to timeout")
       end
        bytesRead = 1;
        local wincode,sL
@@ -77,9 +78,10 @@ function handleClientComm(client)
            if settingsSet
              tic()
            end
-           message = chomp(readline(client))
+           message = (readline(client))
+           println(message)
            if (isempty(message))
-             println("disconect")
+             println("disconnect")
              close(client)
              delete!(connections,port)
              for i in values(connections)
@@ -89,8 +91,9 @@ function handleClientComm(client)
              end
              break;
            end
+           message = chomp(message)
            sL = split(message,r":",keep=false)
-           wincode = parse(getAt(sL,1,-1))
+           wincode = getAt(sL,1,-1)
         #=  (wincode,authString,movenum,movetype,sourcex,sourcey,targetx,targety,option,cheating,
 targetx2,targety2) = (getAt(sL,1,-1),getAt(sL,2,-1),getAt(sL,3,-1),getAt(sL,1,-1),getAt(sL,1,-1),getAt(sL,1,-1),
 getAt(sL,1,-1),getAt(sL,1,-1),getAt(sL,1,-1),getAt(sL,1,-1))=# #possibly iterate through these size of sL and set or null??
@@ -110,24 +113,24 @@ getAt(sL,1,-1),getAt(sL,1,-1),getAt(sL,1,-1),getAt(sL,1,-1))=# #possibly iterate
         end
         # message recieved
         global settingsSet
-        if wincode == 0 && !settingsSet
-          #"<wincode>: <gametype>: <legality>: <timelimit>: <limitadd>"
+        if wincode == "0" && !settingsSet
+          #"<wincode>: <gametype>: <legality>: <timeLimit>: <limitadd>"
           global timeLimit
           global limitAdd
           (gametype,legality,timeLimit,limitAdd) = (sL[2],sL[3],sL[4],sL[5])
-          global output = "$gametype:$legality:$timelimit:$limitadd"
+          global output = "$gametype:$legality:$timeLimit:$limitadd"
           #prints to player 1
           #=try
-            write(connections[player1],"0:$(player1*10^3):$gametype:$legality:$timelimit:$limitadd")
+            write(connections[player1],"0:$(player1*10^3):$gametype:$legality:$timeLimit:$limitadd")
           catch err
             println("$err")
           end =#
           #prints to player 2
 
-        elseif wincode == 1 #Quit the game
+        elseif wincode == "1" #Quit the game
           #Draw
 
-        elseif wincode == 2 #Play a move
+        elseif wincode == "2" #Play a move
           timeElapsedCurrentMove = toc()
           (wincode,authString,movenum,movetype,sourcex,sourcey,targetx,targety,option,cheating,
   targetx2,targety2) = (getAt(sL,1,-1),getAt(sL,2,-1),getAt(sL,3,-1),getAt(sL,4,-1),getAt(sL,5,-1),getAt(sL,6,-1),
@@ -145,9 +148,9 @@ $targetx2:$targety2\n") #send move to opponent
           (host1,port1) = getsockname(player1)
           (host2,port2) = getsockname(player2)
           global whosTurn = port1 == port ? port2 : port1  #After move is made, change the turn
-        elseif wincode == 3 #Accuse opponent of cheating
+        elseif wincode == "3" #Accuse opponent of cheating
 
-        elseif wincode == 10 #Bad payload
+        elseif wincode == "10" #Bad payload
 
         end
         if !settingsSet
@@ -170,8 +173,8 @@ $targetx2:$targety2\n") #send move to opponent
             try
               (host1,port1) = getsockname(player1)
               (host2,port2) = getsockname(player2)
-                write(player1,"\n$(player1index-1):$(port1*10^3):$gametype:$legality:$timelimit:$limitadd\n")
-                write(player2,"\n$(player2index-1):$(port2*10^3):$gametype:$legality:$timelimit:$limitadd\n")
+                write(player1,"\n$(player1index-1):$(port1*10^3):$gametype:$legality:$timeLimit:$limitadd\n")
+                write(player2,"\n$(player2index-1):$(port2*10^3):$gametype:$legality:$timeLimit:$limitadd\n")
             catch err
               println("\n$err\n")
             end
