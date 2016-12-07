@@ -2,10 +2,10 @@
 #=AIHelp.jl --
 functions which will help out the AI=#
 module AIHelp
-global board_max = 9
+global board_max
 function bishop(board,x::Int64,y::Int64) #Returns an array of Tuples(currentX,currentY,newX,newY) of legal coordinates to move
   #Bishop is correct
-  #board_max = 9
+  board_max = 9
   legalC = Array(Tuple{Int64,Int64,Int64,Int64},0)
   team = board[(x,y)][2]
 
@@ -56,7 +56,7 @@ function bishop(board,x::Int64,y::Int64) #Returns an array of Tuples(currentX,cu
 end
 
 function goldGeneral(board,x::Int64,y::Int64)
-  #board_max = 9
+  board_max = 9
   team = board[(x,y)][2]
   legalC = Array(Tuple{Int64,Int64,Int64,Int64},0)
   if team == 'w'
@@ -82,7 +82,7 @@ function goldGeneral(board,x::Int64,y::Int64)
 end
 
 function king(board,x::Int64,y::Int64)
-  #board_max = 9
+  board_max = 9
   team = board[(x,y)][2]
   legalC = Array(Tuple{Int64,Int64,Int64,Int64},0)
   if team == 'w'
@@ -109,7 +109,7 @@ function king(board,x::Int64,y::Int64)
 end
 
 function lance(board,x::Int64,y::Int64)
-  #board_max = 9
+  board_max = 9
   team = board[(x,y)][2]
   legalC = Array(Tuple{Int64,Int64,Int64,Int64},0)
   if team == 'w'
@@ -138,7 +138,7 @@ function lance(board,x::Int64,y::Int64)
   return legalC
 end
 function knight(board,x::Int64,y::Int64)
-  #board_max = 9
+  board_max = 9
   team = board[(x,y)][2]
   legalC = Array(Tuple{Int64,Int64,Int64,Int64},0)
   if team == 'w'
@@ -175,7 +175,7 @@ function pawn(board,x::Int64,y::Int64)
 end
 
 function rook(board,x::Int64,y::Int64)
-  #board_max = 9
+  board_max = 9
   legalC = Array(Tuple{Int64,Int64,Int64,Int64},0)
   team = board[(x,y)][2]
 
@@ -226,7 +226,7 @@ function rook(board,x::Int64,y::Int64)
   return legalC
 end
 function silverGeneral(board,x::Int64,y::Int64)
-  #board_max = 9
+  board_max = 9
   team = board[(x,y)][2]
   legalC = Array(Tuple{Int64,Int64,Int64,Int64},0)
   if team == 'w'
@@ -252,7 +252,7 @@ function silverGeneral(board,x::Int64,y::Int64)
 end
 
 function reverseChariot(board,x::Int64,y::Int64)
-  #board_max = 9
+  board_max = 9
   team = board[(x,y)][2]
   legalC = Array(Tuple{Int64,Int64,Int64,Int64},0)
 
@@ -281,7 +281,7 @@ function reverseChariot(board,x::Int64,y::Int64)
   return legalC
 end
 function copperGeneral(board,x::Int64,y::Int64)
-  #board_max = 9
+  board_max = 9
   team = board[(x,y)][2]
   legalC = Array(Tuple{Int64,Int64,Int64,Int64},0)
   if team == 'w'
@@ -306,7 +306,7 @@ function copperGeneral(board,x::Int64,y::Int64)
   return legalC
 end
 function dragonKing(board,x::Int64,y::Int64)
-  #board_max = 9
+  board_max = 9
   legalC = Array(Tuple{Int64,Int64,Int64,Int64},0)
   team = board[(x,y)][2]
 
@@ -377,7 +377,7 @@ function dragonKing(board,x::Int64,y::Int64)
   return legalC
 end
 function drunkElephant(board,x::Int64,y::Int64)
-  #board_max = 9
+  board_max = 9
   team = board[(x,y)][2]
   legalC = Array(Tuple{Int64,Int64,Int64,Int64},0)
   if team == 'w'
@@ -403,7 +403,7 @@ function drunkElephant(board,x::Int64,y::Int64)
   return legalC
 end
 function ferociousLeopard(board,x::Int64,y::Int64)
-  #board_max = 9
+  board_max = 9
   team = board[(x,y)][2]
   legalC = Array(Tuple{Int64,Int64,Int64,Int64},0)
   if team == 'w'
@@ -429,7 +429,7 @@ function ferociousLeopard(board,x::Int64,y::Int64)
   return legalC
 end
 function dragonHorse(board,x::Int64,y::Int64)
-  #board_max = 9
+  board_max = 9
   legalC = Array(Tuple{Int64,Int64,Int64,Int64},0)
   team = board[(x,y)][2]
 
@@ -502,7 +502,7 @@ end
 function lion(board,x::Int64,y::Int64)
 end
 function kirin(board,x::Int64,y::Int64)
-  #board_max = 9
+  board_max = 9
   team = board[(x,y)][2]
   legalC = Array(Tuple{Int64,Int64,Int64,Int64},0)
   if team == 'w'
@@ -528,7 +528,7 @@ function kirin(board,x::Int64,y::Int64)
   return legalC
 end
 function sideMover(board,x::Int64,y::Int64)
-  #board_max = 9
+  board_max = 9
   legalC = Array(Tuple{Int64,Int64,Int64,Int64},0)
   team = board[(x,y)][2]
 
@@ -577,7 +577,7 @@ function sideMover(board,x::Int64,y::Int64)
 
 end
 function goBetween(board,x::Int64,y::Int64)
-  #board_max = 9
+  board_max = 9
   legalC = Array(Tuple{Int64,Int64,Int64,Int64},0)
   team = board[(x,y)][2]
   if team == 'w'
@@ -602,7 +602,7 @@ function goBetween(board,x::Int64,y::Int64)
   return legalC
 end
 function blindTiger(board,x::Int64,y::Int64)
-  #board_max = 9
+  board_max = 9
   team = board[(x,y)][2]
   legalC = Array(Tuple{Int64,Int64,Int64,Int64},0)
   if team == 'w'
@@ -628,7 +628,7 @@ function blindTiger(board,x::Int64,y::Int64)
   return legalC
 end
 function queen(board,x::Int64,y::Int64)
-  #board_max = 9
+  board_max = 9
   legalC = Array(Tuple{Int64,Int64,Int64,Int64},0)
   team = board[(x,y)][2]
 
@@ -723,7 +723,7 @@ function queen(board,x::Int64,y::Int64)
     return legalC
 end
 function verticalMover(board,x::Int64,y::Int64)
-  #board_max = 9
+  board_max = 9
   legalC = Array(Tuple{Int64,Int64,Int64,Int64},0)
   team = board[(x,y)][2]
 
@@ -770,14 +770,14 @@ function verticalMover(board,x::Int64,y::Int64)
   return legalC
 end
 function phoenix(board,x::Int64,y::Int64)
-  #board_max = 9
+  board_max = 9
   team = board[(x,y)][2]
   legalC = Array(Tuple{Int64,Int64,Int64,Int64},0)
   if team == 'w'
     potential=[(x,y,x+2,y+2),(x,y,x,y-1),(x,y,x,y+1),(x,y,x-1,y),(x,y,x+1,y),(x,y,x-2,y-2),(x,y,x+2,y-2),(x,y,x-2,y+2)]
     for i in eachindex(potential)
       if potential[i][3]<=board_max && potential[i][3]>0 && potential[i][4]<=board_max && potential[i][4]>0 #Makes sure move is not out of bounds
-        if !(get(board,(potential[i][3],potential[i][4]),('x','x'))[2] == 'w') #Check that there's no friendly piece in the path
+        if !(get(board,(potential[i][3],potential[i][4]),("x",'x'))[2] == 'w') #Check that there's no friendly piece in the path
           push!(legalC,potential[i])
         end
       end
@@ -801,7 +801,7 @@ function legalMoves(board,x,y)
   unit = target[1]
 #  println("$unit at $x , $y")
   funDict = Dict("bishop" => bishop, "gold general" => goldGeneral, "king" => king, "lance" => lance, "knight" => knight, "pawn" => pawn, "rook" => rook, "silver general" => silverGeneral,
-  "phoenix" => phoenix, "vertical mover" => verticalMover, "go-between" => goBetween, "queen" => queen, "lion" => lion, "dragon king" => dragonKing, "dragon horse", dragonHorse, "side mover" => sideMover,
+  "phoenix" => phoenix, "vertical mover" => verticalMover, "go-between" => goBetween, "queen" => queen, "lion" => lion, "dragon king" => dragonKing, "dragon horse"=> dragonHorse, "side mover" => sideMover,
   "kirin" => kirin, "blind tiger"=> blindTiger, "reverse chariot" => reverseChariot, "drunk elephant" => drunkElephant, "ferocious leopard" => ferociousLeopard, "blind tiger" => blindTiger)
   funDict[unit](board,x,y)
 end
@@ -811,7 +811,7 @@ function legalMovesPlayer(board,team,shogiType)
   global board_max = board_max_dict[shogiType]
   legalC = Array(Tuple{Int64,Int64,Int64,Int64},0) #Initialize an array of tuples for coordinates
    currentTeam = team #Define currentTeam (either 'b' or 'w)
-   #board_max = 9
+   board_max = 9
   #=for x in 1:board_max
     for y in 1:board_max
       if board[(x,y)][2] == currentTeam
@@ -820,7 +820,7 @@ function legalMovesPlayer(board,team,shogiType)
     end
   end=#
   for (x,y) in keys(board)
-    if y == currentTeam
+    if board[(x,y)][2] == currentTeam
       append!(legalC,legalMoves(board,x,y))
     end
   end

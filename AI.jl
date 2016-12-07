@@ -3,11 +3,11 @@ module AI
 using AIHelp
 using BM
 
-global states = Array(Dict{Tuple{Int64,Int64},Tuple{Char,Char}},0)
+global states = Array(Dict{Tuple{Int64,Int64},Tuple{String,Char}},0)
 global gameType,board,seed,calculationTime
 
 function init(igameType,iboard,iseed,difficulty)
-  global difficultyDict = Dict("normal"=>100,"hard"=>300,"suicidal"=>5,"protacted death"=>5)
+  global difficultyDict = Dict("normal"=>200,"hard"=>300,"suicidal"=>5,"protacted death"=>5)
   global calculationTime = difficultyDict[difficulty]
   global states
   global gameType = igameType
@@ -83,7 +83,7 @@ function run_simulation() #2,3,5
   for i in 2:(max_moves+1)
     state = states_copy[size(states_copy)[1]]
     player = currentPlayer(states_copy)
-    legalC  = AIHelp.legalMovesPlayer(state,player)
+    legalC  = AIHelp.legalMovesPlayer(state,player,gameType)
     moves_states = collect( (p,next_state(state,p)) for p in legalC)
 
 

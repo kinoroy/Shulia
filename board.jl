@@ -12,7 +12,7 @@ end
 
 function startGame(gameType)
   board = Dict()
-  if gameType == "shogi"
+  if gameType == "standard"
     board[(5,1)] = ("king",'w')
     board[(5,9)] = ("king",'b')
     board[(4,1)] = ("gold general",'w')
@@ -277,7 +277,7 @@ function nextState(board::Board, play::Tuple{Int64,Int64,Int64,Int64})
         newBoard.state[(play[3], play[4])] = newBoard.state[(play[1], play[2])]
         delete!(newBoard.state[(play[1], play[2])])
     else # target cell is not empty
-        if (newBoard.state[(play[3], play[4])])[1] == 'k'
+        if (newBoard.state[(play[3], play[4])])[1] == "king"
             newBoard.winner = newBoard.currentPlayer
         end
         newBoard.state[(play[3], play[4])] = newBoard.state[(play[1], play[2])]
@@ -296,7 +296,7 @@ function next_state(target, play::Tuple{Int64,Int64,Int64,Int64})
         newBoard[(play[3], play[4])] = newBoard[(play[1], play[2])]
         delete!(newBoard,(play[1], play[2]))
     else # target cell is not empty
-        if (get(newBoard,(play[3], play[4]),'x'))[1] == 'k'
+        if (get(newBoard,(play[3], play[4]),"x"))[1] == "king"
             #newBoard.winner = newBoard.currentPlayer
         end
         newBoard[(play[3], play[4])] = newBoard[(play[1], play[2])]
@@ -313,9 +313,9 @@ function legalPlays(board::Board)
 end
 
 function winner(state)
-  if !( ('k','b') in values(state)) #=Hist[size(stateHist)[1]]) )=#
+  if !( ("king",'b') in values(state)) #=Hist[size(stateHist)[1]]) )=#
     return 'w'
-  elseif !( ('k','w') in values(state))
+  elseif !( ("king",'w') in values(state))
     return 'b'
   else
     return '?'

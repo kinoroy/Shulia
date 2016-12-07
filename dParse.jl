@@ -21,7 +21,7 @@ board = BM.startGame(gameType)
   lastMoveIDNullable = res[1,1] #SQL query with max move_number (POSSIBLY "NULL" if no moves have been made)
 
   if (!isnull(lastMoveIDNullable)) #Checks that lastMoveID was not NULL
-    lastMoveID = get(res[1,1]) #Parses the last move move_number as an Int
+    lastMoveID = parse(get(res[1,1])) #Parses the last move move_number as an Int
 
   else #lastMoveID is NULL
     lastMoveID = 0 #move_number "0" is unsused. This implies no moves have been made
@@ -30,7 +30,7 @@ board = BM.startGame(gameType)
   currentMoveID=1
     #=----Replays the game until move_id = lastMoveID----=#
     while currentMoveID<=lastMoveID
-      res = SQLite.query(db,"SELECT sourcex,sourcey,targetx,targety,move_type,option FROM moves WHERE move_id = $(currentMoveID);")
+      res = SQLite.query(db,"SELECT sourcex,sourcey,targetx,targety,move_type,option FROM moves WHERE move_number = $(currentMoveID);")
       sourcexNullable = res[1][1]
       sourceyNullable = res[1][2]
       targetxNullable = res[1][3]
