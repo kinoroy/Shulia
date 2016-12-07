@@ -5,7 +5,6 @@ module start
 
 using BM
 
-
 using SQLite
 
 function startShogi(database,gameTypein,cheatingin,timed,time_add,sente_time,gote_time)
@@ -30,4 +29,5 @@ function startShogi(database,gameTypein,cheatingin,timed,time_add,sente_time,got
   SQLite.query(db,"""INSERT INTO meta (key,value) VALUES ("gote_time","$(gote_time)");""")
 
 end
+export startShogi
 end

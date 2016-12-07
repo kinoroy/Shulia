@@ -7,11 +7,11 @@ Accepts 6 command line args : <filename> => database, <xsource> => xSource
 include("dParse.jl")
 module move_user_move
 
-  using ST
-  using SQLite
-  function moveUserMove(database,sourcex,sourcey,targetx,targety,bool::promote)
 
-    board = ST.loadBoard()
+  using SQLite
+  function moveUserMove(database,sourcex,sourcey,targetx,targety,promote::Bool)
+
+    board = Parse(database)
   #=  database = ARGS[1] #/path/to/database/file {string}
     sourcey = parse(Int,chomp(ARGS[2])) #x coordinate of piece {Int}
     sourcex = parse(Int,chomp(ARGS[3])) #y coordinate of piece {Int}
@@ -39,17 +39,15 @@ module move_user_move
     if shouldPromote #Option will be '!'
       SQLite.query(db,"""INSERT INTO "moves" (move_number, move_type, sourcex, sourcey, targetx, targety, option)
       VALUES ($(move_number),'move',$sourcex, $sourcey,$targetx, $targety, !);""")
-      board[targetx,targety].piece = board[sourcex,sourcey].piece #Updates the board before next move
-      board[targetx,targety].team = board[sourcex,sourcey].team
-      ST.clear!(board[sourcex,sourcey])
-      ST.promote!(board[targetx,targety])
+      board[(targetx,targety)] = board[(sourcex,sourcey)] #Updates the board before next move
+      board[(targetx,targety)][1]="promoted$(board[(targetx,targety)][1])"
+      delete!(board,(sourcex,sourcey))
     else #Option will be NULL
       SQLite.query(db,"""INSERT INTO "moves" (move_number, move_type, sourcex, sourcey, targetx, targety)
       VALUES ($(move_number),'move',$sourcex, $sourcey,$targetx, $targety);""")
-      board[targetx,targety].piece = board[sourcex,sourcey].piece #Updates the board before next move
-      board[targetx,targety].team = board[sourcex,sourcey].team
-      ST.clear!(board[sourcex,sourcey])
+      board[(targetx,targety)] = board[(sourcex,sourcey)] #Updates the board before next move
+      delete!(board,(sourcex,sourcey))
     end
-  ST.saveBoard(board)
+  #ST.saveBoard(board)
 end
 end

@@ -5,18 +5,17 @@ using BM
 global DB
 using SQLite
 
-db = SQLite.DB(ARGS[1]) #Opens the database gamefile
-res = SQLite.query(db,"SELECT key,value FROM meta where key = 'type';")
-global gameType = get(res[1,2])
-res = SQLite.query(db,"SELECT key,value FROM meta where key = 'seed';")
-global seed = parse(get(res[1,2]))
 
 function Parse(pathToDatabase)
-  board = BM.startGame(gameType)
+
   #captures = readdml("captures.txt")
   db = SQLite.DB(pathToDatabase) #Opens the database gamefile
   #calculates all black piece positions
-
+  res = SQLite.query(db,"SELECT key,value FROM meta where key = 'type';")
+  global gameType = get(res[1,2])
+  res = SQLite.query(db,"SELECT key,value FROM meta where key = 'seed';")
+  global seed = parse(get(res[1,2]))
+board = BM.startGame(gameType)
   #=----Gets last move number----=#
   res = SQLite.query(db,"SELECT MAX(move_number) FROM moves;") #Finds the last played move (maximum move_number)
   lastMoveIDNullable = res[1,1] #SQL query with max move_number (POSSIBLY "NULL" if no moves have been made)
