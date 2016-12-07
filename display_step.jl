@@ -219,12 +219,6 @@ function backward()#function to go backward
   Setupboard()
 end
 
-  if gameType == "standard"
-    displaystandard()
-  else
-    displaymini()
-  end
-
 while instruction!="quit\n"
   global board
   if instruction=="b\n"

@@ -2,11 +2,11 @@
 given. accepts 4 command line argument,<filename> => database <piece> => piece
 <xtarget> => xTarget <ytarget> => yTarget
 =#
-include("square.jl")
+#include("square.jl")
 include("dParse.jl")
 
 module move_user_drop
-using ST
+#using ST
 using SQLite
 function drop(database,pieceToDrop,xTarget,yTarget)
   #database = ARGS[1] #/path/to/database/file {string}

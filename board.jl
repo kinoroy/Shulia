@@ -2,7 +2,7 @@ include("AIHelp.jl")
 module BM
 type Board
 
-  state::Dict{Tuple{Int64,Int64},Tuple{Char,Char}}
+  state::Dict{Tuple{Int64,Int64},Tuple{String,Char}}
   currentPlayer::Char
   winner::Char # b, w, x for no winner
 
@@ -12,7 +12,7 @@ end
 
 function startGame(gameType)
   board = Dict()
-  if gameType == "standard"
+  if gameType == "shogi"
     board[(5,1)] = ("king",'w')
     board[(5,9)] = ("king",'b')
     board[(4,1)] = ("gold general",'w')

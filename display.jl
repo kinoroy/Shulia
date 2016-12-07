@@ -36,47 +36,47 @@ function displaymini()
     dboard[(x,y)]=board[(x,y)][1]
   end
 
-  for x_index in (1:11)
-    for y_index in (1:11)
-      if y_index==1
-        if x_index==1
+  for y_index in (1:11)
+    for x_index in (1:11)
+      if x_index==1
+        if y_index==1
           print("┌")
-        elseif x_index==11
+        elseif y_index==11
           print("└")
-        elseif rem(x_index,2)==0
+        elseif rem(y_index,2)==0
           print("|")
         else
           print("├")
         end
-      elseif y_index==11
-        if x_index==1
+      elseif x_index==11
+        if y_index==1
           print("┐")
-        elseif x_index==11
+        elseif y_index==11
           print("┘")
-        elseif rem(x_index,2)==0
+        elseif rem(y_index,2)==0
           print("|")
         else
           print("┤")
         end
-      elseif rem(y_index,2)==1
-        if x_index==1
+      elseif rem(x_index,2)==1
+        if y_index==1
           print("┬")
-        elseif x_index==11
+        elseif y_index==11
           print("┴")
-        elseif rem(x_index,2)==1
+        elseif rem(y_index,2)==1
           print("┼")
         else
           print("|")
         end
       else
-        if rem(x_index,2)==1
+        if rem(y_index,2)==1
           print("-")
         else
-          if board[div(x_index,2),(6-div(y_index,2))]=='k' || board[div(x_index,2),(6-div(y_index,2))]=='K'
-            print_with_color(:yellow, "$(board[div(x_index,2),(6-div(y_index,2))])")
+          if board[div(y_index,2),(6-div(x_index,2))]=="king"
+            #print_with_color(:yellow, "$(board[div(y_index,2),(6-div(x_index,2))])")
             continue
           end
-          print(board[div(x_index,2),(6-div(y_index,2))])
+          #print(board[div(y_index,2),(6-div(x_index,2))])
         end
       end
     end
@@ -94,47 +94,47 @@ function displaystandard()
     dboard[(x,y)]=board[(x,y)][1]
   end
 
-for x_index in (19:1)
-  for y_index in (1:19)
-    if y_index==1
-      if x_index==1
-        print("┐")
-      elseif x_index==19
+for y_index in (1:19)
+  for x_index in (1:19)
+    if x_index==1
+      if y_index==1
         print("┌")
-      elseif rem(x_index,2)==0
-        print("-")
-      else
-        print("┬")
-      end
-    elseif y_index==19
-      if x_index==1
-        print("┘")
-      elseif x_index==19
+      elseif y_index==19
         print("└")
-      elseif rem(x_index,2)==0
-        print("-")
-      else
-        print("┴")
-      end
-    elseif rem(y_index,2)==1
-      if x_index==1
-        print("┤")
-      elseif x_index==19
-        print("├")
-      elseif rem(x_index,2)==1
-        print("┼")
-      else
-        print("-")
-      end
-    else
-      if rem(x_index,2)==1
+      elseif rem(y_index,2)==0
         print("|")
       else
-        if dboard[div(x_index,2),(10-div(y_index,2))]=='k' || dboard[div(x_index,2),(10-div(y_index,2))]=='K'
-          print_with_color(:yellow, "$(dboard[div(x_index,2),(10-div(y_index,2))])")
+        print("├")
+      end
+    elseif x_index==19
+      if y_index==1
+        print("┐")
+      elseif y_index==19
+        print("┘")
+      elseif rem(y_index,2)==0
+        print("|")
+      else
+        print("┤")
+      end
+    elseif rem(x_index,2)==1
+      if y_index==1
+        print("┬")
+      elseif y_index==19
+        print("┴")
+      elseif rem(y_index,2)==1
+        print("┼")
+      else
+        print("|")
+      end
+    else
+      if rem(y_index,2)==1
+        print("-")
+      else
+        if board[div(y_index,2),(10-div(x_index,2))]=='k' || board[div(y_index,2),(10-div(x_index,2))]=='K'
+        #  print_with_color(:yellow, "$(dboard[div(y_index,2),(10-div(x_index,2))])")
           continue
         end
-        print(dboard[div(x_index,2),(10-div(y_index,2))])
+      #  print(dboard[div(y_index,2),(10-div(x_index,2))])
       end
     end
   end
@@ -150,47 +150,98 @@ function displaychu()
     dboard[(x,y)]=board[(x,y)][1]
   end
 
-  for x_index in (1:25)
-    for y_index in (1:25)
-      if y_index==1
-        if x_index==1
+  for y_index in (1:25)
+    for x_index in (1:25)
+      if x_index==1
+        if y_index==1
           print("┌")
-        elseif x_index==25
+        elseif y_index==25
           print("└")
-        elseif rem(x_index,2)==0
+        elseif rem(y_index,2)==0
           print("|")
         else
           print("├")
         end
-      elseif y_index==25
-        if x_index==1
+      elseif x_index==25
+        if y_index==1
           print("┐")
-        elseif x_index==25
+        elseif y_index==25
           print("┘")
-        elseif rem(x_index,2)==0
+        elseif rem(y_index,2)==0
           print("|")
         else
           print("┤")
         end
-      elseif rem(y_index,2)==1
-        if x_index==1
+      elseif rem(x_index,2)==1
+        if y_index==1
           print("┬")
-        elseif x_index==25
+        elseif y_index==25
           print("┴")
-        elseif rem(x_index,2)==1
+        elseif rem(y_index,2)==1
           print("┼")
         else
           print("|")
         end
       else
-        if rem(x_index,2)==1
+        if rem(y_index,2)==1
           print("-")
         else
-          if board[div(x_index,2),(13-div(y_index,2))]=='k' || board[div(x_index,2),(13-div(y_index,2))]=='K'
-            print_with_color(:yellow, "$(dboard[div(x_index,2),(10-div(y_index,2))])")
-            continue
-          end
-          print(dboard[div(x_index,2),(13-div(y_index,2))])
+          #if board[div(y_index,2),(13-div(x_index,2))]=='k' || board[div(y_index,2),(13-div(x_index,2))]=='K'
+          #  print_with_color(:yellow, "$(dboard[div(y_index,2),(10-div(x_index,2))])")
+          #  continue
+        #  end
+        #  print(dboard[div(y_index,2),(13-div(x_index,2))])
+        end
+      end
+    end
+    print("\n")
+  end
+end
+
+function displaytenjiku()
+
+
+  for y_index in (1:33)
+    for x_index in (1:33)
+      if x_index==1
+        if y_index==1
+          print("┌")
+        elseif y_index==33
+          print("└")
+        elseif rem(y_index,2)==0
+          print("|")
+        else
+          print("├")
+        end
+      elseif x_index==33
+        if y_index==1
+          print("┐")
+        elseif y_index==33
+          print("┘")
+        elseif rem(y_index,2)==0
+          print("|")
+        else
+          print("┤")
+        end
+      elseif rem(x_index,2)==1
+        if y_index==1
+          print("┬")
+        elseif y_index==33
+          print("┴")
+        elseif rem(y_index,2)==1
+          print("┼")
+        else
+          print("|")
+        end
+      else
+        if rem(y_index,2)==1
+          print("-")
+        else
+          #if board[div(y_index,2),(13-div(x_index,2))]=='k' || board[div(y_index,2),(13-div(x_index,2))]=='K'
+          #  print_with_color(:yellow, "$(dboard[div(y_index,2),(10-div(x_index,2))])")
+          #  continue
+        #  end
+        #  print(dboard[div(y_index,2),(13-div(x_index,2))])
         end
       end
     end
