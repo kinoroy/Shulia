@@ -8,7 +8,7 @@ using BM
 using AI
 using SQLite
 
-function moveAI(database) #Makes a move with the AI, returns the move made
+function moveAI(database,difficulty) #Makes a move with the AI, returns the move made
 
   #=----Parses the database and determines where pieces are on the board----=#
 
@@ -18,7 +18,7 @@ function moveAI(database) #Makes a move with the AI, returns the move made
 
   (board,gameType,seed,lastMoveID) = dParse.Parse(database)
 
-  AI.init(gameType,board,seed)
+  AI.init(gameType,board,seed,difficulty)
 
   (sourcex,sourcey,targetx,targety) = AI.get_play()
   move_number = lastMoveID+1

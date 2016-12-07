@@ -8,6 +8,7 @@ include("start.jl")
 
 using BM
 using Tk
+using move
 
 #change from board to tuples for all ifs
 
@@ -16,9 +17,9 @@ using Tk
 #if gametype = S
 
 
-function dispgfx(boardSize)
+function dispgfx()
 
-
+  boardSize=9
 
   sboard = BM.startGame("shogi")
   board = Array(Tuple{String,Char},boardSize,boardSize)
@@ -136,6 +137,15 @@ for x in 1:9
   end
 end
 
+start.startShogi("game1122.db","S","F","F",0,0,0)
+
+move.moveAI("game1122.db","normal")
+destroy(f)
+for x in 1:9
+  for y in 1:9
+    grid(Button(f, "",shogiimgDict[board[x,y]]),x,y)
+  end
+end
 #start playing game
 end
 #end
@@ -281,7 +291,7 @@ if gametype = C
 
 
 
-function Chu()
+function chu()
   boardSize=12
   cboard = BM.startGame("chu")
   board = Array(Tuple{String,Char},boardSize,boardSize)
@@ -568,9 +578,9 @@ end
 
 #end
 end
-#dispgfx()
-mini()
+dispgfx()
+#mini()
 #emptybrdtest()
-#Chu()
+#chu()
 cd("../")
 export dispgfx

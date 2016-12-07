@@ -35,7 +35,7 @@ function get_play()
   global max_depth = 0
   state = states[size(states)[1]]
   player = currentPlayer(states)
-  legal = AIHelp.legalMovesPlayer(state,player)
+  legal = AIHelp.legalMovesPlayer(state,player,"standard")
 
   if size(legal)[1] == 0
     return
