@@ -78,7 +78,7 @@ gameType = "standard" #TO DO: don't hard code this
       end
 
       #drop case3: It is not promoted
-      if (unit == "promotedbishop" || unit == "promotedlance" || unit == "promotedknight" || unit == "promotedpawn" || unit == "promotedrook" || unit == "promotedsilver")
+      if (unit == "promotedbishop" || unit == "promotedlance" || unit == "promotedknight" || unit == "promotedpawn" || unit == "promotedrook" || unit == "promotedsilver general")
         return false
       end
 
@@ -157,7 +157,7 @@ gameType = "standard" #TO DO: don't hard code this
       return silverGeneralValidate(team,sourcex,sourcey,targetx,targety)
 
     #case 8.2 promoted silver general or veritcal mover
-    elseif unit == "promotedsilver"
+    elseif unit == "promotedsilver general"
       #promoted silver general moves same as gold general
       return goldGeneralValidate(team,sourcex,sourcey,targetx,targety)
 

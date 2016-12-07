@@ -1,3 +1,4 @@
+#=
 include("display_gfx.jl")
 include("move.jl")
 include("move_user_drop.jl")
@@ -8,7 +9,7 @@ include("start.jl")
 include("board.jl")
 
 
-
+=#
 
 
 
@@ -194,8 +195,8 @@ function callbackLIMITTIME(path)
   #return LIMITvalue
 
 
-while true
-  dispgfx()
+#while true
+#  dispgfx()
 
 end
 
