@@ -9,6 +9,12 @@ type Board
   Board(state, currentPlayer) = new(state, currentPlayer, 'x')
 
 end
+function startTestGame()
+  board = Dict()
+  board[(3,3)] = ("king",'b')
+  board[(3,4)] = ("king",'w')
+  return Board(board, 'b')
+end
 
 function startGame(gameType)
   board = Dict()

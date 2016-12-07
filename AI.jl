@@ -7,7 +7,7 @@ global states = Array(Dict{Tuple{Int64,Int64},Tuple{String,Char}},0)
 global gameType,board,seed,calculationTime
 
 function init(igameType,iboard,iseed,difficulty)
-  global difficultyDict = Dict("normal"=>200,"hard"=>300,"suicidal"=>5,"protacted death"=>5)
+  global difficultyDict = Dict("normal"=>20,"hard"=>300,"suicidal"=>5,"protacted death"=>5)
   global calculationTime = difficultyDict[difficulty]
   global states
   global gameType = igameType
@@ -87,7 +87,7 @@ function run_simulation() #2,3,5
     moves_states = collect( (p,next_state(state,p)) for p in legalC)
 
 
-    if all(collect(get(plays,(p,S),0)!=0 for (p,S) in moves_states))#Have stats
+    if all(collect(get(plays,(player,S),0)!=0 for (p,S) in moves_states))#Have stats
       log_total = log(
         sum(plays[(player,S)] for (p,S) in moves_states)
       )
